@@ -1,0 +1,23 @@
+<div class="login-container">
+    <h2>Connexion</h2>
+
+    <form (ngSubmit)="onSubmit()">
+      <!-- Zone de saisie pour l'email -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" [(ngModel)]="email" name="email" placeholder="Entrez votre email" required />
+      </mat-form-field>
+
+      <!-- Zone de saisie pour le mot de passe -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Mot de passe</mat-label>
+        <input matInput type="password" [(ngModel)]="password" name="password" placeholder="Entrez votre mot de passe" required />
+      </mat-form-field>
+
+      <!-- Bouton de connexion -->
+      <button mat-raised-button color="primary" type="submit" [disabled]="!email || !password">
+        Se connecter
+      </button>
+    </form>
+    <p>Pas encore de compte ? <a routerLink="/register">Inscrivez-vous ici</a></p>
+  </div>

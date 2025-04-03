@@ -1,0 +1,50 @@
+<div class="register-container">
+  <h2>Inscription</h2>
+
+  <form (ngSubmit)="onSubmit()">
+    <!-- Zone de saisie pour le prénom -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Prénom</mat-label>
+      <input matInput type="text" [(ngModel)]="firstName" name="firstName" placeholder="Entrez votre prénom" required />
+    </mat-form-field>
+
+    <!-- Zone de saisie pour le nom -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nom</mat-label>
+      <input matInput type="text" [(ngModel)]="lastName" name="lastName" placeholder="Entrez votre nom" required />
+    </mat-form-field>
+
+    <!-- Zone de saisie pour le téléphone -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Téléphone</mat-label>
+      <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Entrez votre téléphone" required />
+    </mat-form-field>
+
+    <!-- Zone de saisie pour l'email -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" [(ngModel)]="email" name="email" placeholder="Entrez votre email" required />
+    </mat-form-field>
+
+    <!-- Zone de saisie pour le mot de passe -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Mot de passe</mat-label>
+      <input matInput type="password" [(ngModel)]="password" name="password" placeholder="Entrez votre mot de passe" required />
+    </mat-form-field>
+
+    <!-- Zone de saisie pour le rôle -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Rôle</mat-label>
+      <select matNativeControl [(ngModel)]="role" name="role" required>
+        <option value="Patient">Patient</option>
+        <option value="Medecin">Medecin</option>
+      </select>
+    </mat-form-field>
+
+    <!-- Bouton d'inscription -->
+    <button mat-raised-button color="primary" type="submit" [disabled]="!email || !password || !firstName || !lastName || !phone || !role">
+      S'inscrire
+    </button>
+  </form>
+  <p>Vous avez déjà un compte ? <a routerLink="/login">Connectez-vous ici</a></p>
+</div>
