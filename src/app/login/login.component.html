@@ -1,23 +1,79 @@
-<div class="login-container">
-    <h2>Connexion</h2>
+<div class="register-container">
+  <mat-card class="register-card center">
+    <span><img src="assets/images/medical.png" height="120"/></span>
+    <h2 class="costum-color2">Connexion </h2>
+    <mat-card-content>
+      <form (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <!-- Zone de saisie pour l'email -->
+          <mat-form-field appearance="fill" class="custom-input">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" [(ngModel)]="email" name="email" placeholder="Entrez votre email" required />
+          </mat-form-field>
+        </div>
 
-    <form (ngSubmit)="onSubmit()">
-      <!-- Zone de saisie pour l'email -->
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Email</mat-label>
-        <input matInput type="email" [(ngModel)]="email" name="email" placeholder="Entrez votre email" required />
-      </mat-form-field>
+        <div class="form-grid">
+          <!-- Zone de saisie pour le mot de passe -->
+          <mat-form-field appearance="fill" class="custom-input">
+            <mat-label>Mot de passe</mat-label>
+            <input matInput [(ngModel)]="password" name="password" placeholder="Entrez votre mot de passe" [type]="hide() ? 'password' : 'text'" />
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="clickEvent($event)"
+              [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="hide()"
+            >
+              <mat-icon>{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
 
-      <!-- Zone de saisie pour le mot de passe -->
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Mot de passe</mat-label>
-        <input matInput type="password" [(ngModel)]="password" name="password" placeholder="Entrez votre mot de passe" required />
-      </mat-form-field>
+        <!-- Bouton de connexion -->
+        <button mat-raised-button color="primary" type="submit" [disabled]="!email || !password">
+          Se connecter
+        </button>
+      </form>
+      <p>Pas encore de compte ? <a class="costum-color2" routerLink="/register">Inscrivez-vous ici</a></p>
+    </mat-card-content>
+  </mat-card>
+</div>
 
-      <!-- Bouton de connexion -->
-      <button mat-raised-button color="primary" type="submit" [disabled]="!email || !password">
-        Se connecter
-      </button>
-    </form>
-    <p>Pas encore de compte ? <a routerLink="/register">Inscrivez-vous ici</a></p>
-  </div>
+<style>
+
+  .register-container {
+    display: flex;
+    justify-content: flex-start; /* Alignement à gauche */
+    align-items: center;
+    height: 100vh;
+    background-image: url('assets/images/background.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    padding-left: 5%; /* Ajoute un espace depuis le bord gauche */
+  }
+
+  .register-card {
+    width: 50%;
+    max-width: 500px; /* Empêche le formulaire d'être trop large */
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: white;
+  }
+
+  .form-grid {
+    display: flex;
+    gap: 20px;
+  }
+
+  .form-grid mat-form-field {
+    flex: 1;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+</style>

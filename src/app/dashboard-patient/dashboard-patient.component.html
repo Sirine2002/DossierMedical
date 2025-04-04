@@ -1,0 +1,145 @@
+<mat-sidenav-container>
+
+  <!-- Side nav content-->
+  <mat-sidenav-content>
+    <app-navbar></app-navbar>
+    <div class="content">
+      <h3 class="costum-color1">Dossier Médicale</h3>
+
+      <mat-accordion *ngFor="let dossier of dossiersComplet">
+        <mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
+          <mat-expansion-panel-header>
+            <mat-panel-title><b class="costum-color2">N°000122335566 </b> </mat-panel-title>
+            <mat-panel-description>
+              <span>12-12-2024 12:00:00</span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <mat-tab-group>
+            <mat-tab label="Fiche de soin">
+              <ng-template matTabContent>
+                <table mat-table [dataSource]="dossier.ficheSoin" matSort>
+
+                  <!-- ID Column -->
+                  <ng-container matColumnDef="numero">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> N° </th>
+                    <td mat-cell *matCellDef="let row"> {{row.numero}} </td>
+                  </ng-container>
+
+                  <!-- Progress Column -->
+                  <ng-container matColumnDef="agentCreateur">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Création </th>
+                    <td mat-cell *matCellDef="let row"> {{row.agentCreateur}}% </td>
+                  </ng-container>
+
+                  <!-- Name Column -->
+                  <ng-container matColumnDef="adresseCreateur">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Agent Créateur </th>
+                    <td mat-cell *matCellDef="let row"> {{row.adresseCreateur}} </td>
+                  </ng-container>
+
+                  <!-- Fruit Column -->
+                  <ng-container matColumnDef="dateCreation">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Adresse Créateur </th>
+                    <td mat-cell *matCellDef="let row"> {{row.dateCreation}} </td>
+                  </ng-container>
+                  <ng-container matColumnDef="Actions">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions </th>
+                    <td mat-cell *matCellDef="let row">  </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns1"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns1;"></tr>
+                </table>
+              </ng-template>
+            </mat-tab>
+            <mat-tab label="Image médicale">
+              <ng-template matTabContent>
+                <table mat-table [dataSource]="dossier.imageMedicale" matSort>
+
+                  <!-- ID Column -->
+                  <ng-container matColumnDef="numero">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> N° </th>
+                    <td mat-cell *matCellDef="let row"> {{row.numero}} </td>
+                  </ng-container>
+                  <ng-container matColumnDef="image">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Image </th>
+                    <td mat-cell *matCellDef="let row"> {{row.image}} </td>
+                  </ng-container>
+
+                  <!-- Progress Column -->
+                  <ng-container matColumnDef="agentCreateur">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Création </th>
+                    <td mat-cell *matCellDef="let row"> {{row.agentCreateur}}% </td>
+                  </ng-container>
+
+                  <!-- Name Column -->
+                  <ng-container matColumnDef="adresseCreateur">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Agent Créateur </th>
+                    <td mat-cell *matCellDef="let row"> {{row.adresseCreateur}} </td>
+                  </ng-container>
+
+                  <!-- Fruit Column -->
+                  <ng-container matColumnDef="dateCreation">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Adresse Créateur </th>
+                    <td mat-cell *matCellDef="let row"> {{row.dateCreation}} </td>
+                  </ng-container>
+                  <ng-container matColumnDef="Actions">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions </th>
+                    <td mat-cell *matCellDef="let row">  </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+                </table>
+              </ng-template>
+            </mat-tab>
+            <mat-tab label="Analyse médicale">
+              <ng-template matTabContent>
+                <table mat-table [dataSource]="dossier.analyseMedicale" matSort>
+
+                  <!-- ID Column -->
+                  <!-- ID Column -->
+                  <ng-container matColumnDef="numero">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> N° </th>
+                    <td mat-cell *matCellDef="let row"> {{row.numero}} </td>
+                  </ng-container>
+                  <ng-container matColumnDef="fichier">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Fichier </th>
+                    <td mat-cell *matCellDef="let row"> {{row.fichier}} </td>
+                  </ng-container>
+
+                  <!-- Progress Column -->
+                  <ng-container matColumnDef="agentCreateur">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Création </th>
+                    <td mat-cell *matCellDef="let row"> {{row.agentCreateur}}% </td>
+                  </ng-container>
+
+                  <!-- Name Column -->
+                  <ng-container matColumnDef="adresseCreateur">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Agent Créateur </th>
+                    <td mat-cell *matCellDef="let row"> {{row.adresseCreateur}} </td>
+                  </ng-container>
+
+                  <!-- Fruit Column -->
+                  <ng-container matColumnDef="dateCreation">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Adresse Créateur </th>
+                    <td mat-cell *matCellDef="let row"> {{row.dateCreation}} </td>
+                  </ng-container>
+                  <ng-container matColumnDef="Actions">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions </th>
+                    <td mat-cell *matCellDef="let row">  </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns3"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns3;"></tr>
+                </table>
+              </ng-template>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

@@ -2,3 +2,19 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.costum-color1{
+  color: #212a5e;
+}
+
+.costum-color2{
+    color: #3f51b5 ;
+  }
+  .pl-5{
+    padding-left: 2%;
+  }
+  .content {
+    margin-top: 64px; /* Ajuste selon la hauteur de la navbar */
+    padding: 16px;
+    background-color: white;
+  }

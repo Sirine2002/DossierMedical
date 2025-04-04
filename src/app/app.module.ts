@@ -26,12 +26,26 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { RegisterComponent } from './register/register.component';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
-
+import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
+import { DashboardPatientComponent } from './dashboard-patient/dashboard-patient.component';
+import { DashboardMedecinComponent } from './dashboard-medecin/dashboard-medecin.component';
+import { DashboardAnalysteComponent } from './dashboard-analyste/dashboard-analyste.component';
+import { DashboardRadiologueComponent } from './dashboard-radiologue/dashboard-radiologue.component';
+import { NavbarComponent } from './navbar/navbar.component';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatTabsModule} from '@angular/material/tabs';
+import { MatGridListModule } from '@angular/material/grid-list';
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    DashboardPatientComponent,
+    DashboardMedecinComponent,
+    DashboardAnalysteComponent,
+    DashboardRadiologueComponent,
+    NavbarComponent
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebaseConfig),
@@ -56,7 +70,12 @@ import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
     MatPaginatorModule,
     MatSortModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatCardModule,
+    MatSelectModule,
+    MatExpansionModule,
+    MatTabsModule,
+    MatGridListModule
   ],
   providers: [],
   bootstrap: [AppComponent]

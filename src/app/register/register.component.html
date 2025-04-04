@@ -1,50 +1,201 @@
 <div class="register-container">
-  <h2>Inscription</h2>
+  <mat-card class="register-card center">
+    <span><img src="assets/images/medical.png" height="120" /></span>
+    <h2 class="costum-color2">Inscription</h2>
+    <mat-card-content>
+      <form (ngSubmit)="onSubmit()">
 
-  <form (ngSubmit)="onSubmit()">
-    <!-- Zone de saisie pour le prénom -->
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Prénom</mat-label>
-      <input matInput type="text" [(ngModel)]="firstName" name="firstName" placeholder="Entrez votre prénom" required />
-    </mat-form-field>
+        <!-- CIN, Date de naissance et Sexe côte à côte -->
+        <div class="form-grid">
+          <mat-form-field appearance="fill" class="custom-input">
+            <mat-label>Rôle</mat-label>
+            <mat-select [(ngModel)]="selectedRole" name="role" (selectionChange)="onRoleChange($event.value)">
+              <mat-option value="Patient">Patient</mat-option>
+              <mat-option value="Medecin">Médecin</mat-option>
+              <mat-option value="Analyste">Analyste</mat-option>
+              <mat-option value="Radiologue">Radiologue</mat-option>
+            </mat-select>
+          </mat-form-field>
 
-    <!-- Zone de saisie pour le nom -->
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Nom</mat-label>
-      <input matInput type="text" [(ngModel)]="lastName" name="lastName" placeholder="Entrez votre nom" required />
-    </mat-form-field>
+          <mat-form-field appearance="fill" class="custom-input">
+            <mat-label>CIN</mat-label>
+            <input matInput type="text" [(ngModel)]="cin" name="cin" placeholder="Entrez votre CIN" required />
+          </mat-form-field>
+        </div>
 
-    <!-- Zone de saisie pour le téléphone -->
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Téléphone</mat-label>
-      <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Entrez votre téléphone" required />
-    </mat-form-field>
+        <div class="form-grid">
+          <mat-form-field appearance="fill" class="custom-input">
+            <mat-label>Prénom</mat-label>
+            <input matInput type="text" [(ngModel)]="firstName" name="firstName" placeholder="Entrez votre prénom"
+              required />
+          </mat-form-field>
 
-    <!-- Zone de saisie pour l'email -->
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Email</mat-label>
-      <input matInput type="email" [(ngModel)]="email" name="email" placeholder="Entrez votre email" required />
-    </mat-form-field>
+          <mat-form-field appearance="fill" class="custom-input">
+            <mat-label>Nom</mat-label>
+            <input matInput type="text" [(ngModel)]="lastName" name="lastName" placeholder="Entrez votre nom"
+              required />
+          </mat-form-field>
+        </div>
+        <div class="form-grid">
+          <mat-form-field *ngIf="selectedRole === 'Patient'" appearance="fill" class="custom-input">
+            <mat-label>Date de naissance</mat-label>
+            <input matInput type="date" [(ngModel)]="dateNaissance" name="dateNaissance" required />
+          </mat-form-field>
 
-    <!-- Zone de saisie pour le mot de passe -->
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Mot de passe</mat-label>
-      <input matInput type="password" [(ngModel)]="password" name="password" placeholder="Entrez votre mot de passe" required />
-    </mat-form-field>
+          <mat-form-field *ngIf="selectedRole === 'Patient'" appearance="fill" class="custom-input">
+            <mat-label>Sexe</mat-label>
+            <mat-select [(ngModel)]="sexe" name="sexe" required>
+              <mat-option value="Homme">Homme</mat-option>
+              <mat-option value="Femme">Femme</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field *ngIf="selectedRole === 'Patient'" appearance="fill" class="custom-input">
+            <mat-label>Téléphone</mat-label>
+            <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Entrez votre téléphone" required />
+          </mat-form-field>
+        </div>
 
-    <!-- Zone de saisie pour le rôle -->
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Rôle</mat-label>
-      <select matNativeControl [(ngModel)]="role" name="role" required>
-        <option value="Patient">Patient</option>
-        <option value="Medecin">Medecin</option>
-      </select>
-    </mat-form-field>
+        <div *ngIf="selectedRole === 'Medecin'">
+          <div class="form-grid">
+            <mat-form-field appearance="fill" class="full-width custom-input">
+              <mat-label>Spécialité</mat-label>
+              <mat-select [(ngModel)]="specialite" name="specialite" required>
+                <mat-option value="Cardiologie">Cardiologie</mat-option>
+                <mat-option value="Neurologie">Neurologie</mat-option>
+                <mat-option value="chirurgie ">chirurgie</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="custom-input">
+              <mat-label>Téléphone</mat-label>
+              <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Entrez votre téléphone"
+                required />
+            </mat-form-field>
+          </div>
+        </div>
 
-    <!-- Bouton d'inscription -->
-    <button mat-raised-button color="primary" type="submit" [disabled]="!email || !password || !firstName || !lastName || !phone || !role">
-      S'inscrire
-    </button>
-  </form>
-  <p>Vous avez déjà un compte ? <a routerLink="/login">Connectez-vous ici</a></p>
+        <div *ngIf="selectedRole === 'Analyste'">
+          <div class="form-grid">
+            <mat-form-field appearance="fill" class="full-width custom-input">
+              <mat-label>Spécialité</mat-label>
+              <mat-select [(ngModel)]="specialite" name="specialite" required>
+                <mat-option value="Pathologie">Pathologie</mat-option>
+                <mat-option value="Hématologie">Hématologie</mat-option>
+                <mat-option value="chirurgie ">Microbiologie</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="full-width custom-input">
+              <mat-label>Service</mat-label>
+              <mat-select [(ngModel)]="service" name="service" required>
+                <mat-option value="Bio-informatique">Bio-informatique</mat-option>
+                <mat-option value="tests diagnostiques ">tests diagnostiques </mat-option>
+                <mat-option value="Radiothérapie  ">Radiothérapie </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="custom-input">
+              <mat-label>Téléphone</mat-label>
+              <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Entrez votre téléphone"
+                required />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div *ngIf="selectedRole === 'Radiologue'">
+          <div class="form-grid">
+            <mat-form-field appearance="fill" class="custom-input">
+              <mat-label>Imagerie</mat-label>
+              <mat-select [(ngModel)]="typeImagerie" name="typeImagerie" required>
+                <mat-option value="Radiographie">Radiographie</mat-option>
+                <mat-option value="Scanner">Scanner</mat-option>
+                <mat-option value="IRM">IRM</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+
+            <mat-form-field appearance="fill" class="full-width custom-input">
+              <mat-label>Service</mat-label>
+              <mat-select [(ngModel)]="service" name="service" required>
+                <mat-option value="diagnostique">diagnostique</mat-option>
+                <mat-option value="interventionnelle ">interventionnelle </mat-option>
+                <mat-option value="Radiothérapie  ">Radiothérapie </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="custom-input">
+              <mat-label>Téléphone</mat-label>
+              <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Entrez votre téléphone"
+                required />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Email et mot de passe côte à côte -->
+        <div class="form-grid">
+          <mat-form-field appearance="fill" class="custom-input">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" [(ngModel)]="email" name="email" placeholder="Entrez votre email" required />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="custom-input">
+            <mat-label>Mot de passe</mat-label>
+            <input matInput [(ngModel)]="password" name="password" placeholder="Entrez votre mot de passe" required
+              [type]="hide() ? 'password' : 'text'" />
+            <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="hide()">
+              <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </mat-form-field>
+
+
+        </div>
+        <div *ngIf="selectedRole === 'Patient'">
+          <mat-form-field appearance="fill" class="full-width custom-input">
+            <mat-label>Adresse</mat-label>
+            <input matInput type="text" [(ngModel)]="adresse" name="adresse" placeholder="Adresse" required />
+          </mat-form-field>
+        </div>
+
+        <button mat-raised-button color="primary" type="submit"
+          [disabled]="!email || !password || !firstName || !lastName || !phone || !selectedRole">
+          S'inscrire
+        </button>
+      </form>
+      <p>Vous avez déjà un compte ? <a class="costum-color2" routerLink="/login">Connectez-vous ici</a></p>
+    </mat-card-content>
+  </mat-card>
 </div>
+
+<style>
+  .register-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100vh;
+    background-image: url('assets/images/background.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding-left: 5%;
+  }
+
+  .register-card {
+    width: 50%;
+    max-width: 500px;
+    padding: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: white;
+  }
+
+  .form-grid {
+    display: flex;
+    gap: 20px;
+  }
+
+  .form-grid mat-form-field {
+    flex: 1;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+</style>

@@ -1,0 +1,80 @@
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 50px;
+  margin-left: 0px;
+}
+/* Fixe la navbar en haut et évite les débordements */
+.toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+/* Correction du logo */
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  max-height: 50px; /* Ajuste la taille */
+  width: auto;
+}
+
+/* Espace flexible pour pousser le menu utilisateur à droite */
+.spacer {
+  flex-grow: 1;
+}
+
+/* Ajustement du contenu pour éviter qu'il soit caché sous la navbar */
+.content {
+  margin-top: 64px; /* Ajuste selon la hauteur de la navbar */
+  padding: 16px;
+}
+
+/* Correction du bouton utilisateur */
+.toolbar-button {
+  display: flex;
+  align-items: center;
+}
+
+/* Conteneur du bouton utilisateur */
+.user-container {
+  display: flex;
+  align-items: center; /* 🟢 Centre verticalement */
+  gap: 8px;
+  font-size: medium; /* 🟢 Espace entre l'icône et le texte */
+}
+
+/* Icône utilisateur */
+.user-icon {
+  font-size: 24px; /* Ajuste la taille de l'icône */
+}
+
+/* Nom d'utilisateur */
+.username {
+  font-size: 16px;
+  font-weight: bold;
+  white-space: nowrap; /* Empêche le retour à la ligne */
+}
+
+/* Icône flèche vers le bas */
+.dropdown-icon {
+  font-size: 20px;
+  margin-left: auto; /* 🟢 Pousse l'icône vers la droite */
+}
+.user-button {
+  display: flex;
+  align-items: center; /* 🟢 Centre verticalement */
+  gap: 8px; /* 🟢 Espace entre l'icône et le texte */
+  font-size: medium;
+}
