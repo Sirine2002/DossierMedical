@@ -1,0 +1,51 @@
+<span mat-dialog-title>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <h3 style="margin: 0;" *ngIf="type === 'image'">
+        Image médicale n°<span class="costum-color2">{{ formatNumero(data.numero) }}</span>
+      </h3>
+      <h3 style="margin: 0;" *ngIf="type === 'analyse'">
+        Analyse médicale n°<span class="costum-color2">{{ formatNumero(data.numero) }}</span>
+      </h3>
+      <button mat-icon-button (click)="closeDialog()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </span>
+  
+  <mat-dialog-content>
+    <div style="display: flex; align-items: center; height: 100%;">
+      <!-- Partie gauche -->
+      <div style="flex: 2;">
+        <p style="display: flex; align-items: center; margin-bottom: 10px;">
+          <mat-icon>event</mat-icon>&ensp;
+          <b>Date Création : </b> {{ data.dateCreation | date: 'MMMM d, y HH:mm' }}
+        </p>
+        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+          <mat-icon>person</mat-icon>&ensp;
+          <b>Agent Créateur : </b> {{ data.agentCreateur }}
+        </div>
+        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+          <mat-icon>home</mat-icon>&ensp;
+          <b>Adresse Créateur : </b> {{ data.adresseCreateur }}
+        </div>
+      </div>
+  
+      <!-- Partie droite : icône -->
+      <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+  
+        <a [href]="data.image" download="{{ data.image }}" class="mat-basic-link1" *ngIf="type === 'image'">
+          <mat-icon
+          style="color:grey; font-size: 60px; height: 100px; width: 100px;">
+          image
+          </mat-icon>
+        </a>
+        <a [href]="data.fichier" download="{{ data.fichier }}" class="mat-basic-link1" *ngIf="type === 'analyse'">
+          <mat-icon
+        style="color:red; font-size: 60px; height: 100px; width: 100px;">
+        picture_as_pdf
+        </mat-icon>
+        </a>
+  
+      </div>
+    </div>
+  </mat-dialog-content>

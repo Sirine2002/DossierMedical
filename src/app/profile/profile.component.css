@@ -1,0 +1,98 @@
+.profile-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+    margin-top: 64px; /* Ajoute un espace entre navbar et le contenu */
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px 16px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  
+  .card-title {
+    font-size: 20px;
+    font-weight: 600;
+  }
+  
+  .spacer {
+    flex: 1 1 auto;
+  }
+  
+  
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+  }
+  
+  .header-text {
+    font-size: 20px;
+    font-weight: 500;
+  }
+  
+  .spacer {
+    flex: 1 1 auto;
+  }
+  
+  .profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .profile-card {
+    padding: 16px;
+  }
+  
+  .basic-info-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+  
+  .info-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .info-text .name {
+    font-size: 20px;
+    font-weight: 600;
+  }
+  
+  .info-text .id {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  
+  .dialog-field {
+    width: 100%;
+    margin-bottom: 16px;
+  }

@@ -36,6 +36,11 @@ import { NavbarComponent } from './navbar/navbar.component';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatTabsModule} from '@angular/material/tabs';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { ProfileComponent } from './profile/profile.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { FicheSoinDetailsComponent } from './fiche-soin-details/fiche-soin-details.component';
+import { VoirPlusComponent } from './voir-plus/voir-plus.component';
+import { MatRadioModule } from '@angular/material/radio';
 @NgModule({
   declarations: [
     AppComponent,
@@ -45,7 +50,10 @@ import { MatGridListModule } from '@angular/material/grid-list';
     DashboardMedecinComponent,
     DashboardAnalysteComponent,
     DashboardRadiologueComponent,
-    NavbarComponent
+    NavbarComponent,
+    ProfileComponent,
+    FicheSoinDetailsComponent,
+    VoirPlusComponent
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebaseConfig),
@@ -75,7 +83,9 @@ import { MatGridListModule } from '@angular/material/grid-list';
     MatSelectModule,
     MatExpansionModule,
     MatTabsModule,
-    MatGridListModule
+    MatGridListModule,
+    MatTooltipModule,
+    MatRadioModule
   ],
   providers: [],
   bootstrap: [AppComponent]

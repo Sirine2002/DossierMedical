@@ -51,7 +51,7 @@
           </mat-form-field>
           <mat-form-field *ngIf="selectedRole === 'Patient'" appearance="fill" class="custom-input">
             <mat-label>Téléphone</mat-label>
-            <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Entrez votre téléphone" required />
+            <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Téléphone" required />
           </mat-form-field>
         </div>
 
@@ -67,7 +67,7 @@
             </mat-form-field>
             <mat-form-field appearance="fill" class="custom-input">
               <mat-label>Téléphone</mat-label>
-              <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Entrez votre téléphone"
+              <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Téléphone"
                 required />
             </mat-form-field>
           </div>
@@ -93,7 +93,7 @@
             </mat-form-field>
             <mat-form-field appearance="fill" class="custom-input">
               <mat-label>Téléphone</mat-label>
-              <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Entrez votre téléphone"
+              <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Téléphone"
                 required />
             </mat-form-field>
           </div>
@@ -122,7 +122,7 @@
 
             <mat-form-field appearance="fill" class="custom-input">
               <mat-label>Téléphone</mat-label>
-              <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Entrez votre téléphone"
+              <input matInput type="tel" [(ngModel)]="phone" name="phone" placeholder="Téléphone"
                 required />
             </mat-form-field>
           </div>
@@ -137,7 +137,7 @@
 
           <mat-form-field appearance="fill" class="custom-input">
             <mat-label>Mot de passe</mat-label>
-            <input matInput [(ngModel)]="password" name="password" placeholder="Entrez votre mot de passe" required
+            <input matInput [(ngModel)]="password" name="password" placeholder="Mot de passe" required
               [type]="hide() ? 'password' : 'text'" />
             <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'"
               [attr.aria-pressed]="hide()">

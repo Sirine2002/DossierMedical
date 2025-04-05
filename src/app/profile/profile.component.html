@@ -1,0 +1,91 @@
+<app-navbar></app-navbar>
+
+<div class="profile-wrapper">
+  <div class="profile-content" *ngIf="!isLoading">
+    <mat-card class="profile-card">
+      <div class="card-header">
+        <mat-card-title>Personal Info</mat-card-title>
+        <span class="spacer"></span>
+        <button mat-stroked-button color="warn" [disabled]="!isDataChanged" (click)="cancel()">Cancel</button>
+        <button mat-flat-button color="accent" [disabled]="!isDataChanged" (click)="save()">
+          <mat-icon>save</mat-icon> Save
+        </button>
+      </div>
+
+      <mat-card-content>
+        <div class="basic-info-top">
+          <img
+            [src]="profileData?.image || 'https://www.w3schools.com/w3images/avatar2.png'"
+            class="avatar"
+            alt="Avatar"
+          />
+          <div class="info-text">
+            <div class="name">{{ profileData?.prenom }} {{ profileData?.nom }}</div>
+            
+          </div>
+        </div>
+
+        <form [formGroup]="profileForm" class="form-grid">
+          <mat-form-field appearance="fill">
+            <mat-label>CIN</mat-label>
+            <input matInput formControlName="cin" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Prénom</mat-label>
+            <input matInput formControlName="prenom" />
+          </mat-form-field>
+
+          <mat-form-field *ngIf="userrole === 'Radiologue'||userrole === 'Analyste'" appearance="fill">
+            <mat-label>Type Imagerie</mat-label>
+            <input matInput formControlName="type" />
+          </mat-form-field>
+
+          <mat-form-field *ngIf="userrole === 'Radiologue'||userrole === 'Analyste'" appearance="fill">
+            <mat-label>Service</mat-label>
+            <input matInput formControlName="service" />
+          </mat-form-field>
+
+          <mat-form-field *ngIf="userrole === 'Medecin'" appearance="fill">
+            <mat-label>Spécialité</mat-label>
+            <input matInput disabled value="{{profileData?.specialite}}"  />
+          </mat-form-field>
+          
+
+          <mat-form-field appearance="fill">
+            <mat-label>Nom</mat-label>
+            <input matInput formControlName="nom" />
+          </mat-form-field>
+
+          <mat-form-field *ngIf="userrole === 'Patient'" appearance="fill">
+            <mat-label>Date de naissance</mat-label>
+            <input matInput disabled value="{{profileData?.dateNaissance}}" />
+            
+          </mat-form-field>
+
+          <mat-form-field *ngIf="userrole === 'Patient'" appearance="fill">
+            <mat-label>Sexe</mat-label>
+            <input matInput disabled value="{{profileData?.sexe}}" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Téléphone</mat-label>
+            <input matInput formControlName="phone" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Email</mat-label>
+            <input matInput disabled value="{{profileData?.email}}" />
+          </mat-form-field>
+
+          <mat-form-field *ngIf="userrole === 'Patient'" appearance="fill" class="full-width">
+            <mat-label>Adresse</mat-label>
+            <input matInput formControlName="address" />
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  
+</div>

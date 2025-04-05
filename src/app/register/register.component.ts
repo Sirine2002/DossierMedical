@@ -56,17 +56,50 @@ export class RegisterComponent {
 
           // Ajouter les champs spécifiques au rôle
           if (this.selectedRole === 'Patient') {
-            userData.dateNaissance = this.dateNaissance;
-            userData.sexe = this.sexe;
-            userData.adresse = this.adresse;
+            let userDataPatient: any = {
+            utilisateurId: userId,
+            dateNaissance :this.dateNaissance,
+            sexe: this.sexe,
+            adresse: this.adresse
+            }
+            this.db.database.ref('patients/').set(userDataPatient).then(() => {
+              console.log("Utilisateur patient enregistré avec succès");
+            }).catch((error) => {
+              console.error("Erreur lors de l'enregistrement des données utilisateur patient : ", error);
+            });
+
           } else if (this.selectedRole === 'Analyste') {
-            userData.service = this.service;
-            userData.specialite = this.specialite;
+            let userDataAnalyste: any = {
+              utilisateurId: userId,
+              typeImagerie: this.typeImagerie,
+              service: this.service
+            }
+            this.db.database.ref('analystes/').set(userDataAnalyste).then(() => {
+              console.log("Utilisateur analyste enregistré avec succès");
+            }).catch((error) => {
+              console.error("Erreur lors de l'enregistrement des données utilisateur analyste : ", error);
+            });
+          } else if (this.selectedRole === 'Medecin') {
+            let userDataMedecin: any = {
+              utilisateurId: userId,
+              specialite: this.specialite
+            }
+            this.db.database.ref('medecins/').set(userDataMedecin).then(() => {
+              console.log("Utilisateur medecin enregistré avec succès");
+            }).catch((error) => {
+              console.error("Erreur lors de l'enregistrement des données utilisateur medecin : ", error);
+            });
           } else if (this.selectedRole === 'Radiologue') {
-            userData.typeImagerie = this.typeImagerie;
-            userData.service = this.service;
-          }else if (this.selectedRole === 'Medecin') {
-            userData.specialite = this.specialite;
+            let userDataRadiologue: any = {
+              utilisateurId: userId,
+              typeImagerie: this.typeImagerie,
+              service: this.service
+            }
+            this.db.database.ref('radiologues/').set(userDataRadiologue).then(() => {
+              console.log("Utilisateur radiologue enregistré avec succès");
+            }).catch((error) => {
+              console.error("Erreur lors de l'enregistrement des données utilisateur radiologue : ", error);
+            });
           }
 
           // Enregistrer les informations supplémentaires dans Firebase Realtime Database
