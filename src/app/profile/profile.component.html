@@ -6,8 +6,8 @@
       <div class="card-header">
         <mat-card-title>Personal Info</mat-card-title>
         <span class="spacer"></span>
-        <button mat-stroked-button color="warn" [disabled]="!isDataChanged" (click)="cancel()">Cancel</button>
-        <button mat-flat-button color="accent" [disabled]="!isDataChanged" (click)="save()">
+        <button mat-stroked-button color="warn" (click)="cancel()">Cancel</button>
+        <button mat-flat-button color="primary" [disabled]="!isDataChanged" (click)="save()">
           <mat-icon>save</mat-icon> Save
         </button>
       </div>
@@ -36,7 +36,7 @@
             <input matInput formControlName="prenom" />
           </mat-form-field>
 
-          <mat-form-field *ngIf="userrole === 'Radiologue'||userrole === 'Analyste'" appearance="fill">
+          <mat-form-field *ngIf="userrole === 'Radiologue'" appearance="fill">
             <mat-label>Type Imagerie</mat-label>
             <input matInput formControlName="type" />
           </mat-form-field>

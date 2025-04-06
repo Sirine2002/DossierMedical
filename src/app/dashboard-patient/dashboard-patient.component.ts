@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, signal, ViewChild, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, signal, ViewChild, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { MatSort } from '@angular/material/sort';
@@ -6,12 +6,14 @@ import { FicheSoinDetailsComponent } from '../fiche-soin-details/fiche-soin-deta
 import { MatDialog } from '@angular/material/dialog';
 import { VoirPlusComponent } from '../voir-plus/voir-plus.component';
 import { FormBuilder, FormGroup } from '@angular/forms';
+
 interface DossierComplet {
   dossier: any;
   ficheSoin: any[];
   imageMedicale: any[];
   analyseMedicale: any[];
 }
+
 @Component({
   selector: 'app-dashboard-patient',
   templateUrl: './dashboard-patient.component.html',
@@ -27,15 +29,18 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
   displayedColumns3: string[] = ['numero', 'fichier', 'agentCreateur', 'adresseCreateur', 'dateCreation', 'Actions'];
 
   filtreForm: FormGroup;
-
   dossiersComplets: DossierComplet[] = [];
   dossiersFiltres: DossierComplet[] = [];
+
   @ViewChild(MatSort) sort!: MatSort;
 
-  dossiersComplet: DossierComplet[] = [];
-
-  constructor(private db: AngularFireDatabase, private auth: AngularFireAuth,public dialog: MatDialog,private fb: FormBuilder) {
-
+  constructor(
+    private db: AngularFireDatabase,
+    private auth: AngularFireAuth,
+    public dialog: MatDialog,
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
+  ) {
     this.filtreForm = this.fb.group({
       dateDebut: [null],
       numero: [''],
@@ -51,9 +56,10 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
         this.db.list('dossier', ref => ref.orderByChild('patientId').equalTo(userId))
           .snapshotChanges()
           .subscribe(dossiers => {
+            this.dossiersComplets = []; // Réinitialiser
+
             dossiers.forEach(d => {
               const dossierData = { ...(d.payload.val() as any), key: d.key };
-              console.log(dossierData);
 
               const dossierComplet: DossierComplet = {
                 dossier: dossierData,
@@ -62,7 +68,7 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
                 analyseMedicale: []
               };
 
-              // Fiches de soin avec key
+              // 🔹 Fiches de soin
               this.db.list('fichesSoin', ref => ref.orderByChild('dossierId').equalTo(dossierData.key))
                 .snapshotChanges()
                 .subscribe(data => {
@@ -70,33 +76,38 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
                     key: item.key,
                     ...(item.payload.val() as any)
                   }));
+                  this.cdr.detectChanges();
                 });
 
-              // Images médicales avec key
+              // 🔹 Images médicales
               this.db.list('imagesMedicales', ref => ref.orderByChild('dossierId').equalTo(dossierData.key))
                 .snapshotChanges()
                 .subscribe(data => {
                   dossierComplet.imageMedicale = data.map(item => ({
                     key: item.key,
-                    type:'image',
+                    type: 'image',
                     ...(item.payload.val() as any)
                   }));
+                  this.cdr.detectChanges();
                 });
 
-              // Analyses médicales avec key
+              // 🔹 Analyses médicales
               this.db.list('analysesMedicales', ref => ref.orderByChild('dossierId').equalTo(dossierData.key))
                 .snapshotChanges()
                 .subscribe(data => {
                   dossierComplet.analyseMedicale = data.map(item => ({
                     key: item.key,
-                    type:'analyse',
+                    type: 'analyse',
                     ...(item.payload.val() as any)
                   }));
+                  this.cdr.detectChanges();
                 });
 
               this.dossiersComplets.push(dossierComplet);
               this.dossiersFiltres = [...this.dossiersComplets];
+              this.cdr.detectChanges();
             });
+
             this.filtreForm.valueChanges.subscribe(() => {
               this.filtrerDossiers();
             });
@@ -104,13 +115,13 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
       }
     });
   }
+
   filtrerDossiers(): void {
     const { dateDebut, numero, etat } = this.filtreForm.value;
 
     this.dossiersFiltres = this.dossiersComplets.filter(dossier => {
       let match = true;
 
-      // ✅ Filtrer par date (si dateDebut est défini)
       if (dateDebut) {
         const selectedDate = new Date(dateDebut);
         selectedDate.setHours(0, 0, 0, 0);
@@ -119,7 +130,6 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
         match = match && dossierDate.getTime() === selectedDate.getTime();
       }
 
-      // ✅ Filtrer par numéro (si numero est défini)
       if (numero) {
         match = match && dossier.dossier.numero?.toString().includes(numero.toString());
       }
@@ -128,17 +138,13 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
         match = match && dossier.dossier.etat?.toLowerCase() === etat.toLowerCase();
       }
 
-
       return match;
     });
+    this.cdr.detectChanges();
   }
 
-
-
   ngAfterViewInit() {
-    // this.dataSourceFicheSoin.sort = this.sort;
-    // this.dataSourceImageMedicale.sort = this.sort;
-    // this.dataSourceAnalyseMedicale.sort = this.sort;
+    // Sorting logique si besoin
   }
 
   getTimeLoaded(index: number) {
@@ -147,30 +153,27 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
     }
     return this.tabLoadTimes[index];
   }
+
   formatNumero(numero: number): string {
     return numero.toString().padStart(8, '0');
   }
 
-
-
   imprimer(row: any) {
     console.log('Impression :', row);
-    // Lance la logique d'impression
+    // logique d'impression ici
   }
+
   voirPlus(ficheSoin: any): void {
-    console.log(ficheSoin);
     this.dialog.open(FicheSoinDetailsComponent, {
       data: ficheSoin,
       width: '60%',
     });
+  }
 
-}
-voirPlusAutre(autre: any): void {
-  console.log(autre);
-  this.dialog.open(VoirPlusComponent, {
-    data: autre,
-    width: '50%',
-  });
-
-}
+  voirPlusAutre(autre: any): void {
+    this.dialog.open(VoirPlusComponent, {
+      data: autre,
+      width: '50%',
+    });
+  }
 }

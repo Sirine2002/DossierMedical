@@ -29,9 +29,6 @@ import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { DashboardPatientComponent } from './dashboard-patient/dashboard-patient.component';
-import { DashboardMedecinComponent } from './dashboard-medecin/dashboard-medecin.component';
-import { DashboardAnalysteComponent } from './dashboard-analyste/dashboard-analyste.component';
-import { DashboardRadiologueComponent } from './dashboard-radiologue/dashboard-radiologue.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatTabsModule} from '@angular/material/tabs';
@@ -41,19 +38,25 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FicheSoinDetailsComponent } from './fiche-soin-details/fiche-soin-details.component';
 import { VoirPlusComponent } from './voir-plus/voir-plus.component';
 import { MatRadioModule } from '@angular/material/radio';
+import { PatientDetailsPageComponent } from './patient-details-page/patient-details-page.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { DossierDetailsComponent } from './dossier-details/dossier-details.component';
+
+
+
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     RegisterComponent,
     DashboardPatientComponent,
-    DashboardMedecinComponent,
-    DashboardAnalysteComponent,
-    DashboardRadiologueComponent,
     NavbarComponent,
     ProfileComponent,
     FicheSoinDetailsComponent,
-    VoirPlusComponent
+    VoirPlusComponent,
+    PatientDetailsPageComponent,
+    DashboardComponent,
+    DossierDetailsComponent,
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebaseConfig),

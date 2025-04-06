@@ -1,0 +1,74 @@
+<mat-sidenav-container style="background-color: white;">
+
+    <!-- Side nav content-->
+    <mat-sidenav-content>
+      <app-navbar></app-navbar>
+      <div class="content">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <h3 class="costum-color1" style="margin: 0;">Liste des patients</h3>
+  
+          <mat-form-field appearance="outline" >
+            <mat-label>Filtrer</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Hanen" #input>
+          </mat-form-field>
+        </div>
+  
+          <table mat-table [dataSource]="dataSource" matSort>
+  
+            <!-- CIN -->
+            <ng-container matColumnDef="cin">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> CIN </th>
+              <td mat-cell *matCellDef="let row"> {{ row.cin }} </td>
+            </ng-container>
+  
+            <!-- Nom complet -->
+            <ng-container matColumnDef="fullName">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom et prénom </th>
+              <td mat-cell *matCellDef="let row"> {{ row.fullName }} </td>
+            </ng-container>
+  
+            <!-- Date de naissance -->
+            <ng-container matColumnDef="dateNaissance">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Date de naissance </th>
+              <td mat-cell *matCellDef="let row"> {{ row.dateNaissance }} </td>
+            </ng-container>
+  
+            <!-- Téléphone -->
+            <ng-container matColumnDef="phone">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Téléphone </th>
+              <td mat-cell *matCellDef="let row"> {{ row.phone }} </td>
+            </ng-container>
+  
+            <!-- Email -->
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+              <td mat-cell *matCellDef="let row"> {{ row.email }} </td>
+            </ng-container>
+  
+            <!-- Actions -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef> Actions </th>
+              <td mat-cell *matCellDef="let row">
+                <button mat-icon-button color="primary" (click)="voirDossier(row)">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+  
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="6">Aucune donnée correspondant au filtre "{{input.value}}"</td>
+            </tr>
+          </table>
+  
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+  
+  
+      </div>
+  
+  
+    </mat-sidenav-content>
+  
+  </mat-sidenav-container>

@@ -1,0 +1,27 @@
+<mat-sidenav-container style="background-color: white;">
+
+    <!-- Side nav content-->
+    <mat-sidenav-content>
+      <app-navbar></app-navbar>
+      <div class="content">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <h3 class="costum-color1" style="margin: 0;">Dossier n° </h3>
+            <h3>Dossier de {{ patient.fullName }}</h3>
+            <p><strong>CIN:</strong> {{ patient.cin }}</p>
+            <p><strong>Date de naissance:</strong> {{ patient.dateNaissance }}</p>
+            <p><strong>Sexe:</strong> {{ patient.sexe }}</p>
+            <p><strong>Téléphone:</strong> {{ patient.phone }}</p>
+            <p><strong>Adresse:</strong> {{ patient.adresse }}</p>
+            <p><strong>Email:</strong> {{ patient.email }}</p>
+  
+  
+        </div>
+  
+  
+      </div>
+  
+  
+    </mat-sidenav-content>
+  
+  </mat-sidenav-container>
+  

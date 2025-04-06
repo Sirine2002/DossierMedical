@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TemplateRef } from '@angular/core';
 import { AuthService } from 'src/Services/auth-service.service';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-profile',
@@ -30,7 +31,8 @@ export class ProfileComponent implements OnInit {
     private clipboard: Clipboard,
     public dialog: MatDialog,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
@@ -69,12 +71,14 @@ export class ProfileComponent implements OnInit {
   save(): void {
     if (this.profileForm.valid) {
       const updatedData = { ...this.profileData, ...this.profileForm.value };
-      localStorage.setItem('userData', JSON.stringify(updatedData));
+      localStorage.setItem('NewuserData', JSON.stringify(updatedData));
       this.profileData = updatedData;
       this.isDataChanged = false;
       console.log('Profile saved:', updatedData);
     }
   }
+  NewuserData=localStorage.getItem('NewuserData');
+  
 
   cancel(): void {
     this.profileForm.patchValue({
@@ -88,6 +92,7 @@ export class ProfileComponent implements OnInit {
       address: this.profileData.address,
     });
     this.isDataChanged = false;
+    this.location.back();
   }
 
 

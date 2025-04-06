@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { AngularFireDatabase } from '@angular/fire/compat/database'; // Pour sauvegarder les données utilisateurs dans la base de données
+import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { AuthService } from 'src/Services/auth-service.service';
 
 @Component({
@@ -26,16 +26,19 @@ export class RegisterComponent {
   typeImagerie?: string;
   service?: string;
 
-  constructor(private auth: AuthService, private router: Router, private db: AngularFireDatabase) {}
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private db: AngularFireDatabase
+  ) {}
 
   hide = signal(true);
-  
+
   clickEvent(event: MouseEvent) {
     this.hide.set(!this.hide());
     event.stopPropagation();
   }
 
-  // Fonction appelée quand le rôle change
   onRoleChange(role: string) {
     this.selectedRole = role;
   }
@@ -43,7 +46,7 @@ export class RegisterComponent {
   onSubmit(): void {
     this.auth.signUpWithEmailAndPassword(this.email, this.password)
       .then((userCredential) => {
-        const userId = userCredential.user?.uid; // Récupérer l'UID de l'utilisateur
+        const userId = userCredential.user?.uid;
         if (userId) {
           let userData: any = {
             cin: this.cin,
@@ -54,67 +57,66 @@ export class RegisterComponent {
             role: this.selectedRole
           };
 
-          // Ajouter les champs spécifiques au rôle
-          if (this.selectedRole === 'Patient') {
-            let userDataPatient: any = {
-            utilisateurId: userId,
-            dateNaissance :this.dateNaissance,
-            sexe: this.sexe,
-            adresse: this.adresse
-            }
-            this.db.database.ref('patients/').set(userDataPatient).then(() => {
-              console.log("Utilisateur patient enregistré avec succès");
-            }).catch((error) => {
-              console.error("Erreur lors de l'enregistrement des données utilisateur patient : ", error);
-            });
+          // Enregistrement spécifique selon le rôle
+          switch (this.selectedRole) {
+            case 'Patient':
+              const patientData = {
+                utilisateurId: userId,
+                dateNaissance: this.dateNaissance,
+                sexe: this.sexe,
+                adresse: this.adresse
+              };
+              this.db.database.ref('patients').child(userId).set(patientData)
+                .then(() => console.log("Utilisateur patient enregistré"))
+                .catch((err) => console.error("Erreur patient :", err));
+              break;
 
-          } else if (this.selectedRole === 'Analyste') {
-            let userDataAnalyste: any = {
-              utilisateurId: userId,
-              typeImagerie: this.typeImagerie,
-              service: this.service
-            }
-            this.db.database.ref('analystes/').set(userDataAnalyste).then(() => {
-              console.log("Utilisateur analyste enregistré avec succès");
-            }).catch((error) => {
-              console.error("Erreur lors de l'enregistrement des données utilisateur analyste : ", error);
-            });
-          } else if (this.selectedRole === 'Medecin') {
-            let userDataMedecin: any = {
-              utilisateurId: userId,
-              specialite: this.specialite
-            }
-            this.db.database.ref('medecins/').set(userDataMedecin).then(() => {
-              console.log("Utilisateur medecin enregistré avec succès");
-            }).catch((error) => {
-              console.error("Erreur lors de l'enregistrement des données utilisateur medecin : ", error);
-            });
-          } else if (this.selectedRole === 'Radiologue') {
-            let userDataRadiologue: any = {
-              utilisateurId: userId,
-              typeImagerie: this.typeImagerie,
-              service: this.service
-            }
-            this.db.database.ref('radiologues/').set(userDataRadiologue).then(() => {
-              console.log("Utilisateur radiologue enregistré avec succès");
-            }).catch((error) => {
-              console.error("Erreur lors de l'enregistrement des données utilisateur radiologue : ", error);
-            });
+            case 'Analyste':
+              const analysteData = {
+                utilisateurId: userId,
+                specialite: this.specialite,
+                service: this.service
+              };
+              this.db.database.ref('analystes').child(userId).set(analysteData)
+                .then(() => console.log("Utilisateur analyste enregistré"))
+                .catch((err) => console.error("Erreur analyste :", err));
+              break;
+
+            case 'Medecin':
+              const medecinData = {
+                utilisateurId: userId,
+                specialite: this.specialite
+              };
+              this.db.database.ref('medecins').child(userId).set(medecinData)
+                .then(() => console.log("Utilisateur médecin enregistré"))
+                .catch((err) => console.error("Erreur médecin :", err));
+              break;
+
+            case 'Radiologue':
+              const radiologueData = {
+                utilisateurId: userId,
+                typeImagerie: this.typeImagerie,
+                service: this.service
+              };
+              this.db.database.ref('radiologues').child(userId).set(radiologueData)
+                .then(() => console.log("Utilisateur radiologue enregistré"))
+                .catch((err) => console.error("Erreur radiologue :", err));
+              break;
           }
 
-          // Enregistrer les informations supplémentaires dans Firebase Realtime Database
+          // Enregistrement général
           this.db.database.ref('users/' + userId).set(userData)
             .then(() => {
-              console.log("Utilisateur enregistré avec succès");
+              console.log("Utilisateur principal enregistré");
               this.router.navigate(['/login']);
             })
             .catch((error) => {
-              console.error("Erreur lors de l'enregistrement des données utilisateur : ", error);
+              console.error("Erreur user principal :", error);
             });
         }
       })
       .catch((error) => {
-        console.error("Erreur d'inscription : ", error);
+        console.error("Erreur d'inscription :", error);
       });
   }
 }

@@ -74,13 +74,13 @@ export class LoginComponent {
                     loadAdditionalData('patients', 'patientData', '/dashboardPatient');
                     break;
                   case 'Medecin':
-                    loadAdditionalData('medecins', 'medecinData', '/dashboardMedecin');
+                    loadAdditionalData('medecins', 'medecinData', '/dashboard');
                     break;
                   case 'Analyste':
-                    loadAdditionalData('analystes', 'analysteData', '/dashboardAnalyste');
+                    loadAdditionalData('analystes', 'analysteData', '/dashboard');
                     break;
                   case 'Radiologue':
-                    loadAdditionalData('radiologues', 'radiologueData', '/dashboardRadiologue');
+                    loadAdditionalData('radiologues', 'radiologueData', '/dashboard');
                     break;
                   default:
                     this.router.navigate(['/']);
