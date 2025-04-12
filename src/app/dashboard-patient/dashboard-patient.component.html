@@ -1,224 +1,191 @@
 <mat-sidenav-container>
-
-  <!-- Side nav content-->
   <mat-sidenav-content>
     <app-navbar></app-navbar>
     <div class="content">
-
-
       <div class="dossier-container" style="display: flex; gap: 20px; flex-direction: row-reverse;">
-        <!-- ✅ Zone filtre à droite -->
-        <div class="filtre-card costum-color1" style="flex: 0.5;">
-          <h3>Filtrer</h3>
-          <div>
-            <form [formGroup]="filtreForm" style="display: flex; flex-direction: column;">
-              <!-- Filtrer par Date -->
-              <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 5px;">
-                <mat-label>Numero</mat-label>
-                <input matInput formControlName="numero">
-                <mat-datepicker></mat-datepicker>
-              </mat-form-field>
 
-              <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 5px;">
-                <mat-label>Date</mat-label>
-                <input matInput [matDatepicker]="picker" formControlName="dateDebut">
-                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-              </mat-form-field>
+        <!-- ✅ Zone filtre -->
+        <mat-card style="padding: 24px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);">
+          <mat-card-title style="font-size: 20px; font-weight: 600; color: #1976d2; margin-bottom: 16px;">
+            <img src="../../assets/images/filtre.png" style="height: 20px;width: 20px;"> Filtre automatique
+            
+          </mat-card-title>
+        <!-- 🔍 Filtres automatiques -->
+          <form [formGroup]="filtreForm" style="display: flex; flex-direction: column; gap: 20px;">
+        
+            <!-- Filtre par date -->
+            <mat-form-field appearance="fill" class="full-width">
+              <mat-label>Date de création</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="dateDebut" placeholder="Choisir une date">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+        
+            <!-- Filtre par état -->
+            <mat-form-field appearance="fill" class="full-width">
+              <mat-label>État</mat-label>
+              <mat-select formControlName="etat">
+                <mat-option value="">Tous</mat-option>
+                <mat-option value="actif">Actif</mat-option>
+                <mat-option value="non actif">Non actif</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </form>
+          <mat-card style="margin-top: 20px;">
+            <mat-calendar></mat-calendar>
+          </mat-card>
+          
+        </mat-card>
+        
+        
 
-              <mat-radio-group formControlName="etat" style="margin-bottom: 10px; display: flex; flex-direction: row; justify-content: space-between; ">
-                <mat-radio-button value="actif">Actif</mat-radio-button>
-                <mat-radio-button value="non actif">Non actif</mat-radio-button>
+        <!-- ✅ Liste des dossiers -->
+        <mat-card class="dossiers-list" style="flex: 2; overflow-y: auto;">
+          <mat-card-header>
+            <mat-card-title class="costum-color1">Dossier Médical</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngFor="let dossier of dossiersFiltres">
+              <div class="dossier">
+                <b class="costum-color2">N°{{ formatNumero(dossier.dossier.numero) }}</b>
+                <p>{{ dossier.dossier.dateCreation | date: 'dd/MM/yyyy' }}</p>
+                <span class="custom-badge">{{ dossier.dossier.etat }}</span>
+                <br />
 
-              </mat-radio-group>
+                <!-- ✅ Fiches de soin -->
+                <mat-card-title>
+                  <p><strong>Fiches de soin</strong></p>
+                </mat-card-title>
 
+                <mat-card *ngFor="let fiche of dossier.ficheSoin" class="example-card custom-card" appearance="outlined">
+                  <div class="card-horizontal">
+                    <img src="../../assets/images/fiche.png" class="card-image"
+                      alt="Shiba Inu" style="margin-top: 10px;">
+                    <div class="card-text">
+                      <mat-card-title>
+                        <p><strong>Numéro: </strong>{{ fiche.numero }}</p>
+                      </mat-card-title>
+                      <mat-card-title>
+                        <p><strong>Date: </strong>{{ fiche.dateCreation }}</p>
+                      </mat-card-title>
+                      <mat-card-title>
+                        <p><strong>Agent: </strong>{{ fiche.agentCreateur }}</p>
+                      </mat-card-title>
+                      <mat-card-title>
+                        <p><strong>Adresse: </strong>{{ fiche.adresseCreateur }}</p>
+                      </mat-card-title>
+                      <mat-card-title>
+                        <button mat-icon-button color="primary" matTooltip="Voir l'image" (click)="voirPlus(fiche)">
+                          <mat-icon>visibility</mat-icon>
+                        </button>
+                        <button mat-icon-button color="accent" matTooltip="Télécharger l'image" (click)="telechargerDonneesFiche(fiche)">
+                          <mat-icon>download</mat-icon>
+                        </button>
+                      </mat-card-title>
+                    </div>
+                  </div>
+                </mat-card>
+                <hr>
 
-
-
-            </form>
-          </div>
-        </div>
-
-
-        <!-- ✅ Liste des dossiers à gauche -->
-        <div class="dossiers-list" style="flex: 2; overflow-y: auto;">
-          <h3 class="costum-color1">Dossier Médicale</h3>
-
-          <mat-accordion *ngFor="let dossier of dossiersFiltres">
-            <mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <b class="costum-color2">N°{{ formatNumero(dossier.dossier.numero) }}</b>
-                </mat-panel-title>
-                <mat-panel-description>
-                  <span>{{ dossier.dossier.dateCreation | date: 'dd/MM/yyyy hh:mm:ss' }}</span>
-                  <span class="custom-badge" style="float: right;">{{dossier.dossier.etat}}</span>
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-
-              <mat-tab-group>
-                <mat-tab label="Fiche de soin">
-                  <ng-template matTabContent>
-                    <table mat-table [dataSource]="dossier.ficheSoin" matSort>
-
-                      <!-- ID Column -->
-                      <ng-container matColumnDef="numero">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> N° </th>
-                        <td mat-cell *matCellDef="let row"> {{row.numero}} </td>
-                      </ng-container>
-
-                      <!-- Progress Column -->
-                      <ng-container matColumnDef="dateCreation">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Création </th>
-                        <td mat-cell *matCellDef="let row"> {{row.dateCreation}}</td>
-                      </ng-container>
-
-                      <!-- Name Column -->
-                      <ng-container matColumnDef="agentCreateur">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Agent Créateur </th>
-                        <td mat-cell *matCellDef="let row"> {{row.agentCreateur}} </td>
-                      </ng-container>
-
-                      <!-- Fruit Column -->
-                      <ng-container matColumnDef="adresseCreateur">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Adresse Créateur </th>
-                        <td mat-cell *matCellDef="let row"> {{row.adresseCreateur}} </td>
-                      </ng-container>
-                      <ng-container matColumnDef="Actions">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Actions </th>
-                        <td mat-cell *matCellDef="let row">
-                          <button mat-icon-button color="primary" (click)="voirPlus(row)" matTooltip="Voir Plus">
-                            <mat-icon>visibility</mat-icon>
-                          </button>
-                          <button mat-icon-button color="accent" (click)="imprimer(row)" matTooltip="Imprimer">
-                            <mat-icon>print</mat-icon>
-                          </button>
-                        </td>
-                      </ng-container>
-
-
-                      <tr mat-header-row *matHeaderRowDef="displayedColumns1"></tr>
-                      <tr mat-row *matRowDef="let row; columns: displayedColumns1;"></tr>
-                    </table>
-                  </ng-template>
-                </mat-tab>
-                <mat-tab label="Image médicale">
-                  <ng-template matTabContent>
-                    <table mat-table [dataSource]="dossier.imageMedicale" matSort>
-
-                      <!-- ID Column -->
-                      <ng-container matColumnDef="numero">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> N° </th>
-                        <td mat-cell *matCellDef="let row"> {{row.numero}} </td>
-                      </ng-container>
-                      <ng-container matColumnDef="image">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Image</th>
-                        <td mat-cell *matCellDef="let row">
-                          <a [href]="row.image" download="{{ row.image }}" class="mat-basic-link1">
-                            <button mat-icon-button color="basic" matTooltip="Télécharger l'image">
-                              <mat-icon>image</mat-icon>
+                <!-- ✅ Images médicales -->
+                <mat-card-title>
+                  <p><strong>Images Médicales</strong></p>
+                </mat-card-title>
+                <div *ngFor="let dossier of dossiersFiltres">
+                  <mat-card class="example-card custom-card" appearance="outlined">
+                  
+                    <ng-container *ngFor="let img of dossier.imageMedicale | slice:-3">
+                      <div class="card-horizontal">
+                        <img [src]="img.image" class="card-image" alt="Image médicale" style="margin-top: 25px; ">
+                        <div class="card-text">
+                          <mat-card-title>
+                            <p><strong>Numéro:</strong> {{ img.numero }}</p>
+                          </mat-card-title>
+                          <mat-card-title>
+                            <p><strong>Date:</strong> {{ img.dateCreation }}</p>
+                          </mat-card-title>
+                          <mat-card-title>
+                            <p><strong>Agent:</strong> {{ img.agentCreateur }}</p>
+                          </mat-card-title>
+                          <mat-card-title>
+                            <p><strong>Adresse:</strong> {{ img.adresseCreateur }}</p>
+                          </mat-card-title>
+                          <mat-card-title>
+                            <button mat-icon-button color="primary" matTooltip="Voir l'image" (click)="voirImage(img.image)">
+                              <mat-icon>visibility</mat-icon>
                             </button>
-                          </a>
-                        </td>
-                      </ng-container>
-
-                      <!-- Progress Column -->
-                      <ng-container matColumnDef="dateCreation">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Création </th>
-                        <td mat-cell *matCellDef="let row"> {{row.dateCreation}} </td>
-                      </ng-container>
-
-                      <!-- Name Column -->
-                      <ng-container matColumnDef="agentCreateur">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Agent Créateur </th>
-                        <td mat-cell *matCellDef="let row"> {{row.agentCreateur}} </td>
-                      </ng-container>
-
-                      <!-- Fruit Column -->
-                      <ng-container matColumnDef="adresseCreateur">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Adresse Créateur </th>
-                        <td mat-cell *matCellDef="let row"> {{row.adresseCreateur}} </td>
-                      </ng-container>
-                      <ng-container matColumnDef="Actions">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Actions </th>
-                        <td mat-cell *matCellDef="let row">
-                          <button mat-icon-button color="primary" (click)="voirPlusAutre(row)" matTooltip="Voir Plus">
-                            <mat-icon>visibility</mat-icon>
-                          </button>
-                          <button mat-icon-button color="accent" (click)="imprimer(row)" matTooltip="Imprimer">
-                            <mat-icon>print</mat-icon>
-                          </button>
-                        </td>
-                      </ng-container>
-                      <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
-                      <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
-                    </table>
-                  </ng-template>
-                </mat-tab>
-                <mat-tab label="Analyse médicale">
-                  <ng-template matTabContent>
-                    <table mat-table [dataSource]="dossier.analyseMedicale" matSort>
+                            <a [href]="img.image" download>
+                              <button mat-icon-button color="accent" matTooltip="Télécharger l'image">
+                                <mat-icon>download</mat-icon>
+                              </button>
+                            </a>
+                          </mat-card-title>
+                        </div>
+                      </div>
+                    </ng-container>
+                
+                    <!-- <button mat-button color="primary" (click)="voirImages(dossier)">Voir plus</button> -->
+                  </mat-card>
+                </div>
+                
+                <hr>
+                
+                
 
 
-                      <!-- ID Column -->
-                      <ng-container matColumnDef="numero">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> N° </th>
-                        <td mat-cell *matCellDef="let row"> {{row.numero}} </td>
-                      </ng-container>
-                      <ng-container matColumnDef="fichier">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fichier</th>
-                        <td mat-cell *matCellDef="let row">
-                          <a [href]="row.fichier" download="{{ row.fichier }}" class="mat-basic-link2">
-                            <button mat-icon-button color="basic" matTooltip="Télécharger le fichier PDF">
-                              <mat-icon>picture_as_pdf</mat-icon>
-                            </button>
-                          </a>
-                        </td>
-                      </ng-container>
+                <!-- ✅ Analyses médicales -->
 
+                <mat-card-title>
+                  <p><strong>Analyses médicales</strong></p>
+                </mat-card-title>
 
-                      <!-- Progress Column -->
-                      <ng-container matColumnDef="dateCreation">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Création </th>
-                        <td mat-cell *matCellDef="let row"> {{row.dateCreation}} </td>
-                      </ng-container>
+                <mat-card class="example-card custom-card" appearance="outlined">
+                  <div class="card-horizontal">
+                    <img src="https://material.angular.io/assets/img/examples/shiba2.jpg" class="card-image"
+                      alt="Shiba Inu" style="margin-top: 25px;">
+                    <div class="card-text">
+                      <mat-card-title>
+                        <p><strong>Numéro:</strong></p>
+                      </mat-card-title>
+                      <mat-card-title>
+                        <p><strong>Date:</strong></p>
+                      </mat-card-title>
+                      <mat-card-title>
+                        <p><strong>Agent:</strong></p>
+                      </mat-card-title>
+                      <mat-card-title>
+                        <p><strong>Adresse:</strong></p>
+                      </mat-card-title>
+                      <mat-card-title>
+                        <button mat-icon-button color="primary" matTooltip="Voir l'image">
+                          <mat-icon>visibility</mat-icon>
+                        </button>
+                        <button mat-icon-button color="accent" matTooltip="Télécharger l'image">
+                          <mat-icon>download</mat-icon>
+                        </button>
+                      </mat-card-title>
+                    </div>
+                  </div>
+                </mat-card>
+                <style>
+                  .custom-card {
+                    width: 100%;
+                  }
 
-                      <!-- Name Column -->
-                      <ng-container matColumnDef="agentCreateur">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Agent Créateur </th>
-                        <td mat-cell *matCellDef="let row"> {{row.agentCreateur}} </td>
-                      </ng-container>
+                  .card-horizontal {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 16px;
+                  }
 
-                      <!-- Fruit Column -->
-                      <ng-container matColumnDef="adresseCreateur">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Adresse Créateur </th>
-                        <td mat-cell *matCellDef="let row"> {{row.adresseCreateur}} </td>
-                      </ng-container>
-                      <ng-container matColumnDef="Actions">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Actions </th>
-                        <td mat-cell *matCellDef="let row">
-                          <button mat-icon-button color="primary" (click)="voirPlusAutre(row)" matTooltip="Voir Plus">
-                            <mat-icon>visibility</mat-icon>
-                          </button>
-                          <button mat-icon-button color="accent" (click)="imprimer(row)" matTooltip="Imprimer">
-                            <mat-icon>print</mat-icon>
-                          </button>
-                        </td>
-                      </ng-container>
-                      <tr mat-header-row *matHeaderRowDef="displayedColumns3"></tr>
-                      <tr mat-row *matRowDef="let row; columns: displayedColumns3;"></tr>
-                    </table>
-                  </ng-template>
-                </mat-tab>
-              </mat-tab-group>
-            </mat-expansion-panel>
-            <br/>
-          </mat-accordion>
-      </div>
-    </div>
-    </div>
+                  .card-image {
+                    width: 200px;
+                    height: 150px;
+                    object-fit: cover;
+                    border-radius: 4px;
+                  }
 
-
-  </mat-sidenav-content>
-
-</mat-sidenav-container>
+                  .card-text {
+                    flex: 1;
+                  }
+                </style>

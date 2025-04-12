@@ -7,10 +7,12 @@ import { ProfileComponent } from './profile/profile.component';
 import { PatientDetailsPageComponent } from './patient-details-page/patient-details-page.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DossierDetailsComponent } from './dossier-details/dossier-details.component';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
-  {path:'login',pathMatch:'full' ,component:LoginComponent},
-  {path:'',redirectTo:'login',pathMatch:'full'},
+  {path:'home',pathMatch:'full' ,component:HomeComponent},
+  {path:'',redirectTo:'home',pathMatch:'full'},
+  {path:'login',component:LoginComponent},
   { path: 'register', component: RegisterComponent },
   { path: 'dashboardPatient', component: DashboardPatientComponent },
   { path: 'dashboard', component: DashboardComponent },

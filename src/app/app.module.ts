@@ -41,6 +41,10 @@ import { MatRadioModule } from '@angular/material/radio';
 import { PatientDetailsPageComponent } from './patient-details-page/patient-details-page.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DossierDetailsComponent } from './dossier-details/dossier-details.component';
+import { FooterHomeComponent } from './footer-home/footer-home.component';
+import { HomeComponent } from './home/home.component';
+import { NavBarHomeComponent } from './nav-bar-home/nav-bar-home.component';
+import { MatDividerModule } from '@angular/material/divider';
 
 
 
@@ -57,6 +61,9 @@ import { DossierDetailsComponent } from './dossier-details/dossier-details.compo
     PatientDetailsPageComponent,
     DashboardComponent,
     DossierDetailsComponent,
+    FooterHomeComponent,
+    HomeComponent,
+    NavBarHomeComponent,
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebaseConfig),
@@ -88,7 +95,9 @@ import { DossierDetailsComponent } from './dossier-details/dossier-details.compo
     MatTabsModule,
     MatGridListModule,
     MatTooltipModule,
-    MatRadioModule
+    MatRadioModule,
+    MatDividerModule
+
   ],
   providers: [],
   bootstrap: [AppComponent]

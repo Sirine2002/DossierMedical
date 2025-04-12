@@ -1,0 +1,42 @@
+<mat-toolbar [class.toolbar-transparent]="!isScrolled" color="primary" class="toolbar" style="padding-left:7%" >
+
+    <!-- Logo qui change selon le scroll -->
+    <div class="logo-container">
+      <img [src]="isScrolled ? 'assets/images/logo (1).png' : 'assets/images/logo (2).png'" alt="Logo" class="logo" />
+    </div>
+  
+    <div class="pl-5">
+      <button mat-button [routerLink]="['/home']">
+        <div class="user-button"><b>Accueil</b></div>
+      </button>
+    </div>
+  
+    <div class="pl-5">
+      <button mat-button (click)="scrollToSection('nos-services')">
+        <div class="user-button"><b>Nos Services</b></div>
+      </button>
+    </div>
+  
+    <div class="pl-5">
+      <button mat-button (click)="scrollToSection('nos-specialites')">
+        <div class="user-button"><b>Nos Spécialités</b></div>
+      </button>
+    </div>
+    <div class="pl-5">
+      <button mat-button (click)="scrollToSection('nos-partenaires')">
+        <div class="user-button"><b>Nos Partenaires</b></div>
+      </button>
+    </div>
+  
+    <span class="spacer"></span>
+  
+    <div  style="padding-right:7%" >
+      <button mat-button [routerLink]="['/login']">
+        <div class="user-button">
+          <mat-icon class="user-icon">account_circle</mat-icon>
+          <b>Connexion</b>
+        </div>
+      </button>
+    </div>
+  
+  </mat-toolbar>

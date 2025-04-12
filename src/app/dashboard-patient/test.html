@@ -1,0 +1,237 @@
+<!-- <mat-card class="home-card">
+    <mat-card-content class="home-card-content">
+      <img mat-card-image
+        src="https://material.angular.io/assets/img/examples/shiba2.jpg"
+        alt="Photo of a Shiba Inu">
+      <div>
+        <div>Second</div>
+        <div>Third</div>
+        <div>Fourth</div>
+      </div>
+    </mat-card-content>
+</mat-card> -->
+
+<mat-sidenav-container>
+  <mat-sidenav-content>
+    <app-navbar></app-navbar>
+    <div class="content">
+      <div class="dossier-container" style="display: flex; gap: 20px; flex-direction: row-reverse;">
+
+        <!-- ✅ Zone filtre -->
+        <mat-card class="filtre-card costum-color1" style="flex: 0.5;">
+          <mat-card-header>
+            <mat-card-title>Filtrer</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="filtreForm" style="display: flex; flex-direction: column;">
+              <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 5px;">
+                <mat-label>Date</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="dateDebut">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-radio-group formControlName="etat"
+                style="margin-bottom: 10px; display: flex; flex-direction: row; justify-content: space-between;">
+                <mat-radio-button value="actif">Actif</mat-radio-button>
+                <mat-radio-button value="non actif">Non actif</mat-radio-button>
+              </mat-radio-group>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- ✅ Liste des dossiers -->
+        <mat-card class="dossiers-list" style="flex: 2; overflow-y: auto;">
+          <mat-card-header>
+            <mat-card-title class="costum-color1">Dossier Médical</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngFor="let dossier of dossiersFiltres">
+              <div class="dossier">
+                <b class="costum-color2">N°{{ formatNumero(dossier.dossier.numero) }}</b>
+                <p>{{ dossier.dossier.dateCreation | date: 'dd/MM/yyyy' }}</p>
+                <span class="custom-badge">{{ dossier.dossier.etat }}</span>
+
+                <!-- ✅ Fiches de soin -->
+                <mat-card-title>
+                  <p><strong>Fiches de soin</strong></p>
+                </mat-card-title>
+                <mat-card class="costum-color1" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 10px;">
+
+                  <!-- ✅ Image à gauche avec taille contrôlée -->
+                  <div style="margin-right: 20px;">
+                    <img src="../../assets/images/file.png" width="250"height="150" style="border-radius: 8px;">
+                  </div>
+                
+                  <!-- Informations à droite -->
+                  <div style="flex: 1; display: flex; flex-direction: column; gap: 10;">
+                    <p><strong>Numéro:</strong> 1</p>
+                    <p><strong>Date:</strong> </p>
+                    <p><strong>Agent Créateur:</strong></p>
+                
+                    <!-- Actions -->
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                      <button mat-icon-button color="primary" matTooltip="Voir l'image">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                      <button mat-icon-button color="accent" matTooltip="Télécharger l'image">
+                        <mat-icon>download</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                
+                </mat-card>
+                
+                
+
+
+                <!-- <mat-card class="costum-color1">
+                  <mat-card-header>
+                    <mat-card-title>Fiches de soin</mat-card-title>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <table mat-table class="mat-elevation-z1">
+                      <ng-container matColumnDef="numero">
+                        <th mat-header-cell *matHeaderCellDef>N°</th>
+                        <td mat-cell *matCellDef="let row">{{ row.numero }}</td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="dateCreation">
+                        <th mat-header-cell *matHeaderCellDef>Date</th>
+                        <td mat-cell *matCellDef="let row">{{ row.dateCreation }}</td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="agentCreateur">
+                        <th mat-header-cell *matHeaderCellDef>Créateur</th>
+                        <td mat-cell *matCellDef="let row">{{ row.agentCreateur }}</td>
+                      </ng-container> -->
+
+                <!-- Actions Column -->
+                <!-- <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef>Actions</th>
+                        <td mat-cell *matCellDef="let row">
+                          <div class="mat-column-actions">
+                            <button mat-icon-button color="primary" (click)="voirPlus(row)" matTooltip="Voir Plus">
+                              <mat-icon>visibility</mat-icon>
+                            </button>
+                            <button mat-icon-button color="accent" (click)="imprimer(row)" matTooltip="Imprimer">
+                              <mat-icon>print</mat-icon>
+                            </button>
+                          </div>
+                        </td>
+                      </ng-container> -->
+
+                <!-- <tr mat-header-row *matHeaderRowDef="['numero', 'dateCreation', 'agentCreateur', 'actions']"></tr>
+                      <tr mat-row *matRowDef="let row; columns: ['numero', 'dateCreation', 'agentCreateur', 'actions'];"></tr>
+                    </table>
+                  </mat-card-content>
+                </mat-card> -->
+                <hr>
+
+                <!-- ✅ Images médicales -->
+                <mat-card-header>
+                  <mat-card-title>
+                    <p><strong>Images médicales</strong></p>
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card class="costum-color1" style="display: flex; align-items: center; gap: 20px; padding: 10px;">
+
+                  <!-- Image à gauche -->
+                  <img [src]="" width="150" style="border-radius: 8px;">
+
+                  <!-- Informations à droite -->
+                  <div style="flex: 1; display: flex; flex-direction: column;">
+                    <p><strong>Description:</strong> banjour</p>
+                    <p><strong>Date:</strong> </p>
+                    <p><strong>Agent Créateur:</strong></p>
+                    <p><strong>Adresse Créateur:</strong></p>
+
+                    <!-- Actions (par exemple, Voir ou Télécharger l'image) -->
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                      <button mat-icon-button color="primary" matTooltip="Voir l'image">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                      <button mat-icon-button color="accent" matTooltip="Télécharger l'image">
+                        <mat-icon>download</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </mat-card>
+                <hr>
+
+                <!-- ✅ Analyses médicales -->
+                <!-- <mat-card class="costum-color1">
+                  <mat-card-header>
+                    <mat-card-title>Analyses médicales</mat-card-title>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <table mat-table [dataSource]="dossier.analyseMedicale.slice(0, 3)" class="mat-elevation-z1">
+                      <ng-container matColumnDef="numero">
+                        <th mat-header-cell *matHeaderCellDef>N°</th>
+                        <td mat-cell *matCellDef="let row">{{ row.numero }}</td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="fichier">
+                        <th mat-header-cell *matHeaderCellDef>Fichier</th>
+                        <td mat-cell *matCellDef="let row">
+                          <a [href]="row.fichier" target="_blank" download>
+                            <button mat-icon-button><mat-icon>picture_as_pdf</mat-icon></button>
+                          </a>
+                        </td>
+                      </ng-container> -->
+
+                <mat-card-header>
+                  <mat-card-title>
+                    <p><strong>Analyses médicales</strong></p>
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card class="costum-color1" style="display: flex; align-items: center; gap: 20px; padding: 10px;">
+
+                  <!-- Image à gauche -->
+                  <img [src]="" width="150" style="border-radius: 8px;">
+
+                  <!-- Informations à droite -->
+                  <div style="flex: 1; display: flex; flex-direction: column;">
+                    <p><strong>Description:</strong> hello</p>
+                    <p><strong>Date:</strong> </p>
+                    <p><strong>Agent Créateur:</strong></p>
+                    <p><strong>Adresse Créateur:</strong></p>
+
+                    <!-- Actions (par exemple, Voir ou Télécharger l'image) -->
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                      <button mat-icon-button color="primary" matTooltip="Voir l'image">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                      <button mat-icon-button color="accent" matTooltip="Télécharger l'image">
+                        <mat-icon>download</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </mat-card>
+
+                <!-- Actions Column for Analyse -->
+                <!-- <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef> Actions </th>
+                        <td mat-cell *matCellDef="let row" class="mat-column-actions">
+                          <button mat-icon-button color="primary" matTooltip="Voir Plus">
+                            <mat-icon>visibility</mat-icon>
+                          </button>
+                          <button mat-icon-button color="accent" matTooltip="Imprimer">
+                            <mat-icon>print</mat-icon>
+                          </button>
+                        </td>
+                      </ng-container> -->
+
+                <!-- <tr mat-header-row *matHeaderRowDef="['numero', 'fichier', 'actions']"></tr>
+                      <tr mat-row *matRowDef="let row; columns: ['numero', 'fichier', 'actions'];"></tr>
+                    </table> -->
+                <!-- </mat-card-content>
+                </mat-card>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div> -->
+                <!-- </mat-sidenav-content> -->
+                <!-- </mat-sidenav-container> -->

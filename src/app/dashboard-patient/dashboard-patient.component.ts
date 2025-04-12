@@ -6,6 +6,8 @@ import { FicheSoinDetailsComponent } from '../fiche-soin-details/fiche-soin-deta
 import { MatDialog } from '@angular/material/dialog';
 import { VoirPlusComponent } from '../voir-plus/voir-plus.component';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+import jsPDF from 'jspdf';
 
 interface DossierComplet {
   dossier: any;
@@ -28,6 +30,8 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
   displayedColumns2: string[] = ['numero', 'image', 'agentCreateur', 'adresseCreateur', 'dateCreation', 'Actions'];
   displayedColumns3: string[] = ['numero', 'fichier', 'agentCreateur', 'adresseCreateur', 'dateCreation', 'Actions'];
 
+  
+
   filtreForm: FormGroup;
   dossiersComplets: DossierComplet[] = [];
   dossiersFiltres: DossierComplet[] = [];
@@ -39,7 +43,8 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
     private auth: AngularFireAuth,
     public dialog: MatDialog,
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {
     this.filtreForm = this.fb.group({
       dateDebut: [null],
@@ -176,4 +181,33 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
       width: '50%',
     });
   }
+  voirFiches(dossier: any) {
+    this.router.navigate(['/fiches-soin', dossier.dossier.numero]);
+  }
+  
+  voirImages(dossier: any) {
+    this.router.navigate(['/images-medicales', dossier.dossier.numero]);
+  }
+  
+  voirAnalyses(dossier: any) {
+    this.router.navigate(['/analyses-medicales', dossier.dossier.numero]);
+  }
+  
+
+telechargerDonneesFiche(fiche: any): void {
+  const doc = new jsPDF();
+  doc.setFontSize(12);
+  doc.text(`Fiche de Soin`, 10, 10);
+  doc.text(`Numéro: ${fiche.numero}`, 10, 20);
+  doc.text(`Date: ${fiche.dateCreation}`, 10, 30);
+  doc.text(`Agent: ${fiche.agentCreateur}`, 10, 40);
+  doc.text(`Adresse: ${fiche.adresseCreateur}`, 10, 50);
+  
+  doc.save(`Fiche-${fiche.numero}.pdf`);
+}
+voirImage(imageUrl: string) {
+  window.open(imageUrl, '_blank');
+}
+
+  
 }
