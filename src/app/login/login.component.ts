@@ -34,11 +34,14 @@ export class LoginComponent {
                 const userData = snapshot.val();
                 const role = userData.role;
                 const username = userData.firstName + ' ' + userData.lastName;
+                const lignesFicheSoin = userData.lignesFicheSoin || [];
 
                 console.log("Connexion réussie, rôle :", role);
                 localStorage.setItem('userRole', role);
                 localStorage.setItem('username', username);
                 localStorage.setItem('userData', JSON.stringify(userData));
+                
+                
 
                 // 🔁 Fonction utilitaire pour charger des données supplémentaires
                 const loadAdditionalData = (collection: string, storageKey: string, redirectPath: string) => {

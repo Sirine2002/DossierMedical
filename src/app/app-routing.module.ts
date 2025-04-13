@@ -4,10 +4,13 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { DashboardPatientComponent } from './dashboard-patient/dashboard-patient.component';
 import { ProfileComponent } from './profile/profile.component';
-import { PatientDetailsPageComponent } from './patient-details-page/patient-details-page.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DossierDetailsComponent } from './dossier-details/dossier-details.component';
 import { HomeComponent } from './home/home.component';
+import { FichesSoinComponent } from './fiches-soin/fiches-soin.component';
+import { AnalysesMedicalesComponent } from './analyses-medicales/analyses-medicales.component';
+import { ImagesMedicalesComponent } from './images-medicales/images-medicales.component';
+
 
 const routes: Routes = [
   {path:'home',pathMatch:'full' ,component:HomeComponent},
@@ -17,8 +20,10 @@ const routes: Routes = [
   { path: 'dashboardPatient', component: DashboardPatientComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'profile', component: ProfileComponent },
-  { path: 'patient-details', component: PatientDetailsPageComponent },
-  { path: 'dossiers/:id', component: DossierDetailsComponent }
+  { path: 'dossiers/:id', component: DossierDetailsComponent },
+  { path: 'fiches-soin/:numero', component: FichesSoinComponent },
+  { path: 'images-medicales/:numero', component: ImagesMedicalesComponent },
+  { path: 'analyses-medicales/:numero', component: AnalysesMedicalesComponent },
 
 ];
 

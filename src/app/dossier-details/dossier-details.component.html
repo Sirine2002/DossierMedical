@@ -1,27 +1,90 @@
 <mat-sidenav-container style="background-color: white;">
+  <mat-sidenav-content>
+    <app-navbar></app-navbar>
 
-    <!-- Side nav content-->
-    <mat-sidenav-content>
-      <app-navbar></app-navbar>
-      <div class="content">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <h3 class="costum-color1" style="margin: 0;">Dossier n° </h3>
-            <h3>Dossier de {{ patient.fullName }}</h3>
-            <p><strong>CIN:</strong> {{ patient.cin }}</p>
-            <p><strong>Date de naissance:</strong> {{ patient.dateNaissance }}</p>
-            <p><strong>Sexe:</strong> {{ patient.sexe }}</p>
-            <p><strong>Téléphone:</strong> {{ patient.phone }}</p>
-            <p><strong>Adresse:</strong> {{ patient.adresse }}</p>
-            <p><strong>Email:</strong> {{ patient.email }}</p>
-  
-  
+    <div class="content">
+      <button mat-stroked-button color="primary" (click)="retour()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="card">
+        <div class="card-left">
+          <img [src]="patient.avatarUrl || 'assets/images/avatar-default.png'" alt="Avatar du patient" class="avatar" />
         </div>
-  
-  
+        <div class="card-right">
+
+          <h2 class="title">Dossier De {{ patient.fullName }}</h2>
+          <div class="info-list">
+            <div class="info-column">
+              <div class="info-item">
+                <mat-icon class="info-icon">fingerprint</mat-icon>
+                <span><strong>CIN:</strong> {{ patient.cin }}</span>
+              </div>
+              <div class="info-item">
+                <mat-icon class="info-icon">cake</mat-icon>
+                <span><strong>Date de naissance:</strong> {{ patient.dateNaissance }}</span>
+              </div>
+              <div class="info-item">
+                <mat-icon class="info-icon">wc</mat-icon>
+                <span><strong>Sexe:</strong> {{ patient.sexe }}</span>
+              </div>
+            </div>
+            <div class="info-column">
+              <div class="info-item">
+                <mat-icon class="info-icon">phone</mat-icon>
+                <span><strong>Téléphone:</strong> {{ patient.phone }}</span>
+              </div>
+              <div class="info-item">
+                <mat-icon class="info-icon">home</mat-icon>
+                <span><strong>Adresse:</strong> {{ patient.adresse }}</span>
+              </div>
+              <div class="info-item">
+                <mat-icon class="info-icon">email</mat-icon>
+                <span><strong>Email:</strong> {{ patient.email }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-  
-  
-    </mat-sidenav-content>
-  
-  </mat-sidenav-container>
-  
+    </div>
+
+    <div class="access-form">
+      <h3 class="form-title">Accès aux informations médicales</h3>
+      <form [formGroup]="accessForm" (ngSubmit)="onAccessSubmit()">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Code confidentiel</mat-label>
+          <input matInput type="password" formControlName="code">
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-flat-button color="accent" type="submit" [disabled]="accessForm.invalid">Valider</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Affichage des images médicales si le code est correct -->
+    <!-- <div *ngIf="imagesVisibles" class="medical-images">
+      <h3>Images médicales disponibles</h3>
+      <div class="images-grid">
+        <img *ngFor="let img of listeImagesIRM" [src]="img" alt="Image médicale" class="medical-image" />
+      </div>
+    </div> -->
+    <div *ngIf="imagesVisibles" class="medical-gallery-container">
+      <h3 class="gallery-title">Images Médicales Disponibles</h3>
+      <div class="medical-gallery-grid">
+        <div class="gallery-card" *ngFor="let img of listeImagesIRM">
+          <div class="image-wrapper">
+            <img [src]="img.url" alt="Image médicale" class="gallery-image" />
+            <div class="image-info-overlay">
+              <p><strong>Type:</strong> {{ img.type }}</p>
+              <p><strong>Date:</strong> {{ img.date }}</p>
+              <p><strong>Médecin:</strong> {{ img.medecin }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  </mat-sidenav-content>
+</mat-sidenav-container>

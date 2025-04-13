@@ -49,7 +49,9 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
     this.filtreForm = this.fb.group({
       dateDebut: [null],
       numero: [''],
-      etat: ['']
+      typeFichier: [''],
+      nomAgent: ['']
+
     });
   }
 
@@ -78,7 +80,7 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
                 .snapshotChanges()
                 .subscribe(data => {
                   dossierComplet.ficheSoin = data.map(item => ({
-                    key: item.key,
+                    id: item.key,
                     ...(item.payload.val() as any)
                   }));
                   this.cdr.detectChanges();
@@ -122,7 +124,7 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
   }
 
   filtrerDossiers(): void {
-    const { dateDebut, numero, etat } = this.filtreForm.value;
+    const { dateDebut, numero, nomAgent,typeFichier } = this.filtreForm.value;
 
     this.dossiersFiltres = this.dossiersComplets.filter(dossier => {
       let match = true;
@@ -139,8 +141,11 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
         match = match && dossier.dossier.numero?.toString().includes(numero.toString());
       }
 
-      if (etat) {
-        match = match && dossier.dossier.etat?.toLowerCase() === etat.toLowerCase();
+      if (nomAgent) {
+        match = match && dossier.dossier.agentCreateur?.toString().toLowerCase().includes(nomAgent.toLowerCase());
+      }
+      if (typeFichier) {
+        match = match && dossier.ficheSoin.some(fiche => fiche.type?.toString().toLowerCase().includes(typeFichier.toLowerCase()));
       }
 
       return match;

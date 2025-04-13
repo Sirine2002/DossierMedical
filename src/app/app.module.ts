@@ -38,13 +38,16 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FicheSoinDetailsComponent } from './fiche-soin-details/fiche-soin-details.component';
 import { VoirPlusComponent } from './voir-plus/voir-plus.component';
 import { MatRadioModule } from '@angular/material/radio';
-import { PatientDetailsPageComponent } from './patient-details-page/patient-details-page.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DossierDetailsComponent } from './dossier-details/dossier-details.component';
 import { FooterHomeComponent } from './footer-home/footer-home.component';
 import { HomeComponent } from './home/home.component';
 import { NavBarHomeComponent } from './nav-bar-home/nav-bar-home.component';
 import { MatDividerModule } from '@angular/material/divider';
+import { FichesSoinComponent } from './fiches-soin/fiches-soin.component';
+import { AnalysesMedicalesComponent } from './analyses-medicales/analyses-medicales.component';
+import { ImagesMedicalesComponent } from './images-medicales/images-medicales.component';
+
 
 
 
@@ -58,12 +61,15 @@ import { MatDividerModule } from '@angular/material/divider';
     ProfileComponent,
     FicheSoinDetailsComponent,
     VoirPlusComponent,
-    PatientDetailsPageComponent,
     DashboardComponent,
     DossierDetailsComponent,
     FooterHomeComponent,
     HomeComponent,
     NavBarHomeComponent,
+    FichesSoinComponent,
+    AnalysesMedicalesComponent,
+    ImagesMedicalesComponent,
+
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebaseConfig),

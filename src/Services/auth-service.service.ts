@@ -18,7 +18,7 @@ return this.afAuth.signInWithEmailAndPassword(email, password);
 signOut() {
   return this.afAuth.signOut().then(() => {
     localStorage.clear();
-    this.router.navigate(['/login']); // Redirige vers la page de connexion
+    this.router.navigate(['/']); // Redirige vers la page home
   }).catch(error => console.error('Erreur de déconnexion :', error));
 }
 

@@ -1,0 +1,76 @@
+<mat-sidenav-container style="margin-right: 9%; margin-left: 9%;">
+    <mat-sidenav-content>
+        <app-navbar></app-navbar>
+        <div class="content">
+            <div class="dossier-container" style="display: flex; gap: 20px; flex-direction: row-reverse;">
+                
+                <!-- Zone filtre -->
+                <mat-card style="padding: 24px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);">
+                    <mat-card-title style="font-size: 20px; font-weight: 600; color: #1976d2; margin-bottom: 16px;">
+                        <img src="../../assets/images/filtre.png" style="height: 20px;width: 20px;"> Filtre automatique
+                    </mat-card-title>
+                    <form  style="display: flex; flex-direction: column; gap: 20px;">
+                        <!-- Filtre par date -->
+                        <mat-form-field appearance="fill" class="full-width">
+                            <mat-label>Date de création</mat-label>
+                            <input matInput [matDatepicker]="picker" formControlName="dateDebut" placeholder="Choisir une date">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                        
+                        <!-- Filtre par agent -->
+                        <mat-form-field appearance="fill" class="full-width">
+                            <mat-label>Nom de l'agent</mat-label>
+                            <input matInput formControlName="nomAgent" placeholder="Nom de l'agent">
+                        </mat-form-field>
+                    </form>
+                </mat-card>
+
+                <!-- Liste des images médicales -->
+                <mat-card class="dossiers-list" style="flex: 2; overflow-y: auto;">
+                    <mat-card-header>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <!-- Bouton Retour aligné à gauche -->
+                            <button mat-stroked-button color="primary" (click)="retour()">
+                                <mat-icon>arrow_back</mat-icon>
+                            </button>
+
+                            <!-- Titre Images Médicales aligné à droite du bouton -->
+                            <mat-card-title>
+                                <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">Images Médicales</p>
+                            </mat-card-title>
+                        </div>
+                    </mat-card-header>
+
+                    <mat-card-content>
+                        <div *ngFor="let image of imagesMedicales" style="display: flex; flex-direction: column;">
+                            <div style="display: flex; align-items: center; flex-wrap: wrap; flex-direction: row-reverse; gap: 15px;">
+                                <div style="flex: 1; text-align: left; padding: 0%">
+                                    <p style="font-size: 18px; line-height: 1.8; max-width: 900px; margin: 0 auto;">
+                                        <strong>Numéro:</strong> {{ image.numero }}<br />
+                                        <strong>Date:</strong> {{ image.dateCreation }}<br />
+                                        <strong>Agent:</strong> {{ image.agentCreateur }}<br />
+                                        <strong>Adresse:</strong> {{ image.adresseCreateur }}<br />
+                                        <button mat-icon-button color="primary" matTooltip="Voir l'image" (click)="voirImage(image.image)">
+                                            <mat-icon>visibility</mat-icon>
+                                        </button>
+                                        <button mat-icon-button color="accent" matTooltip="Télécharger l'image">
+                                            <mat-icon>download</mat-icon>
+                                        </button>
+                                    </p>
+                                </div>
+                                <img [src]="image.image" alt="Image médicale" style="width: 17%; max-width: 17%; height: 40%;">
+                            </div>
+                            <hr style="width: 100%; border: 0; border-top: 1px solid #ccc; margin: 20px 0;" />
+                        </div>
+
+                        <!-- Pagination -->
+                        <mat-paginator [length]="imagesMedicales.length" [pageSize]="pageSize" [pageSizeOptions]="[4, 8, 12]"
+                            showFirstLastButtons (page)="onPageChanged($event)">
+                        </mat-paginator>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>

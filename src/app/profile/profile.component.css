@@ -1,98 +1,187 @@
 .profile-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 24px;
-    background-color: #f5f5f5;
-    min-height: 100vh;
-    margin-top: 64px; /* Ajoute un espace entre navbar et le contenu */
-  }
-  .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 16px 16px;
-    font-size: 20px;
-    font-weight: 600;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  margin-top: 64px; /* Ajoute un espace entre navbar et le contenu */
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 16px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.header-text {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-card {
+  padding: 16px;
+}
+
+.basic-info-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-text .name {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.info-text .id {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.dialog-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+.profile-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #f5f5f5;
+}
+
+.profile-content {
+  width: 100%;
+  max-width: 800px;
+}
+
+.profile-card {
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.basic-info-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 1rem;
+  border: 2px solid #3f51b5;
+}
+
+.name {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.info-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.full-width {
+  grid-column: span 2;
+}
+.profile-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* hauteur écran */
+  background-color: #f5f5f5;
+  padding: 2rem;
   
-  .card-title {
-    font-size: 20px;
-    font-weight: 600;
-  }
-  
-  .spacer {
-    flex: 1 1 auto;
-  }
-  
-  
-  .toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 16px;
-  }
-  
-  .header-text {
-    font-size: 20px;
-    font-weight: 500;
-  }
-  
-  .spacer {
-    flex: 1 1 auto;
-  }
-  
-  .profile-content {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-  
-  .profile-card {
-    padding: 16px;
-  }
-  
-  .basic-info-top {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  
-  .avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  }
-  
-  .info-text {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  
-  .info-text .name {
-    font-size: 20px;
-    font-weight: 600;
-  }
-  
-  .info-text .id {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #666;
-  }
-  
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 16px;
-  }
-  
-  .dialog-field {
-    width: 100%;
-    margin-bottom: 16px;
-  }
+}
+
+.profile-content {
+  width: 100%;
+  max-width: 900px;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* espace entre les boutons */
+}
+
+.spacer {
+  flex: 1;
+}
+.profile-wrapper {
+  display: flex;
+  justify-content: center;
+}
