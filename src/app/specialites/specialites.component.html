@@ -1,0 +1,87 @@
+  <mat-sidenav-container style="background-color: white;">
+    <mat-sidenav-content>
+  
+      <!-- Contenu principal -->
+      <div>
+  
+        <!-- Section images animées -->
+        <section class="image-slider">
+          <div class="slider">
+            <app-nav-bar-home></app-nav-bar-home>
+  
+            <img [src]="'assets/images/MEDICAL (8).png'" alt="Slider image" />
+  
+            <div class="slider-overlay">
+              <h1 style="font-size: 36px; color: #3f51b5">Spécialités</h1>
+              <div class="breadcrumb-line">
+                <mat-icon>home</mat-icon>
+                <ng-container *ngFor="let segment of breadcrumbSegments; let i = index; let last = last">
+                  <a [routerLink]="segment.url"
+                     [ngClass]="{'highlight-segment': i === 1}"
+                     style="text-decoration: none; color: inherit;">
+                    {{ segment.label }}
+                  </a>
+                  <span *ngIf="!last">/</span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </section>
+  
+        <!-- Section Nos spécialités -->
+        <section id="nos-specialites" class="specialites">
+  
+          <!-- Bloc Neurologie -->
+          <div class="specialite-cards" style="display: flex; flex-direction: column; gap: 60px;">
+            <div style="display: flex; align-items: center; gap: 30px; flex-wrap: wrap; flex-direction: row-reverse;">
+              <div style="flex: 1; text-align: left; padding: 4%;">
+                <h1 style="font-size: 40px; margin: 15px auto;">La neurologie</h1>
+                <p style="font-size: 18px; line-height: 1.8; max-width: 900px; margin: 0 auto;">
+                  La neurologie est la spécialité médicale qui traite les troubles du système nerveux. Elle couvre des
+                  affections comme les AVC, les migraines, l’épilepsie ou les maladies neurodégénératives.
+                </p>
+              </div>
+              <img src="assets/images/neuro.png" alt="Neurologie" style="width: 30%; max-width: 100%;">
+            </div>
+          </div>
+  
+          <!-- Bloc Chirurgie -->
+          <div class="specialite-cards" style="display: flex; flex-direction: column; gap: 60px;">
+            <div style="display: flex; align-items: center; gap: 30px; flex-wrap: wrap; flex-direction: row-reverse;">
+              <img src="assets/images/chirugie.png" alt="Chirurgie" style="width: 30%; max-width: 100%;">
+              <div style="flex: 1; text-align: left; padding: 4%;">
+                <h1 style="font-size: 40px; margin: 15px auto;">La chirurgie</h1>
+                <p style="font-size: 18px; line-height: 1.8; max-width: 900px; margin: 0 auto;">
+                  La chirurgie est une spécialité qui traite les affections nécessitant une intervention physique pour corriger un problème ou retirer une pathologie.
+                </p>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Bloc Neurologie (répété : tu veux peut-être une autre spécialité ici ?) -->
+          <div class="specialite-cards" style="display: flex; flex-direction: column; gap: 60px;">
+            <div style="display: flex; align-items: center; gap: 30px; flex-wrap: wrap; flex-direction: row-reverse;">
+              <div style="flex: 1; text-align: left; padding: 4%;">
+                <h1 style="font-size: 40px; margin: 15px auto;">La radiologie</h1>
+                <p style="font-size: 18px; line-height: 1.8; max-width: 900px; margin: 0 auto;">
+                  La radiologie permet d'observer l'intérieur du corps humain à l'aide d’imagerie médicale comme l’IRM, la radiographie ou le scanner.
+                </p>
+              </div>
+              <img src="assets/images/irm.png" alt="Neurologie" style="width: 30%; max-width: 100%;">
+            </div>
+          </div>
+  
+        </section>
+  
+        <!-- Pied de page -->
+        <app-footer-home></app-footer-home>
+  
+      </div>
+  
+      <!-- Bouton retour haut de page -->
+      <button mat-fab class="back-to-top" *ngIf="showBackToTop" (click)="scrollToTop()" color="primary">
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+  
+    </mat-sidenav-content>
+  </mat-sidenav-container>

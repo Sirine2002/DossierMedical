@@ -60,16 +60,11 @@ export class LoginComponent {
                         };
                         console.log(`Données supplémentaires ${collection}:`, fullUserData);
                         localStorage.setItem(storageKey, JSON.stringify(fullUserData));
-                      } else {
-                        console.warn(`Aucune donnée trouvée pour ${collection}`);
-                      }
-                      this.router.navigate([redirectPath]);
-                    })
-                    .catch((error) => {
-                      console.error(`Erreur lors de la récupération des données de ${collection} :`, error);
-                      this.router.navigate([redirectPath]);
-                    });
-                };
+                
+                        // Si c'est un patient, on récupère ses fiches de soin
+                      }})};
+                       
+                
 
                 // 📦 Redirection et récupération en fonction du rôle
                 switch (role) {

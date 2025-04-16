@@ -37,11 +37,22 @@ export class HomeComponent {
       description: 'Rappels et prises suivies.'
     },
   ];
-  blogNews = [
-    { image: 'assets/images/news1.jpg' },
-    { image: 'assets/images/news2.jpg' },
-    { image: 'assets/images/news3.jpg' },
-    { image: 'assets/images/news4.jpg' },
+  partenaires = [
+    {
+      icon: 'assets/images/clinic1.png',
+    },
+    {
+      icon: 'assets/images/clinic2.png',
+    },
+    {
+      icon: 'assets/images/clinic3.png',
+    },
+    {
+      icon: 'assets/images/clinic4.png',
+    },
+    {
+      icon: 'assets/images/clinic5.png',
+    },
   ];
 
 
@@ -65,5 +76,4 @@ export class HomeComponent {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
-
 

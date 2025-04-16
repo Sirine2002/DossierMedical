@@ -1,84 +1,73 @@
 <mat-sidenav-container style="background-color: white;">
-    <mat-sidenav-content>
-  
-      <!-- Barre de navigation -->
-  
-      <!-- Contenu principal -->
-      <div>
-        <!-- Section images animées -->
-        <section class="image-slider">
-          <div class="slider">
-            <app-nav-bar-home></app-nav-bar-home>
-  
-            <img [src]="images[currentImage]" alt="Slider image" />
-  
-            <div class="slider-overlay">
-              <h1 style="line-height: 1.2;">Bienvenue dans notre site "DME"</h1>
-              <p style="font-size: 18px; line-height: 1.8;max-width: 900px; margin: 0 auto;">Accédez facilement et en
-                toute sécurité à vos dossiers médicaux en ligne, où que vous soyez, pour un meilleur suivi et une
-                coordination optimale avec les professionnels de santé.</p>
-            </div>
+  <mat-sidenav-content>
+
+    <!-- Barre de navigation -->
+
+    <!-- Contenu principal -->
+    <div>
+      <!-- Section images animées -->
+      <section class="image-slider">
+        <div class="slider">
+          <app-nav-bar-home></app-nav-bar-home>
+
+          <img [src]="images[currentImage]" alt="Slider image" />
+
+          <div class="slider-overlay">
+            <h1 style="line-height: 1.2;">Bienvenue dans notre site "DME"</h1>
+            <p style="font-size: 18px; line-height: 1.8;max-width: 900px; margin: 0 auto;">Accédez facilement et en
+              toute sécurité à vos dossiers médicaux en ligne, où que vous soyez, pour un meilleur suivi et une
+              coordination optimale avec les professionnels de santé.</p>
           </div>
-        </section>
-  
-        <section id="nos-services" class="services">
-          <div class="service-cards">
-            <div
-              class="service-card"
-              *ngFor="let service of services"
-            >
-              <div>
-                <div class="icon-wrapper">
-                  <img [src]="service.icon" alt="{{ service.title }}" />
-                </div>
-                <h4>{{ service.title }}</h4>
-                <p>{{ service.description }}</p>
+        </div>
+      </section>
+      <section id="nos-services" class="services">
+        <div class="service-cards">
+          <div class="service-card" *ngFor="let service of services">
+            <div>
+              <div class="icon-wrapper">
+                <img [src]="service.icon" alt="{{ service.title }}" />
               </div>
+              <h4>{{ service.title }}</h4>
+              <p>{{ service.description }}</p>
             </div>
           </div>
-        </section>
-  
-  
-  
-        <section id="nos-specialites" class="specialites">
-  
-          <div class="specialite-cards" style="display: flex; flex-direction: column; gap: 60px;">
-            <!-- Chirurgie : image à gauche, texte à droite -->
-            <div style="display: flex; align-items: center; gap: 30px; flex-wrap: wrap; flex-direction: row-reverse;">
-              <div style="flex: 1; text-align: left; padding:4%">
-                <h5 style="font-size: 36px;  font-weight: lighter; margin: 0 auto;">Parmis Nos Spécialités</h5>
-                <h1 style="font-size: 40px; margin: 15px auto;">La neurologie</h1>
-                <p style="font-size: 18px; line-height: 1.8;max-width: 900px; margin: 0 auto;">La neurologie est la spécialité médicale qui traite les troubles du système nerveux. Elle couvre des
-                  affections comme les AVC, les migraines, l’épilepsie ou les maladies neurodégénératives.</p><br/>
-                  <button mat-raised-button color="primary">
-                    Voir Plus
-                  </button>
-              </div>
-              <img src="assets/images/neuro.png" alt="Chirurgie"
-                style="width:40%; max-width: 100%; ">
+        </div>
+      </section>
+      <section id="nos-specialites" class="specialites">
+        <div class="specialite-cards" style="display: flex; flex-direction: column; gap: 60px;">
+          <!-- Chirurgie : image à gauche, texte à droite -->
+          <div style="display: flex; align-items: center; gap: 30px; flex-wrap: wrap; flex-direction: row-reverse;">
+            <div style="flex: 1; text-align: left; padding:4%">
+              <h5 style="font-size: 36px;  font-weight: lighter; margin: 0 auto;">Parmis Nos Spécialités</h5>
+              <h1 style="font-size: 40px; margin: 15px auto;">La neurologie</h1>
+              <p style="font-size: 18px; line-height: 1.8;max-width: 900px; margin: 0 auto;">La neurologie est la
+                spécialité médicale qui traite les troubles du système nerveux. Elle couvre des
+                affections comme les AVC, les migraines, l’épilepsie ou les maladies neurodégénératives.</p><br />
+              <button mat-raised-button color="primary" [routerLink]="['/home/specialites']">
+                Voir Plus
+              </button>
             </div>
-  
-  
-  
-  
+            <img src="assets/images/neuro.png" alt="Chirurgie" style="width:40%; max-width: 100%; ">
           </div>
-  
-        </section>
-  
-  
-  
-  
-  
-  
-  
-        <!-- Pied de page -->
-        <app-footer-home></app-footer-home>
-  
-      </div>
-      <button mat-fab class="back-to-top" *ngIf="showBackToTop" (click)="scrollToTop()" mat-fab color="primary">
-        <mat-icon>keyboard_arrow_up</mat-icon>
-      </button>
-  
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-  
+        </div>
+      </section>
+      <section id="nos-partenaires" class="partenaires">
+        <div class="partenaire-container">
+          <img [src]="'assets/images/clinic1.png'" alt="clinic1" />
+          <img [src]="'assets/images/clinic2.png'" alt="clinic2" />
+          <img [src]="'assets/images/clinic3.png'" alt="clinic3" />
+          <img [src]="'assets/images/clinic4.png'" alt="clinic4" />
+          <img [src]="'assets/images/clinic8.png'" alt="clinic8" />
+          <img [src]="'assets/images/clinic9.png'" alt="clinic9" />
+        </div>
+      </section>
+      <!-- Pied de page -->
+      <app-footer-home></app-footer-home>
+
+    </div>
+    <button mat-fab class="back-to-top" *ngIf="showBackToTop" (click)="scrollToTop()" mat-fab color="primary">
+      <mat-icon>keyboard_arrow_up</mat-icon>
+    </button>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>

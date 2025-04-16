@@ -47,6 +47,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { FichesSoinComponent } from './fiches-soin/fiches-soin.component';
 import { AnalysesMedicalesComponent } from './analyses-medicales/analyses-medicales.component';
 import { ImagesMedicalesComponent } from './images-medicales/images-medicales.component';
+import { PartenairesComponent } from './partenaires/partenaires.component';
+import { ServicesComponent } from './services/services.component';
+import { specialitesComponent } from './specialites/specialites.component';
 
 
 
@@ -69,6 +72,9 @@ import { ImagesMedicalesComponent } from './images-medicales/images-medicales.co
     FichesSoinComponent,
     AnalysesMedicalesComponent,
     ImagesMedicalesComponent,
+    PartenairesComponent,
+    ServicesComponent,
+    specialitesComponent,
 
   ],
   imports: [

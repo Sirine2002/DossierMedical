@@ -22,7 +22,8 @@ export class FicheSoinDetailsComponent implements OnInit {
     private ficheSoinService: FicheSoinService // Injecter le service
   ) {
     
-    console.log('DATA INJECTED :', this.data); // Ajout temporaire pour déboguer
+    console.log('DATA INJECTED :', this.data);
+   
 
     this.ficheId = this.data.id;
     
@@ -32,7 +33,7 @@ export class FicheSoinDetailsComponent implements OnInit {
     // this.ficheSoinService.setFicheId(this.ficheId);
     this.auth.authState.subscribe(user => {
       if (user) {
-        console.log(this.ficheId);
+        
         this.db.list('lignesFicheSoin', ref => ref.orderByChild('ficheSoinId').equalTo(this.ficheId))
           .snapshotChanges()
           .subscribe(lignes => {
@@ -40,11 +41,14 @@ export class FicheSoinDetailsComponent implements OnInit {
               key: d.key,
               ...d.payload.val() as any
             }));
+            localStorage.setItem('LigneficheSoin', JSON.stringify(this.ficheSoin));
           }, error => {
             console.error('Erreur lors de la récupération des lignes :', error);
           });
       }
     });
+    
+    
   }
 
   formatNumero(numero: number): string {
@@ -53,5 +57,8 @@ export class FicheSoinDetailsComponent implements OnInit {
 
   closeDialog(): void {
     this.dialogRef.close();
+    // localStorage.removeItem('LigneficheSoin'); // Ajout temporaire pour déboguer
   }
+
+  
 }

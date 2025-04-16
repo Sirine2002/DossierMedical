@@ -1,74 +1,249 @@
-<mat-sidenav-container style="background-color: white;">
+<mat-sidenav-container style="background-color: #f5f7fa; padding-top:78px">
+  <mat-sidenav-content>
+    <app-navbar></app-navbar>
 
-    <!-- Side nav content-->
-    <mat-sidenav-content>
-      <app-navbar></app-navbar>
-      <div class="content">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <h3 class="costum-color1" style="margin: 0;">Liste des patients</h3>
-  
-          <mat-form-field appearance="outline" >
-            <mat-label>Filtrer</mat-label>
-            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Hanen" #input>
-          </mat-form-field>
+    <div class="dashboard-container">
+      <!-- File d'attente des patients -->
+      <div class="patient-queue">
+        <h3 class="section-title">Liste des patients</h3>
+        <div class="patient-card" *ngFor="let patient of dataSource" (click)="voirDossier(patient)">
+          <div class="card-left">
+            <img src="assets/images/avatarF.png" alt="Avatar" class="avatar" />
+          </div>
+          <div class="info">
+            <h4>{{ patient.fullName }}</h4>
+            <p>Crée le {{ patient.dateCreation | date }}</p>
+          </div>
+          <button mat-icon-button>
+            <mat-icon>arrow_forward_ios</mat-icon>
+          </button>
         </div>
-  
-          <table mat-table [dataSource]="dataSource" matSort>
-  
-            <!-- CIN -->
-            <ng-container matColumnDef="cin">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> CIN </th>
-              <td mat-cell *matCellDef="let row"> {{ row.cin }} </td>
-            </ng-container>
-  
-            <!-- Nom complet -->
-            <ng-container matColumnDef="fullName">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom et prénom </th>
-              <td mat-cell *matCellDef="let row"> {{ row.fullName }} </td>
-            </ng-container>
-  
-            <!-- Date de naissance -->
-            <ng-container matColumnDef="dateNaissance">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Date de naissance </th>
-              <td mat-cell *matCellDef="let row"> {{ row.dateNaissance }} </td>
-            </ng-container>
-  
-            <!-- Téléphone -->
-            <ng-container matColumnDef="phone">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Téléphone </th>
-              <td mat-cell *matCellDef="let row"> {{ row.phone }} </td>
-            </ng-container>
-  
-            <!-- Email -->
-            <ng-container matColumnDef="email">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
-              <td mat-cell *matCellDef="let row"> {{ row.email }} </td>
-            </ng-container>
-  
-            <!-- Actions -->
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef> Actions </th>
-              <td mat-cell *matCellDef="let row">
-                <button mat-icon-button color="primary" (click)="voirDossier(row)">
-                  <mat-icon>visibility</mat-icon>
-                </button>
-              </td>
-            </ng-container>
-  
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  
-            <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell" colspan="6">Aucune donnée correspondant au filtre "{{input.value}}"</td>
-            </tr>
-          </table>
-  
-          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
-  
-  
       </div>
-  
-  
-    </mat-sidenav-content>
-  
-  </mat-sidenav-container>
+
+      <!-- Détails du patient sélectionné -->
+      <div class="patient-details" *ngIf="selectedPatient">
+        <mat-card class="card-section">
+          <div class="card-header">
+            <img src="assets/images/avatarF.png" alt="Avatar" class="avatar" />
+            <div class="info">
+              <h4>{{ selectedPatient.fullName }}</h4>
+              <p>Crée le {{ selectedPatient.dateCreation | date }}</p>
+            </div>
+          </div>
+
+          <mat-card-content style="padding-left:0%;padding-right:0%;">
+            <div class="row">
+              <div class="col-6">
+                <div class="info-card">
+                  <div class="section-title">Informations de base</div>
+                  <div class="info-grid">
+                    <div><mat-icon>person</mat-icon> <strong>Genre:</strong> {{ selectedPatient.sexe }}</div>
+                    <div><mat-icon>cake</mat-icon> <strong>Naissance:</strong> {{ selectedPatient.dateNaissance }}</div>
+                    <div><mat-icon>phone</mat-icon> <strong>Téléphone:</strong> {{ selectedPatient.phone }}</div>
+                    <div><mat-icon>email</mat-icon> <strong>Email:</strong> {{ selectedPatient.email }}</div>
+                    <div><mat-icon>maps_home_work</mat-icon> <strong>Adresse:</strong> {{ selectedPatient.adresse }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="info-card">
+                  <div class="section-title">Pour accéder aux informations médicales de ce patient merci de saisi le code confidentiel</div>
+                  <div class="info-grid" style="text-align: center;">
+                      <form [formGroup]="codeForm" (ngSubmit)="validerCode()">
+                        <mat-form-field appearance="outline" class="form-field">
+                          <mat-label>Code confidentiel</mat-label>
+                          <input matInput type="password" formControlName="code">
+                        </mat-form-field>
+                        <div class="form-actions">
+                          <button mat-flat-button color="accent" type="submit">Valider</button>
+                        </div>
+                      </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br />
+            <div *ngIf="roleAcces === 'Medecin' ">
+              <div class="info-card">
+                <div class="section-header">
+                  <div class="section-title"><mat-icon color="primary">medical_services</mat-icon> Fiches de soin</div>
+                  <button mat-icon-button color="primary" (click)="ajouterFiche()">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+
+                <table mat-table [dataSource]="ficheSoin" class="mat-elevation-z1 mat-table">
+
+                  <!-- Numéro -->
+                  <ng-container matColumnDef="numero">
+                    <th mat-header-cell *matHeaderCellDef> Numéro </th>
+                    <td mat-cell *matCellDef="let fiche"> {{ fiche.numero }} </td>
+                  </ng-container>
+
+                  <!-- Date -->
+                  <ng-container matColumnDef="dateCreation">
+                    <th mat-header-cell *matHeaderCellDef> Date </th>
+                    <td mat-cell *matCellDef="let fiche"> {{ fiche.dateCreation }} </td>
+                  </ng-container>
+
+                  <!-- Agent -->
+                  <ng-container matColumnDef="agentCreateur">
+                    <th mat-header-cell *matHeaderCellDef> Agent </th>
+                    <td mat-cell *matCellDef="let fiche"> {{ fiche.agentCreateur }} </td>
+                  </ng-container>
+
+                  <!-- Adresse -->
+                  <ng-container matColumnDef="adresseCreateur">
+                    <th mat-header-cell *matHeaderCellDef> Adresse </th>
+                    <td mat-cell *matCellDef="let fiche"> {{ fiche.adresseCreateur }} </td>
+                  </ng-container>
+
+                  <!-- Actions -->
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef> Action </th>
+                    <td mat-cell *matCellDef="let fiche">
+                      <button mat-icon-button color="primary" (click)="voirFiche(fiche)">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                <br/>
+
+                <mat-paginator [pageSize]="4" [pageSizeOptions]="[4]" showFirstLastButtons></mat-paginator>
+              </div>
+            </div>
+
+
+            <br />
+            <div *ngIf="images.length && roleAcces === 'Medecin' || roleAcces === 'Radiologue'">
+              <div class="info-card">
+                <div class="section-title"><mat-icon color="primary">image</mat-icon> Images médicales</div>
+                <div class="image-grid">
+                  <div class="image-box" *ngFor="let image of images.slice(0, 4)" (click)="openImageModal(image)">
+                    <img [src]="'assets/images/imagerie2.png'" alt="Image médicale" class="image-preview" />
+                    <div class="overlay">
+                      <mat-icon class="eye-icon">visibility</mat-icon>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br />
+
+            <div *ngIf="analyses.length && roleAcces === 'Medecin' || roleAcces === 'Analyste'">
+              <div class="info-card">
+                <div class="section-title"><mat-icon color="primary">science</mat-icon> Analyses médicales</div>
+                <div class="image-grid">
+                  <div class="image-box" *ngFor="let analyse of analyses.slice(0, 4)"
+                    (click)="openAnalyseModal(analyse)">
+                    <img src="assets/images/analyseMedicale.png" alt="Fichier analyse" class="image-preview" />
+                    <div class="overlay">
+                      <mat-icon class="eye-icon">visibility</mat-icon>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+
+<ng-template [ngIf]="isImageModalOpen">
+  <div class="modal-backdrop" (click)="closeImageModal()"></div>
+  <div class="image-modal" style="color: #212a5e;">
+    <button class="close-btn" (click)="closeImageModal()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <img [src]="'assets/images/imagerie2.png'" class="modal-image" alt="Image" />
+    <div class="modal-info">
+      <p><mat-icon color="primary">confirmation_number</mat-icon> <strong>Numéro :</strong> {{ selectedImage.numero }}</p>
+      <p><mat-icon color="primary">calendar_today</mat-icon> <strong>Date création :</strong> {{ selectedImage.dateCreation }}</p>
+      <p><mat-icon color="primary">person</mat-icon> <strong>Agent créateur :</strong> {{ selectedImage.agentCreateur }}</p>
+      <p><mat-icon color="primary">place</mat-icon> <strong>Adresse créateur :</strong> {{ selectedImage.adresseCreateur }}</p>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template [ngIf]="isAnalyseModalOpen">
+  <div class="modal-backdrop" (click)="closeAnalyseModal()"></div>
+  <div class="image-modal" style="color: #212a5e;">
+    <button class="close-btn" (click)="closeAnalyseModal()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <img src="assets/images/analyseMedicale.png" class="modal-image" alt="Analyse" />
+    <div class="modal-info">
+      <p><mat-icon color="primary">confirmation_number</mat-icon> <strong>Numéro :</strong> {{ selectedAnalyse.numero }}</p>
+      <p><mat-icon color="primary">calendar_today</mat-icon> <strong>Date création :</strong> {{ selectedAnalyse.dateCreation }}</p>
+      <p><mat-icon color="primary">person</mat-icon> <strong>Agent créateur :</strong> {{ selectedAnalyse.agentCreateur }}</p>
+      <p><mat-icon color="primary">place</mat-icon> <strong>Adresse créateur :</strong> {{ selectedAnalyse.adresseCreateur }}</p>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template [ngIf]="isFicheModalOpen">
+  <div class="modal-backdrop" (click)="closeFicheModal()"></div>
+  <div class="fiche-modal" style="color: #212a5e;">
+    <button class="close-btn" (click)="closeFicheModal()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <h2 style="color: #212a5e;">Détails de la fiche de soin</h2>
+
+    <div class="modal-info">
+      <p><mat-icon color="primary">confirmation_number</mat-icon> <strong>Numéro :</strong> {{ selectedFiche?.numero }}</p>
+      <p><mat-icon color="primary">calendar_today</mat-icon> <strong>Date de création :</strong> {{ selectedFiche?.dateCreation }}</p>
+      <p><mat-icon color="primary">person</mat-icon> <strong>Agent créateur :</strong> {{ selectedFiche?.agentCreateur }}</p>
+      <p><mat-icon color="primary">place</mat-icon> <strong>Adresse créateur :</strong> {{ selectedFiche?.adresseCreateur }}</p>
+    </div>
+
+    <div class="section-title" style="padding-top: 1%;">Lignes de la fiche</div>
+
+    <div *ngIf="selectedFiche?.lignes?.length; else noLigne">
+      <table mat-table [dataSource]="selectedFiche.lignes" class="mat-elevation-z1 custom-mat-table">
+
+        <!-- Nom Column -->
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef> Nom </th>
+          <td mat-cell *matCellDef="let ligne"> {{ ligne.nom }} </td>
+        </ng-container>
+
+        <!-- Type Column -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef> Type </th>
+          <td mat-cell *matCellDef="let ligne"> {{ ligne.type }} </td>
+        </ng-container>
+
+        <!-- Date d'ajout Column -->
+        <ng-container matColumnDef="dateAjout">
+          <th mat-header-cell *matHeaderCellDef> Date d'ajout </th>
+          <td mat-cell *matCellDef="let ligne"> {{ ligne.dateAjout }} </td>
+        </ng-container>
+
+        <!-- Contenu Column -->
+        <ng-container matColumnDef="contenu">
+          <th mat-header-cell *matHeaderCellDef> Contenu </th>
+          <td mat-cell *matCellDef="let ligne"> {{ ligne.contenu }} </td>
+        </ng-container>
+
+        <!-- Header & Row Declarations -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns1"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns1;"></tr>
+
+      </table>
+    </div>
+
+    <ng-template #noLigne>
+      <p style="font-style: italic;">Aucune ligne trouvée dans cette fiche.</p>
+    </ng-template>
+  </div>
+</ng-template>

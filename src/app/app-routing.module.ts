@@ -10,6 +10,9 @@ import { HomeComponent } from './home/home.component';
 import { FichesSoinComponent } from './fiches-soin/fiches-soin.component';
 import { AnalysesMedicalesComponent } from './analyses-medicales/analyses-medicales.component';
 import { ImagesMedicalesComponent } from './images-medicales/images-medicales.component';
+import { specialitesComponent } from './specialites/specialites.component';
+import { PartenairesComponent } from './partenaires/partenaires.component';
+import { ServicesComponent } from './services/services.component';
 
 
 const routes: Routes = [
@@ -21,6 +24,9 @@ const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'dossiers/:id', component: DossierDetailsComponent },
+  { path: 'home/specialites', component: specialitesComponent },
+  { path: 'home/partenaires', component: PartenairesComponent },
+  { path: 'home/services', component: ServicesComponent },
   { path: 'fiches-soin/:numero', component: FichesSoinComponent },
   { path: 'images-medicales/:numero', component: ImagesMedicalesComponent },
   { path: 'analyses-medicales/:numero', component: AnalysesMedicalesComponent },

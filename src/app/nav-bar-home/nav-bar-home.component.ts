@@ -12,7 +12,7 @@ export class NavBarHomeComponent {
 
   @HostListener('window:scroll', [])
     onWindowScroll() {
-      this.isScrolled = window.scrollY > 50;
+      this.isScrolled = window.scrollY > 30;
     }
     scrollToSection(sectionId: string) {
       this.viewportScroller.scrollToAnchor(sectionId);

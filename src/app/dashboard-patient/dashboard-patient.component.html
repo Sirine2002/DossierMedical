@@ -2,144 +2,208 @@
   <mat-sidenav-content>
     <app-navbar></app-navbar>
     <div class="content">
+
+
       <div class="dossier-container" style="display: flex; gap: 20px; flex-direction: row-reverse;">
-
-        <!-- ✅ Zone filtre -->
-        <mat-card
-        style="padding: 24px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);">
-        <mat-card-title style="font-size: 20px; font-weight: 600; color: #1976d2; margin-bottom: 16px;">
-          <img src="../../assets/images/filtre.png" style="height: 20px;width: 20px;"> Filtre automatique
-        </mat-card-title>
-        
-        <form [formGroup]="filtreForm" style="display: flex; flex-direction: column; gap: 20px;">
-          
-          <!-- Filtre par date -->
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Date de création</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="dateDebut" placeholder="Choisir une date">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
-          
-          <!-- Filtre par type de fichier -->
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Type de fichier</mat-label>
-            <mat-select formControlName="typeFichier">
-              <mat-option value="">Tous</mat-option>
-              <mat-option value="image">Image</mat-option>
-              <mat-option value="analyse">Analyse</mat-option>
-              <mat-option value="fiche_soin">Fiche de soin</mat-option>
-            </mat-select>
-          </mat-form-field>
-          
-          <!-- Filtre par agent -->
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Nom de l'agent</mat-label>
-            <input matInput formControlName="nomAgent" placeholder="Nom de l'agent">
-          </mat-form-field>
-
-        </form>
-        
-      
-      </mat-card>
 
         <!-- ✅ Liste des dossiers -->
         <mat-card class="dossiers-list" style="flex: 2; overflow-y: auto;">
           <mat-card-header>
-            <mat-card-title class="costum-color1">Dossier Médical</mat-card-title>
+            <mat-card-title><h2 style="
+              font-size: 26px;
+              font-weight: 600;
+              color: #2C3E50;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            ">
+              <mat-icon style="color: #1976d2;">folder_shared</mat-icon>
+              Dossier Médical
+            </h2>
+            </mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <div *ngFor="let dossier of dossiersFiltres">
               <div class="dossier">
-                <b class="costum-color2">N°{{ formatNumero(dossier.dossier.numero) }}</b>
-                <p>{{ dossier.dossier.dateCreation | date: 'dd/MM/yyyy' }}</p>
-                <span class="custom-badge">{{ dossier.dossier.etat }}</span>
-                <br />
+                <b class="costum-color2"></b>
+                <p style="
+  font-size: 14px;
+  color: #607D8B;
+  margin-top: 4px;
+  margin-left: 36px;
+"> Crée le: <span style="font-weight: 500;">{{ dossier.dossier.dateCreation | date: 'dd/MM/yyyy' }}</span></p>
 
+                <br />
+                
+                <!-- ✅ Statistiques médicales résumées -->
+                <div style="display: flex; justify-content: space-between; gap: 20px; margin-bottom: 30px;">
+                  <!-- Carte 1 -->
+                  <mat-card
+  style="flex: 1; padding: 20px; border-radius: 15px; display: flex; flex-direction: row; align-items: center; text-align: left; gap: 15px;">
+  
+  <!-- Image à gauche -->
+  <img src="../../assets/images/blood_pressure.png" alt="Blood Pressure Icon"
+    style="width: 60px; height: 60px;" />
+
+  <!-- Texte à droite de l’image -->
+  <div style="display: flex; flex-direction: column;">
+    <p style="font-weight: bold; color: #2c3e50; margin: 0;">Blood Pressure</p>
+    <p style="font-size: 14px; color: #2c3e50; margin: 0;">
+      <mat-icon style="vertical-align: middle;">trending_down</mat-icon> 10% Less Than Last Month
+    </p>
+  </div>
+</mat-card>
+
+
+                  <!-- Carte 2 -->
+                  <mat-card
+                  style="flex: 1; padding: 20px; border-radius: 15px; display: flex; flex-direction: row; align-items: center; text-align: left; gap: 15px;">
+                
+                  <!-- Image -->
+                  <img src="../../assets/images/glucos_level.png" alt="Glucose Level Icon"
+                    style="width: 60px; height: 60px;" />
+                
+                  <!-- Texte -->
+                  <div style="display: flex; flex-direction: column;">
+                    <p style="font-weight: bold; color: #2c3e50; margin: 0;">Glucose Level</p>
+                    <p style="font-size: 14px; color: #2c3e50; margin: 0;">
+                      <mat-icon style="vertical-align: middle;">trending_up</mat-icon> 12% Higher Than Last Month
+                    </p>
+                  </div>
+                </mat-card>
+                  <!-- Carte 3 -->
+                  <mat-card
+                  style="flex: 1; padding: 20px; border-radius: 15px; display: flex; flex-direction: row; align-items: center; text-align: left; gap: 15px;">
+                  
+                  <!-- Image -->
+                  <img src="../../assets/images/blood_count.png" alt="Blood Count Icon"
+                    style="width: 60px; height: 60px;" />
+                
+                  <!-- Texte -->
+                  <div style="display: flex; flex-direction: column;">
+                    <p style="font-weight: bold; color: #2c3e50; margin: 0;">Blood Count</p>
+                    <p style="font-size: 14px; color: #2c3e50; margin: 0;">
+                      <mat-icon style="vertical-align: middle;">trending_up</mat-icon> 5% Higher Than Last Month
+                    </p>
+                  </div>
+                </mat-card>
+                </div>
+                
                 <!-- ✅ Fiches de soin -->
                 <mat-card-title>
-                  <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">Fiches de soin</p>
+                  <p class="section-title">
+                  <mat-icon style="color: #1976d2;">description</mat-icon> Fiches de soin</p>
                 </mat-card-title><br />
-                <div *ngFor="let fiche of dossier.ficheSoin | slice: -2" style="display: flex; flex-direction: column;">
-                  <div style="display: flex; align-items: center; flex-wrap: wrap; flex-direction: row-reverse;gap: 15px;">
-                    <div style="flex: 1; text-align: left; padding:0%">
-                      <p style="font-size: 18px; line-height: 1.8;max-width: 900px; margin: 0 auto;">
-                        <strong>Numéro:</strong>{{ fiche.numero }}<br />
-                        <strong>Date: </strong>{{ fiche.dateCreation }}<br />
-                        <strong>Agent: </strong>{{ fiche.agentCreateur }}<br />
-                        <strong>Adresse: </strong>{{ fiche.adresseCreateur }}<br />
-                        <button mat-icon-button color="primary" matTooltip="Voir l'image" (click)="voirPlus(fiche)">
-                          <mat-icon>visibility</mat-icon>
-                        </button>
-                        <button mat-icon-button color="accent" matTooltip="Télécharger l'image" (click)="telechargerDonneesFiche(fiche)">
-                          <mat-icon>download</mat-icon>
-                        </button>
-                      </p>
-                    </div>
-                    <img src="../../assets/images/fiche.png" style="width:17%; max-width: 17%; ">
+
+                <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                  <div *ngFor="let fiche of dossier.ficheSoin | slice: -4" class="fiche-card-container">
+                    <mat-card class="fiche-card">
+                      <img src="../../assets/images/ficheSoin.png" class="fiche-image">
+                      <div class="fiche-details">
+                        <p class="fiche-info">
+                          <strong>Numéro:</strong> {{ fiche.numero }}<br />
+                          <strong>Date:</strong> {{ fiche.dateCreation }}<br />
+                          <strong>Agent:</strong> {{ fiche.agentCreateur }}<br />
+                          <strong>Adresse:</strong> {{ fiche.adresseCreateur }}<br />
+                        </p>
+                        <div class="fiche-actions">
+                          <button mat-icon-button color="primary" matTooltip="Voir la fiche" (click)="voirPlus(fiche)">
+                            <mat-icon>visibility</mat-icon>
+                          </button>
+                          <button mat-icon-button color="accent" matTooltip="Télécharger la fiche"
+                            (click)="telechargerDonneesFiche(fiche)">
+                            <mat-icon>download</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </mat-card>
                   </div>
                 </div>
+
+
                 <div style="display: flex; justify-content: flex-end;">
                   <button mat-flat-button color="primary" (click)="voirFiches(dossier)" style="font-size: 14px;">
                     Voir plus
                   </button>
                 </div>
-                <hr/>
+
+                <mat-divider></mat-divider>
 
                 <!-- ✅ Images médicales -->
                 <mat-card-title>
-                  <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">Images médicales</p>
+                  <p style="font-size: 24px; font-weight: bold; margin: 10px 0; color: #2c3e50;">
+                    <mat-icon style="color: #1976d2;">image</mat-icon> Images médicales</p>
                 </mat-card-title><br />
-                <div *ngFor="let img of dossier.imageMedicale | slice: -2" style="display: flex; flex-direction: column;">
-                  <div style="display: flex; align-items: center; flex-wrap: wrap; flex-direction: row-reverse;gap: 15px;">
-                    <div style="flex: 1; text-align: left; padding:0%">
-                      <p style="font-size: 18px; line-height: 1.8;max-width: 900px; margin: 0 auto;">
-                        <strong>Numéro:</strong>{{ img.numero }}<br />
-                        <strong>Date: </strong>{{ img.dateCreation }}<br />
-                        <strong>Agent: </strong>{{ img.agentCreateur }}<br />
-                        <strong>Adresse: </strong>{{ img.adresseCreateur }}<br />
-                        <button mat-icon-button color="primary" matTooltip="Voir l'image" (click)="voirImage(img.image)">
-                          <mat-icon>visibility</mat-icon>
-                        </button>
-                        <button mat-icon-button color="accent" matTooltip="Télécharger l'image" >
-                          <mat-icon>download</mat-icon>
-                        </button>
-                      </p>
-                    </div>
-                    <img [src]="img.image" alt="Image médicale" style="width:17%; max-width: 17%;height: 40%;">
+
+                <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                  <div *ngFor="let img of dossier.imageMedicale | slice: -4" class="image-card-container">
+                    <mat-card class="image-card"
+                      style="display: flex; flex-direction: row; gap: 15px; padding: 16px; background-color: #f8f9fa; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                      <!-- Image médicale -->
+                      <img [src]="img.image" alt="Image médicale"
+                        style="width: 30%; max-width: 30%; height: 40%; border-radius: 8px; object-fit: cover;">
+                      <div style="flex: 1; text-align: left; padding: 0 10px;">
+                        <p style="font-size: 18px; line-height: 1.8; color: #34495e;">
+                          <strong>Numéro:</strong> {{ img.numero }}<br />
+                          <strong>Date:</strong> {{ img.dateCreation }}<br />
+                          <strong>Agent:</strong> {{ img.agentCreateur }}<br />
+                          <strong>Adresse:</strong> {{ img.adresseCreateur }}<br />
+                        </p>
+
+                        <div style="display: flex; justify-content: flex-start; gap: 10px;">
+                          <button mat-icon-button color="primary" matTooltip="Voir l'image"
+                            (click)="voirImage(img.image)">
+                            <mat-icon>visibility</mat-icon>
+                          </button>
+                          <button mat-icon-button color="accent" matTooltip="Télécharger l'image">
+                            <mat-icon>download</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </mat-card>
                   </div>
                 </div>
+
+
                 <div style="display: flex; justify-content: flex-end;">
                   <button mat-flat-button color="primary" (click)="voirImages(dossier)" style="font-size: 14px;">
                     Voir plus
                   </button>
                 </div>
-                <hr/>
-                
+
+                <mat-divider></mat-divider>
+
                 <!-- ✅ Analyses médicales -->
                 <mat-card-title>
-                  <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">Analyses médicales</p>
-                </mat-card-title>
-                <br />
-                <div *ngFor="let analyse of dossier.analyseMedicale | slice: -2" style="display: flex; flex-direction: column;">
-                  <div style="display: flex; align-items: center; flex-wrap: wrap; flex-direction: row-reverse;gap: 15px;">
-                    <div style="flex: 1; text-align: left; padding:0%">
-                      <p style="font-size: 18px; line-height: 1.8;max-width: 900px; margin: 0 auto;">
-                        <strong>Numéro:</strong>{{ analyse.numero }}<br />
-                        <strong>Date: </strong>{{ analyse.dateCreation }}<br />
-                        <strong>Agent: </strong>{{ analyse.agentCreateur }}<br />
-                        <strong>Adresse: </strong>{{ analyse.adresseCreateur }}<br />
-                        <button mat-icon-button color="primary" matTooltip="Voir l'image" (click)="voirImage(analyse.fichier)">
-                          <mat-icon>visibility</mat-icon>
-                        </button>
-                        <button mat-icon-button color="accent" matTooltip="Télécharger l'image" >
-                          <mat-icon>download</mat-icon>
-                        </button>
-                      </p>
-                    </div>
-                    <img [src]="analyse.fichier" alt="Analyse médicale" style="width:17%; max-width: 17%;">
+                  <p style="font-size: 24px; font-weight: bold; margin: 10px 0; color: #2c3e50;"><mat-icon style="color: #1976d2;">science</mat-icon>
+                    Analyses médicales</p>
+                </mat-card-title><br />
+
+                <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                  <div *ngFor="let analyse of dossier.analyseMedicale | slice: -4" class="analyse-card-container">
+                    <mat-card class="analyse-card"
+                      style="display: flex; flex-direction: row; gap: 15px; padding: 16px;">
+                      <img [src]="analyse.fichier" alt="Analyse médicale"
+                        style="width: 30%; max-width: 30%; height: 40%; border-radius: 8px;">
+                      <div style="flex: 1; text-align: left;">
+                        <p style="font-size: 18px; line-height: 1.8; color: #34495e;">
+                          <strong>Numéro:</strong> {{ analyse.numero }}<br />
+                          <strong>Date: </strong>{{ analyse.dateCreation }}<br />
+                          <strong>Agent: </strong>{{ analyse.agentCreateur }}<br />
+                          <strong>Adresse: </strong>{{ analyse.adresseCreateur }}<br />
+                          <button mat-icon-button color="primary" matTooltip="Voir l'analyse"
+                            (click)="voirImage(analyse.fichier)">
+                            <mat-icon>visibility</mat-icon>
+                          </button>
+                          <button mat-icon-button color="accent" matTooltip="Télécharger l'analyse">
+                            <mat-icon>download</mat-icon>
+                          </button>
+                        </p>
+                      </div>
+                    </mat-card>
                   </div>
                 </div>
+
                 <div style="display: flex; justify-content: flex-end;">
                   <button mat-flat-button color="primary" (click)="voirAnalyses(dossier)" style="font-size: 14px;">
                     Voir plus

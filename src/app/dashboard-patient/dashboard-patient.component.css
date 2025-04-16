@@ -1,0 +1,113 @@
+.section-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #2c3e50; /* Couleur sombre pour le titre */
+  }
+  
+  /* Conteneur de la carte */
+  .fiche-card-container {
+    flex: 0 0 48%; /* Pour afficher 2 cartes par ligne */
+    box-sizing: border-box;
+    margin-bottom: 20px;
+  }
+
+  .image-card-container {
+    flex: 0 0 48%; /* Pour afficher 2 cartes par ligne */
+    box-sizing: border-box;
+    margin-bottom: 20px;
+  }
+
+  .analyse-card-container {
+    flex: 0 0 48%; /* Pour afficher 2 cartes par ligne */
+    box-sizing: border-box;
+    margin-bottom: 20px;
+  }
+  
+  /* Style de la carte */
+  .fiche-card  {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #ffffff; /* Fond blanc pour la carte */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre douce */
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .image-card  {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #ffffff; /* Fond blanc pour la carte */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre douce */
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .analyse-card  {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #ffffff; /* Fond blanc pour la carte */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre douce */
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .fiche-card:hover {
+    transform: scale(1.02); /* Effet au survol */
+    
+  }
+  
+  .image-card:hover{
+    transform: scale(1.02); /* Effet au survol */
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .analyse-card:hover{
+    transform: scale(1.02); /* Effet au survol */
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  /* Image de la fiche */
+  .fiche-image {
+    width: 40%;
+    max-width: 40%;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  
+  /* Détails de la fiche */
+  .fiche-details {
+    flex: 1;
+    text-align: left;
+    font-size: 16px;
+    color: #34495e; /* Couleur du texte */
+  }
+  
+  .fiche-info {
+    line-height: 1.8;
+    margin-bottom: 15px;
+  }
+  
+  .fiche-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  
+  button.mat-icon-button:hover {
+    background-color: #2980b9; /* Couleur bleue foncée au survol */
+  }
+  
+  /* Optimisation pour mobile */
+  @media (max-width: 768px) {
+    .fiche-card-container {
+      flex: 0 0 100%; /* Cartes en pleine largeur sur petits écrans */
+    }
+  }

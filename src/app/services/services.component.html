@@ -1,0 +1,54 @@
+<mat-sidenav-container style="background-color: white;">
+    <mat-sidenav-content>
+  
+      <!-- Barre de navigation -->
+  
+      <!-- Contenu principal -->
+      <div>
+        <!-- Section images animées -->
+        <section class="image-slider">
+          <div class="slider">
+            <app-nav-bar-home></app-nav-bar-home>
+  
+            <img [src]="'assets/images/MEDICAL (8).png'" alt="Slider image" />
+  
+            <div class="slider-overlay">
+              <h1 style="font-size: 36px; color: #3f51b5">Services</h1>
+              <div class="breadcrumb-line">
+                <mat-icon>home</mat-icon>
+                <ng-container *ngFor="let segment of breadcrumbSegments; let i = index; let last = last">
+                  <a [routerLink]="segment.url"
+                     [ngClass]="{'highlight-segment': i === 1}"
+                     style="text-decoration: none; color: inherit;">
+                    {{ segment.label }}
+                  </a>
+                  <span *ngIf="!last">/</span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="nos-services" class="services">
+          <div class="service-cards">
+            <div class="service-card" *ngFor="let service of services">
+              <div>
+                <div class="icon-wrapper">
+                  <img [src]="service.icon" alt="{{ service.title }}" />
+                </div>
+                <h4>{{ service.title }}</h4>
+                <p>{{ service.description }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Pied de page -->
+        <app-footer-home></app-footer-home>
+  
+      </div>
+      <button mat-fab class="back-to-top" *ngIf="showBackToTop" (click)="scrollToTop()" mat-fab color="primary">
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+  
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+  

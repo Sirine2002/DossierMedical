@@ -1,0 +1,56 @@
+<mat-sidenav-container style="background-color: white;">
+    <mat-sidenav-content>
+  
+      <!-- Contenu principal -->
+      <div>
+  
+        <!-- Section images animées -->
+        <section class="image-slider">
+          <div class="slider">
+            <app-nav-bar-home></app-nav-bar-home>
+  
+            <img [src]="'assets/images/MEDICAL (8).png'" alt="Slider image" />
+  
+            <div class="slider-overlay">
+              <h1 style="font-size: 36px; color: #3f51b5">Partenaires</h1>
+              <div class="breadcrumb-line">
+                <mat-icon>home</mat-icon>
+                <ng-container *ngFor="let segment of breadcrumbSegments; let i = index; let last = last">
+                  <a [routerLink]="segment.url"
+                     [ngClass]="{'highlight-segment': i === 1}"
+                     style="text-decoration: none; color: inherit;">
+                    {{ segment.label }}
+                  </a>
+                  <span *ngIf="!last">/</span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </section>
+  
+        <section id="nos-partenaires" class="partenaires">
+          <div class="partenaire-container">
+            <img [src]="'assets/images/clinic1.png'" alt="clinic1" />
+            <img [src]="'assets/images/clinic2.png'" alt="clinic2" />
+            <img [src]="'assets/images/clinic3.png'" alt="clinic3" />
+            <img [src]="'assets/images/clinic4.png'" alt="clinic4" />
+            <img [src]="'assets/images/clinic8.png'" alt="clinic8" />
+            <img [src]="'assets/images/clinic9.png'" alt="clinic9" />
+          </div>
+        </section>
+  
+        <section id="map-section" style="width: auto; height: 500px; padding-left:9%; padding-right:9%; padding-bottom:4%">
+          <div id="map" style="height: 100%; width: 100%;"></div>
+        </section>
+  
+        <!-- Pied de page -->
+        <app-footer-home></app-footer-home>
+      </div>
+  
+      <!-- Bouton retour haut de page -->
+      <button mat-fab class="back-to-top" *ngIf="showBackToTop" (click)="scrollToTop()" color="primary">
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+  
+    </mat-sidenav-content>
+  </mat-sidenav-container>

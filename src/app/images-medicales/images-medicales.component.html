@@ -4,27 +4,86 @@
         <div class="content">
             <div class="dossier-container" style="display: flex; gap: 20px; flex-direction: row-reverse;">
                 
-                <!-- Zone filtre -->
-                <mat-card style="padding: 24px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);">
-                    <mat-card-title style="font-size: 20px; font-weight: 600; color: #1976d2; margin-bottom: 16px;">
-                        <img src="../../assets/images/filtre.png" style="height: 20px;width: 20px;"> Filtre automatique
-                    </mat-card-title>
-                    <form  style="display: flex; flex-direction: column; gap: 20px;">
-                        <!-- Filtre par date -->
-                        <mat-form-field appearance="fill" class="full-width">
-                            <mat-label>Date de création</mat-label>
-                            <input matInput [matDatepicker]="picker" formControlName="dateDebut" placeholder="Choisir une date">
-                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                            <mat-datepicker #picker></mat-datepicker>
+                 <!-- Zone filtre -->
+                 
+                 <div style="padding-top: 40px;"> 
+                  <form [formGroup]="filtreForm" style="display: flex; flex-direction: column; align-items: center;">
+                    <div
+                      style="
+                        border-radius: 20px;
+                        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+                        font-family: 'Segoe UI', sans-serif;
+                        max-width: 500px;
+                        width: 100%;
+                        background-color: #fff;
+                        border: 1px solid #d1d5db;
+                        overflow: hidden;
+                      "
+                    >
+                      <!-- En-tête -->
+                      <div
+                        style="
+                          background-color: #3f51b5;
+                          color: white;
+                          padding: 16px 24px;
+                          font-size: 18px;
+                          font-weight: 600;
+                          display: flex;
+                          align-items: center;
+                          gap: 12px;
+                          border-radius: 20px 20px 0 0;
+                        "
+                      >
+                        <img src="../../assets/images/funnel.png" style="height: 20px;" />
+                        Filtres de recherche
+                      </div>
+                
+                      <!-- Champs de filtre -->
+                      <div
+                        style="
+                          padding: 24px;
+                          background-color: #f9fafb;
+                          display: flex;
+                          flex-direction: column;
+                          gap: 20px;
+                        "
+                      >
+                        <!-- Champ Date -->
+                        <mat-form-field appearance="outline" style="width: 100%; border-radius: 12px; ">
+                          <mat-label style="font-weight: 500; color: #3f51b5;">Date de création</mat-label>
+                          <input
+                            matInput
+                            [matDatepicker]="picker"
+                            formControlName="dateDebut"
+                            placeholder="Choisir une date"
+                            style="padding: 0px; font-size: 14px;"
+                          />
+                          <mat-datepicker-toggle matSuffix [for]="picker">
+                            <mat-icon matDatepickerToggleIcon style="color: #3f51b5;">event</mat-icon>
+                          </mat-datepicker-toggle>
+                          <mat-datepicker #picker></mat-datepicker>
                         </mat-form-field>
                         
-                        <!-- Filtre par agent -->
-                        <mat-form-field appearance="fill" class="full-width">
-                            <mat-label>Nom de l'agent</mat-label>
-                            <input matInput formControlName="nomAgent" placeholder="Nom de l'agent">
+                
+                        <!-- Champ Agent -->
+                        <mat-form-field appearance="outline" style="width: 100%;  border-radius: 12px;">
+                          <mat-label style="font-weight: 500; color: #3f51b5;">Nom de l'agent</mat-label>
+                          <input
+                            matInput
+                            formControlName="nomAgent"
+                            placeholder="Entrez le nom de l'agent"
+                            style="padding: 0px; font-size: 14px;"
+                          />
+                          <mat-icon matSuffix style="color: #3f51b5;">person</mat-icon>
                         </mat-form-field>
-                    </form>
-                </mat-card>
+                        
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                   
+                   
+             
 
                 <!-- Liste des images médicales -->
                 <mat-card class="dossiers-list" style="flex: 2; overflow-y: auto;">
@@ -37,7 +96,7 @@
 
                             <!-- Titre Images Médicales aligné à droite du bouton -->
                             <mat-card-title>
-                                <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">Images Médicales</p>
+                                <p style="font-size: 24px; font-weight: bold; margin: 10px 0; color: #2c3e50;">Images Médicales</p>
                             </mat-card-title>
                         </div>
                     </mat-card-header>
@@ -46,7 +105,7 @@
                         <div *ngFor="let image of imagesMedicales" style="display: flex; flex-direction: column;">
                             <div style="display: flex; align-items: center; flex-wrap: wrap; flex-direction: row-reverse; gap: 15px;">
                                 <div style="flex: 1; text-align: left; padding: 0%">
-                                    <p style="font-size: 18px; line-height: 1.8; max-width: 900px; margin: 0 auto;">
+                                    <p style="font-size: 18px; line-height: 1.8; max-width: 900px; margin: 0 auto; font-size: 18px; line-height: 1.8; color: #34495e;">
                                         <strong>Numéro:</strong> {{ image.numero }}<br />
                                         <strong>Date:</strong> {{ image.dateCreation }}<br />
                                         <strong>Agent:</strong> {{ image.agentCreateur }}<br />
@@ -59,7 +118,7 @@
                                         </button>
                                     </p>
                                 </div>
-                                <img [src]="image.image" alt="Image médicale" style="width: 17%; max-width: 17%; height: 40%;">
+                                <img [src]="image.image" alt="Image médicale" style="width: 17%; max-width: 17%; height: 40%; border-radius: 8px; object-fit: cover;">
                             </div>
                             <hr style="width: 100%; border: 0; border-top: 1px solid #ccc; margin: 20px 0;" />
                         </div>

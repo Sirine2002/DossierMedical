@@ -7,6 +7,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   styleUrls: ['./footer-home.component.css']
 })
 export class FooterHomeComponent {
-
   
+
+  constructor() {
+  }
 }
