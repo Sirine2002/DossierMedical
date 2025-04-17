@@ -56,8 +56,11 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
     
     
   }
+  nomPatient: string = '';
 
   ngOnInit(): void {
+    const storedName = localStorage.getItem('username');
+    this.nomPatient = storedName ? storedName : 'Inconnu';
     this.auth.authState.subscribe(user => {
       if (user) {
         const userId = user.uid;
@@ -407,6 +410,44 @@ telechargerDonneesFiche(fiche: any): void {
 
 voirImage(imageUrl: string) {
   window.open(imageUrl, '_blank');
+}
+
+downloadAnalyse(imageUrl: string, nomPatient: string, fichierId: number) {
+  fetch(imageUrl)
+    .then(response => response.blob())
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      // Simule un dossier en préfixant le nom du fichier (navigateur ne crée pas de dossier, mais ça aide à organiser)
+      a.download = `${nomPatient}_analyse_${fichierId}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+      console.error('Erreur lors du téléchargement de l’image :', error);
+    });
+}
+
+downloadImage(imageUrl: string, nomPatient: string, imageId: number) {
+  fetch(imageUrl)
+    .then(response => response.blob())
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      // Simule un dossier en préfixant le nom du fichier (navigateur ne crée pas de dossier, mais ça aide à organiser)
+      a.download = `${nomPatient}_image_${imageId}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+      console.error('Erreur lors du téléchargement de l’image :', error);
+    });
 }
 
   

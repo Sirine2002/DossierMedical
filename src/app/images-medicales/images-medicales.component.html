@@ -54,9 +54,10 @@
                           <input
                             matInput
                             [matDatepicker]="picker"
-                            formControlName="dateDebut"
+                            formControlName="date"
                             placeholder="Choisir une date"
                             style="padding: 0px; font-size: 14px;"
+                            (dateChange)="applyFilters()"
                           />
                           <mat-datepicker-toggle matSuffix [for]="picker">
                             <mat-icon matDatepickerToggleIcon style="color: #3f51b5;">event</mat-icon>
@@ -70,9 +71,10 @@
                           <mat-label style="font-weight: 500; color: #3f51b5;">Nom de l'agent</mat-label>
                           <input
                             matInput
-                            formControlName="nomAgent"
+                            formControlName="agent"
                             placeholder="Entrez le nom de l'agent"
                             style="padding: 0px; font-size: 14px;"
+                            (input)="applyFilters()"
                           />
                           <mat-icon matSuffix style="color: #3f51b5;">person</mat-icon>
                         </mat-form-field>
@@ -113,7 +115,7 @@
                                         <button mat-icon-button color="primary" matTooltip="Voir l'image" (click)="voirImage(image.image)">
                                             <mat-icon>visibility</mat-icon>
                                         </button>
-                                        <button mat-icon-button color="accent" matTooltip="Télécharger l'image">
+                                        <button mat-icon-button color="accent" matTooltip="Télécharger l'image" (click)="downloadImage(image.image, nomPatient, image.numero)">
                                             <mat-icon>download</mat-icon>
                                         </button>
                                     </p>

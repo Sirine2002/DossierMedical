@@ -54,9 +54,10 @@
                           <input
                             matInput
                             [matDatepicker]="picker"
-                            formControlName="dateDebut"
+                            formControlName="date"
                             placeholder="Choisir une date"
                             style="padding: 0px; font-size: 14px;"
+                            (dateChange)="applyFilters()"
                           />
                           <mat-datepicker-toggle matSuffix [for]="picker">
                             <mat-icon matDatepickerToggleIcon style="color: #3f51b5;">event</mat-icon>
@@ -70,9 +71,10 @@
                           <mat-label style="font-weight: 500; color: #3f51b5;">Nom de l'agent</mat-label>
                           <input
                             matInput
-                            formControlName="nomAgent"
+                            formControlName="agent"
                             placeholder="Entrez le nom de l'agent"
                             style="padding: 0px; font-size: 14px;"
+                            (input)="applyFilters()"
                           />
                           <mat-icon matSuffix style="color: #3f51b5;">person</mat-icon>
                         </mat-form-field>
@@ -114,7 +116,7 @@
                                             (click)="voirImage(analyse.fichier)">
                                             <mat-icon>visibility</mat-icon>
                                         </button>
-                                        <button mat-icon-button color="accent" matTooltip="Télécharger l'analyse">
+                                        <button mat-icon-button color="accent" matTooltip="Télécharger l'analyse"(click)="downloadAnalyse(analyse.fichier, nomPatient, analyse.numero)">
                                             <mat-icon>download</mat-icon>
                                         </button>
                                     </p>

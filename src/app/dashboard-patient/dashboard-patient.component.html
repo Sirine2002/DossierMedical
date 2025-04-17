@@ -155,7 +155,7 @@
                             (click)="voirImage(img.image)">
                             <mat-icon>visibility</mat-icon>
                           </button>
-                          <button mat-icon-button color="accent" matTooltip="Télécharger l'image">
+                          <button mat-icon-button color="accent" matTooltip="Télécharger l'image" (click)="downloadImage(img.image, nomPatient, img.numero)">
                             <mat-icon>download</mat-icon>
                           </button>
                         </div>
@@ -195,7 +195,7 @@
                             (click)="voirImage(analyse.fichier)">
                             <mat-icon>visibility</mat-icon>
                           </button>
-                          <button mat-icon-button color="accent" matTooltip="Télécharger l'analyse">
+                          <button mat-icon-button color="accent" matTooltip="Télécharger l'analyse" (click)="downloadAnalyse(analyse.fichier, nomPatient, analyse.numero)">
                             <mat-icon>download</mat-icon>
                           </button>
                         </p>

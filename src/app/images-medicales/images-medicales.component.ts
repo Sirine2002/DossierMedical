@@ -12,25 +12,30 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 })
 export class ImagesMedicalesComponent implements OnInit, OnDestroy {
   imagesMedicales: any[] = []; // Images après filtrage
-  allImagesMedicales: any[] = [];  
+  allImagesMedicales: any[] = [];
   pagedImages: any[] = [];
   pageSize: number = 4; // Nombre d'images par page
-  pageIndex: number = 0; 
-   filterDate: string = '';
+  pageIndex: number = 0;
+  filterDate: string = '';
   filterAgent: string = '';
   filtreForm: FormGroup;
   private subscription: Subscription = new Subscription();
 
-  constructor(private db: AngularFireDatabase,private location: Location,private fb: FormBuilder) {
+  constructor(private db: AngularFireDatabase, private location: Location, private fb: FormBuilder) {
     this.filtreForm = this.fb.group({
       date: [''],
       agent: ['']
     });
   }
-
+  nomPatient: string = '';
   ngOnInit(): void {
     this.loadImages();
+    const storedName = localStorage.getItem('username');
+    this.nomPatient = storedName ? storedName : 'Inconnu';
   }
+
+
+
 
   loadImages(): void {
     const imagesSub = this.db.list('imagesMedicales').snapshotChanges()
@@ -48,10 +53,10 @@ export class ImagesMedicalesComponent implements OnInit, OnDestroy {
 
   applyFilters(): void {
     const { date, agent } = this.filtreForm.value;
-  
+
     this.imagesMedicales = this.allImagesMedicales.filter(image => {
       let match = true;
-  
+
       // Comparaison par date (en normalisant à minuit)
       if (date) {
         const selectedDate = new Date(date);
@@ -60,20 +65,20 @@ export class ImagesMedicalesComponent implements OnInit, OnDestroy {
         imageDate.setHours(0, 0, 0, 0);
         match = match && imageDate.getTime() === selectedDate.getTime();
       }
-  
+
       // Comparaison par nom d'agent
       if (agent) {
         match = match && image.agentCreateur?.toString().toLowerCase().includes(agent.toLowerCase());
       }
-  
+
       return match;
     });
-  
+
     this.pageIndex = 0;
     this.updatePagedImages();
   }
-  
-  
+
+
   updatePagedImages() {
     const startIndex = this.pageIndex * this.pageSize;
     const endIndex = startIndex + this.pageSize;
@@ -96,4 +101,25 @@ export class ImagesMedicalesComponent implements OnInit, OnDestroy {
   retour(): void {
     this.location.back();
   }
+
+  downloadImage(imageUrl: string, nomPatient: string, imageId: number) {
+    fetch(imageUrl)
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        // Simule un dossier en préfixant le nom du fichier (navigateur ne crée pas de dossier, mais ça aide à organiser)
+        a.download = `${nomPatient}_image_${imageId}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+        console.error('Erreur lors du téléchargement de l’image :', error);
+      });
+  }
+
+
 }

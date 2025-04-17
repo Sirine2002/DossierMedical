@@ -16,8 +16,6 @@ export class AnalysesMedicalesComponent implements OnInit, OnDestroy {
   pagedAnalyses: any[] = [];
   pageSize: number = 4; // Nombre d'analyses par page
   pageIndex: number = 0; // Page courante
-  filterDate: string = '';
-  filterAgent: string = '';
   filtreForm: FormGroup;
   selectedFilter: 'date' | 'agent' = 'agent'; // Valeur par défaut
   private subscription: Subscription = new Subscription();
@@ -25,14 +23,16 @@ export class AnalysesMedicalesComponent implements OnInit, OnDestroy {
   constructor(private db: AngularFireDatabase, private location: Location, private fb: FormBuilder) {
     
     this.filtreForm = this.fb.group({
-      filterType: ['date'], // par défaut
       date: [''],
       agent: ['']
     });
   }
+  nomPatient: string = '';
 
   ngOnInit(): void {
     this.loadAnalyses();
+    const storedName = localStorage.getItem('username');
+    this.nomPatient = storedName ? storedName : 'Inconnu';
   }
 
   loadAnalyses(): void {
@@ -50,12 +50,8 @@ export class AnalysesMedicalesComponent implements OnInit, OnDestroy {
   }
 
   applyFilters(): void {
-    const { filterType, date, agent } = this.filtreForm.value;
-    if (filterType === 'date') {
-      console.log('Filtrage par date :', date);
-    } else {
-      console.log('Filtrage par agent :', agent);
-    }
+    const { date, agent } = this.filtreForm.value;
+  
   
   
     this.analysesMedicales = this.allAnalysesMedicales.filter(analyse => {
@@ -101,6 +97,26 @@ export class AnalysesMedicalesComponent implements OnInit, OnDestroy {
   voirImage(imageUrl: string) {
     window.open(imageUrl, '_blank');
   }
+
+  downloadAnalyse(imageUrl: string, nomPatient: string, fichierId: number) {
+    fetch(imageUrl)
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        // Simule un dossier en préfixant le nom du fichier (navigateur ne crée pas de dossier, mais ça aide à organiser)
+        a.download = `${nomPatient}_analyse_${fichierId}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+        console.error('Erreur lors du téléchargement de l’image :', error);
+      });
+  }
+  
 
   retour(): void {
     this.location.back();

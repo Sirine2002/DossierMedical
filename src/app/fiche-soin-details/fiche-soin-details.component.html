@@ -1,5 +1,5 @@
 <span mat-dialog-title>
-  <div style="display: flex; align-items: center; justify-content: space-between;   border-radius: 8px;">
+  <div style="display: flex; align-items: center; justify-content: space-between; border-radius: 8px;">
     <h3 style="margin: 0; font-size: 22px; font-weight: bold;">
       <span class="costum-color2">Fiche de soin n°{{ data.numero }}</span>
     </h3>
@@ -35,7 +35,7 @@
   </div>
 
   <!-- Tableau des actes -->
-  <table mat-table [dataSource]="ficheSoin" matSort style="width: 100%; border-collapse: collapse;">
+  <table mat-table [dataSource]="dataSource" matSort style="width: 100%; border-collapse: collapse;">
 
     <!-- Nom -->
     <ng-container matColumnDef="nom">
@@ -66,5 +66,8 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
   </table>
-  <br/>
+
+  <!-- Pagination -->
+  <mat-paginator [pageSize]="3" [pageSizeOptions]="[3, 6, 9]" showFirstLastButtons></mat-paginator>
+
 </mat-dialog-content>
