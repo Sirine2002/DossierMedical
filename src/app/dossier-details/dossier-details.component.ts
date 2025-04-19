@@ -40,6 +40,7 @@ export class DossierDetailsComponent implements OnInit {
   selectedFiche: any = null;
   showFilters: boolean = false;
   userrole: string | null = localStorage.getItem('userRole');
+  codeInvalide: boolean = false;
 
   filterValue: string = '';
   displayedColumns: string[] = ['numero', 'dateCreation', 'agentCreateur', 'adresseCreateur', 'actions'];
@@ -76,15 +77,23 @@ export class DossierDetailsComponent implements OnInit {
     switch (code) {
       case '1111':
         this.roleAcces = 'Medecin';
+        this.codeInvalide = false;
         break;
       case '2222':
         this.roleAcces = 'Radiologue';
+        this.codeInvalide = false;
         break;
       case '3333':
         this.roleAcces = 'Analyste';
+        this.codeInvalide = false;
         break;
-      default:
-        this.roleAcces = 'none';
+        default:
+          this.roleAcces = 'none';
+          this.codeInvalide = true;
+          setTimeout(() => {
+            this.codeInvalide = false;
+          }, 3000);
+          break;
     }
   }
 

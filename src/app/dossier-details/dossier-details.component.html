@@ -84,6 +84,9 @@
                       </mat-form-field>
                       <div class="form-actions">
                         <button mat-flat-button color="accent" type="submit">Valider</button>
+                        <div *ngIf="codeInvalide" class="error-message" style="color: red; margin-top: 10px;">
+                          Code incorrect. Veuillez réessayer.
+                        </div>
                       </div>
                     </form>
                   </div>

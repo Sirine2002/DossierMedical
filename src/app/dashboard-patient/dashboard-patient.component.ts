@@ -240,7 +240,7 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
   }
 
 
- telechargerDonneesFiche(fiche: any): void {
+ telechargerDonneesFiche(fiche: any,nomPatient:string): void {
        // console.log('Fiche ID:', ficheId);
        const IdFicheSoins: any[] = []; // Initialisation du tableau
    
@@ -426,7 +426,7 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
              const logoX = pageWidth - 50; // Position X pour placer le logo à droite
              const logoY = 5;
              doc.addImage(logoAgent, 'PNG', logoX, logoY, 40, 30); // Ajuster la taille et la position
-             doc.save(`Fiche-${fiche.numero}.pdf`);
+             doc.save(`Fiche-${nomPatient}.pdf`);
            };
          } else if (fiche.agentCreateur.toLowerCase().includes("ibn khaldoun".toLowerCase())) {
            const logoAgent = new Image();
@@ -435,7 +435,7 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
              const logoX = pageWidth - 50; // Position X pour placer le logo à droite
              const logoY = 5;
              doc.addImage(logoAgent, 'PNG', logoX, logoY, 40, 30); // Ajuster la taille et la position
-             doc.save(`Fiche-${fiche.numero}.pdf`);
+             doc.save(`Fiche-${nomPatient}.pdf`);
            };
          }else if (fiche.agentCreateur.toLowerCase().includes("errayhane".toLowerCase())) {
            const logoAgent = new Image();
@@ -444,7 +444,7 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
              const logoX = pageWidth - 50; // Position X pour placer le logo à droite
              const logoY = 5;
              doc.addImage(logoAgent, 'PNG', logoX, logoY, 40, 30); // Ajuster la taille et la position
-             doc.save(`Fiche-${fiche.numero}.pdf`);
+             doc.save(`Fiche-${nomPatient}.pdf`);
            };
          }else if (fiche.agentCreateur.toLowerCase().includes("syphax".toLowerCase())) {
            const logoAgent = new Image();
@@ -453,7 +453,7 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
              const logoX = pageWidth - 50; // Position X pour placer le logo à droite
              const logoY = 5;
              doc.addImage(logoAgent, 'PNG', logoX, logoY, 40, 30); // Ajuster la taille et la position
-             doc.save(`Fiche-${fiche.numero}.pdf`);
+             doc.save(`Fiche-${nomPatient}.pdf`);
            };
          }else if (fiche.agentCreateur.toLowerCase().includes("el bassatine".toLowerCase())) {
            const logoAgent = new Image();
@@ -462,7 +462,7 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
              const logoX = pageWidth - 50; // Position X pour placer le logo à droite
              const logoY = 5;
              doc.addImage(logoAgent, 'PNG', logoX, logoY, 40, 30); // Ajuster la taille et la position
-             doc.save(`Fiche-${fiche.numero}.pdf`);
+             doc.save(`Fiche-${nomPatient}.pdf`);
            };
          } else if (fiche.agentCreateur.toLowerCase().includes("arij".toLowerCase())) {
            const logoAgent = new Image();
@@ -471,7 +471,7 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
              const logoX = pageWidth - 50; // Position X pour placer le logo à droite
              const logoY = 5;
              doc.addImage(logoAgent, 'PNG', logoX, logoY, 40, 30); // Ajuster la taille et la position
-             doc.save(`Fiche-${fiche.numero}.pdf`);
+             doc.save(`Fiche-${nomPatient}.pdf`);
            };
          }else if (fiche.agentCreateur.toLowerCase().includes("ennasr".toLowerCase())) {
            const logoAgent = new Image();
@@ -480,11 +480,11 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
              const logoX = pageWidth - 50; // Position X pour placer le logo à droite
              const logoY = 5;
              doc.addImage(logoAgent, 'PNG', logoX, logoY, 40, 30); // Ajuster la taille et la position
-             doc.save(`Fiche-${fiche.numero}.pdf`);
+             doc.save(`Fiche-${nomPatient}.pdf`);
            };
          }
          else {
-           doc.save(`Fiche-${fiche.numero}.pdf`);
+           doc.save(`Fiche-${nomPatient}.pdf`);
          }
        };
      }

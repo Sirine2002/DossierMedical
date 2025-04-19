@@ -5,9 +5,10 @@
     <div class="dashboard-container">
       <!-- File d'attente des patients -->
       <div class="profil-queue" style="text-align: center;">
-        <img src="assets/images/avatarH.png" class="avatar" />
+        <img [src]="sexe === 'Homme' ? 'assets/images/avatarH.png' : 'assets/images/avatarF.png'" class="avatar" />
         <span class="user-role-badge" [ngClass]="userrole">{{ userrole }}</span>
       </div>
+      
 
       <!-- Détails du patient sélectionné -->
       <div class="patient-details">

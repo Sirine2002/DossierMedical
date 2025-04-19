@@ -35,13 +35,13 @@
 
   <!-- Menu déroulant -->
   <mat-menu #userMenu="matMenu" [overlapTrigger]="false">
-    <button mat-menu-item (click)="ModifierProfile()">
-      <mat-icon>account_box</mat-icon>
-      <span>Informations Personnelles</span>
+    <button mat-menu-item (click)="ModifierProfile()" >
+      <mat-icon style="color: #3f51b5;">account_box</mat-icon>
+      <span style="color: #3f51b5;font-size: medium;"><b>Informations Personnelles</b></span>
     </button>
     <button mat-menu-item (click)="logout()">
-      <mat-icon>exit_to_app</mat-icon>
-      <span>Déconnexion</span>
+      <mat-icon style="color: #3f51b5;">exit_to_app</mat-icon>
+      <span style="color: #3f51b5;font-size: medium;"><b>Déconnexion</b></span>
     </button>
   </mat-menu>
 

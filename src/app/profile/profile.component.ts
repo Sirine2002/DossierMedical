@@ -23,6 +23,7 @@ export class ProfileComponent implements OnInit {
   profileData: any = {};
   password: string = '';
   confirmPassword: string = '';
+  sexe: string = ''; 
 
   @ViewChild('changePasswordDialog') changePasswordDialog!: TemplateRef<any>;
 
@@ -55,6 +56,11 @@ export class ProfileComponent implements OnInit {
 
           this.profileData = { ...userData, ...roleData };
 
+          if(this.profileData?.sexe === 'Homme') {
+            this.sexe = 'Homme';
+          } else if(this.profileData?.sexe === 'Femme') {
+            this.sexe = 'Femme';}
+
           this.profileForm = this.fb.group({
             cin: [this.profileData?.cin || ''],
             firstName: [this.profileData?.firstName || ''],
@@ -68,6 +74,7 @@ export class ProfileComponent implements OnInit {
             service: [this.profileData?.service || ''],
             specialite: [this.profileData?.specialite || ''],
           });
+         
 
           // Désactivation des champs selon rôle
           if (role === 'Patient') {

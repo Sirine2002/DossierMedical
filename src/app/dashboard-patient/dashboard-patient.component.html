@@ -18,7 +18,7 @@
               align-items: center;
               gap: 10px;
             ">
-                <mat-icon style="color: #1976d2;">folder_shared</mat-icon>
+                <mat-icon style="color: #3f51b5">folder_shared</mat-icon>
                 Dossier Médical
               </h2>
             </mat-card-title>
@@ -94,7 +94,7 @@
                 <mat-card-title>
                   <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <p class="section-title" style="display: flex; align-items: center; margin: 0;">
-                      <mat-icon style="color: #1976d2; margin-right: 8px;">description</mat-icon>
+                      <mat-icon style="color: #3f51b5; margin-right: 8px;">description</mat-icon>
                       Fiches de soin
                     </p>
                     <button mat-flat-button color="primary" (click)="voirFiches(dossier)" style="font-size: 14px;margin-right: 27px;">
@@ -120,7 +120,7 @@
                             <mat-icon>visibility</mat-icon>
                           </button>
                           <button mat-icon-button color="accent" matTooltip="Télécharger la fiche"
-                            (click)="telechargerDonneesFiche(fiche)">
+                            (click)="telechargerDonneesFiche(fiche,nomPatient)">
                             <mat-icon>download</mat-icon>
                           </button>
                         </div>
@@ -137,7 +137,7 @@
                 <mat-card-title>
                   <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                   <p style="font-size: 24px; font-weight: bold; margin: 10px 0; color: #2c3e50;">
-                    <mat-icon style="color: #1976d2;">image</mat-icon> Images médicales
+                    <mat-icon style="color: #3f51b5;">image</mat-icon> Images médicales
                   </p>
                   <div style="display: flex; justify-content: flex-end;">
                     <button mat-flat-button color="primary" (click)="voirImages(dossier)" style="font-size: 14px;margin-right: 27px;">
@@ -151,7 +151,7 @@
                   <div *ngFor="let img of dossier.imageMedicale | slice: -4" class="image-card-container">
                     <mat-card class="image-card"
                       style="display: flex; flex-direction: row; gap: 15px; padding: 16px; background-color: #f8f9fa; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-                      <!-- Image médicale -->
+                      
                       <img [src]="img.image" alt="Image médicale"
                         style="width: 30%; max-width: 30%; height: 40%; border-radius: 8px; object-fit: cover;">
                       <div style="flex: 1; text-align: left; padding: 0 10px;">
@@ -186,14 +186,14 @@
                 <mat-card-title>
                   <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                   <p style="font-size: 24px; font-weight: bold; margin: 10px 0; color: #2c3e50;"><mat-icon
-                      style="color: #1976d2;">science</mat-icon>
+                      style="color: #3f51b5;">science</mat-icon>
                     Analyses médicales</p>
                     <div style="display: flex; justify-content: flex-end;">
                       <button mat-flat-button color="primary" (click)="voirAnalyses(dossier)" style="font-size: 14px;margin-right: 27px;">
                         Voir plus
                       </button>
                     </div>
-                  </div>
+                  </div>  
                 </mat-card-title><br />
 
                 <div style="display: flex; flex-wrap: wrap; gap: 20px;">
