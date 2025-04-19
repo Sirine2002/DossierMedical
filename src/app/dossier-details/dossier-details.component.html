@@ -1,90 +1,276 @@
-<mat-sidenav-container style="background-color: white;">
+<mat-sidenav-container style="background-color: #f5f7fa; padding-top:78px">
   <mat-sidenav-content>
     <app-navbar></app-navbar>
 
-    <div class="content">
-      <button mat-stroked-button color="primary" (click)="retour()">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <div class="card">
-        <div class="card-left">
-          <img [src]="patient.avatarUrl || 'assets/images/avatar-default.png'" alt="Avatar du patient" class="avatar" />
-        </div>
-        <div class="card-right">
+    <div class="dashboard-container">
+      <!-- File d'attente des patients -->
+      <div class="patient-queue">
+        <div class="section-header">
+          <h3 class="section-title">Liste des patients</h3>
 
-          <h2 class="title">Dossier De {{ patient.fullName }}</h2>
-          <div class="info-list">
-            <div class="info-column">
-              <div class="info-item">
-                <mat-icon class="info-icon">fingerprint</mat-icon>
-                <span><strong>CIN:</strong> {{ patient.cin }}</span>
-              </div>
-              <div class="info-item">
-                <mat-icon class="info-icon">cake</mat-icon>
-                <span><strong>Date de naissance:</strong> {{ patient.dateNaissance }}</span>
-              </div>
-              <div class="info-item">
-                <mat-icon class="info-icon">wc</mat-icon>
-                <span><strong>Sexe:</strong> {{ patient.sexe }}</span>
-              </div>
-            </div>
-            <div class="info-column">
-              <div class="info-item">
-                <mat-icon class="info-icon">phone</mat-icon>
-                <span><strong>Téléphone:</strong> {{ patient.phone }}</span>
-              </div>
-              <div class="info-item">
-                <mat-icon class="info-icon">home</mat-icon>
-                <span><strong>Adresse:</strong> {{ patient.adresse }}</span>
-              </div>
-              <div class="info-item">
-                <mat-icon class="info-icon">email</mat-icon>
-                <span><strong>Email:</strong> {{ patient.email }}</span>
-              </div>
+          <!-- Bouton pour afficher/masquer les filtres -->
+          <button mat-icon-button (click)="showFilters = !showFilters" aria-label="Filtrer">
+            <mat-icon>filter_alt</mat-icon>
+          </button>
+        </div>
+
+        <!-- Filtres visibles uniquement si showFilters est true -->
+        <div class="filters" *ngIf="showFilters">
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Filtrer par Nom, Numéro ou Date</mat-label>
+            <input matInput [(ngModel)]="filterValue" (input)="applyFilters()">
+          </mat-form-field>
+        </div>
+
+        <!-- Liste des patients -->
+        <div class="patient-card" *ngFor="let patient of dataSource"
+        [class.selected]="patient.id === selectedPatient?.id"
+        (click)="voirDossier(patient,true)">
+          <div class="card-left">
+            <img src="assets/images/avatarH.png" alt="Avatar" class="avatar" *ngIf="patient.sexe == 'Homme'" />
+            <img src="assets/images/avatarF.png" alt="Avatar" class="avatar" *ngIf="patient.sexe == 'Femme'" />
+          </div>
+          <div class="info">
+            <h4>{{ patient.fullName }}</h4>
+            <p><b>N°</b> {{ formatPatientNumero(patient.numero) }}</p>
+            <p><b>Crée le</b> {{ patient.dateCreation | date }}</p>
+          </div>
+          <button mat-icon-button>
+            <mat-icon>arrow_forward_ios</mat-icon>
+          </button>
+        </div>
+
+        <!-- Pagination -->
+        <mat-paginator [length]="dataSourceOriginal.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" (page)="pageEvent($event)">
+        </mat-paginator>
+      </div>
+
+      <!-- Détails du patient sélectionné -->
+      <div class="patient-details" *ngIf="selectedPatient">
+        <mat-card class="card-section">
+          <div class="card-header">
+            <img src="assets/images/avatarH.png" alt="Avatar" class="avatar" *ngIf="selectedPatient.sexe == 'Homme'" />
+            <img src="assets/images/avatarF.png" alt="Avatar" class="avatar" *ngIf="selectedPatient.sexe == 'Femme'" />
+            <div class="info">
+              <h4>{{ selectedPatient.fullName }}</h4>
+              <p><b>N°</b> {{ formatPatientNumero(selectedPatient.numero) }}</p>
+              <p><b>Crée le</b> {{ selectedPatient.dateCreation | date }}</p>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="access-form">
-      <h3 class="form-title">Accès aux informations médicales</h3>
-      <form [formGroup]="accessForm" (ngSubmit)="onAccessSubmit()">
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Code confidentiel</mat-label>
-          <input matInput type="password" formControlName="code">
-        </mat-form-field>
+          <mat-card-content style="padding-left:0%;padding-right:0%;">
+            <div class="row">
+              <div class="col-6">
+                <div class="info-card">
+                  <div class="section-title">Informations de base</div>
+                  <div class="info-grid">
+                    <div><mat-icon>person</mat-icon> <strong>Genre:</strong> {{ selectedPatient.sexe }}</div>
+                    <div><mat-icon>cake</mat-icon> <strong>Naissance:</strong> {{ selectedPatient.dateNaissance }}</div>
+                    <div><mat-icon>phone</mat-icon> <strong>Téléphone:</strong> {{ selectedPatient.phone }}</div>
+                    <div><mat-icon>email</mat-icon> <strong>Email:</strong> {{ selectedPatient.email }}</div>
+                    <div><mat-icon>maps_home_work</mat-icon> <strong>Adresse:</strong> {{ selectedPatient.adresse }}</div>
+                  </div>
+                </div>
+              </div>
 
-        <div class="form-actions">
-          <button mat-flat-button color="accent" type="submit" [disabled]="accessForm.invalid">Valider</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- Affichage des images médicales si le code est correct -->
-    <!-- <div *ngIf="imagesVisibles" class="medical-images">
-      <h3>Images médicales disponibles</h3>
-      <div class="images-grid">
-        <img *ngFor="let img of listeImagesIRM" [src]="img" alt="Image médicale" class="medical-image" />
-      </div>
-    </div> -->
-    <div *ngIf="imagesVisibles" class="medical-gallery-container">
-      <h3 class="gallery-title">Images Médicales Disponibles</h3>
-      <div class="medical-gallery-grid">
-        <div class="gallery-card" *ngFor="let img of listeImagesIRM">
-          <div class="image-wrapper">
-            <img [src]="img.url" alt="Image médicale" class="gallery-image" />
-            <div class="image-info-overlay">
-              <p><strong>Type:</strong> {{ img.type }}</p>
-              <p><strong>Date:</strong> {{ img.date }}</p>
-              <p><strong>Médecin:</strong> {{ img.medecin }}</p>
+              <div class="col-6">
+                <div class="info-card">
+                  <div class="section-title">Pour accéder aux informations médicales de ce patient merci de saisir le code confidentiel</div>
+                  <div class="info-grid" style="text-align: center;">
+                    <form [formGroup]="codeForm" (ngSubmit)="validerCode()">
+                      <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Code confidentiel</mat-label>
+                        <input matInput type="password" formControlName="code">
+                      </mat-form-field>
+                      <div class="form-actions">
+                        <button mat-flat-button color="accent" type="submit">Valider</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+
+            <!-- Sections visibles en fonction du rôle -->
+            <br *ngIf="roleAcces === 'Medecin'" />
+            <div *ngIf="roleAcces === 'Medecin'">
+              <div class="info-card">
+                <div class="section-header">
+                  <div class="section-title"><mat-icon color="primary">medical_services</mat-icon> Fiches de soin</div>
+                  <button mat-icon-button color="primary">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+
+                <table mat-table [dataSource]="ficheSoin" class="mat-elevation-z1 mat-table">
+                  <!-- Numéro -->
+                  <ng-container matColumnDef="numero">
+                    <th mat-header-cell *matHeaderCellDef> Numéro </th>
+                    <td mat-cell *matCellDef="let fiche"> {{ fiche.numero }} </td>
+                  </ng-container>
+
+                  <!-- Date -->
+                  <ng-container matColumnDef="dateCreation">
+                    <th mat-header-cell *matHeaderCellDef> Date </th>
+                    <td mat-cell *matCellDef="let fiche"> {{ fiche.dateCreation }} </td>
+                  </ng-container>
+
+                  <!-- Agent -->
+                  <ng-container matColumnDef="agentCreateur">
+                    <th mat-header-cell *matHeaderCellDef> Agent </th>
+                    <td mat-cell *matCellDef="let fiche"> {{ fiche.agentCreateur }} </td>
+                  </ng-container>
+
+                  <!-- Adresse -->
+                  <ng-container matColumnDef="adresseCreateur">
+                    <th mat-header-cell *matHeaderCellDef> Adresse </th>
+                    <td mat-cell *matCellDef="let fiche"> {{ fiche.adresseCreateur }} </td>
+                  </ng-container>
+
+                  <!-- Actions -->
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef> Action </th>
+                    <td mat-cell *matCellDef="let fiche">
+                      <button mat-icon-button color="primary" (click)="voirFiche(fiche)">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                <br />
+
+                <mat-paginator [pageSize]="4" [pageSizeOptions]="[4]" showFirstLastButtons></mat-paginator>
+              </div>
+            </div>
+
+            <br *ngIf="images.length && (roleAcces === 'Medecin' || roleAcces === 'Radiologue')" />
+            <div *ngIf="images.length && (roleAcces === 'Medecin' || roleAcces === 'Radiologue')">
+              <div class="info-card">
+                <div class="section-title"><mat-icon color="primary">image</mat-icon> Images médicales</div>
+                <div class="image-grid">
+                  <div class="image-box" *ngFor="let image of images.slice(0, 4)" (click)="openImageModal(image)">
+                    <img [src]="'assets/images/imagerie2.png'" alt="Image médicale" class="image-preview" />
+                    <div class="overlay">
+                      <mat-icon class="eye-icon">visibility</mat-icon>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <br *ngIf="analyses.length && (roleAcces === 'Medecin' || roleAcces === 'Analyste')" />
+            <div *ngIf="analyses.length && (roleAcces === 'Medecin' || roleAcces === 'Analyste')">
+              <div class="info-card">
+                <div class="section-title"><mat-icon color="primary">science</mat-icon> Analyses médicales</div>
+                <div class="image-grid">
+                  <div class="image-box" *ngFor="let analyse of analyses.slice(0, 4)" (click)="openAnalyseModal(analyse)">
+                    <img src="assets/images/analyseMedicale.png" alt="Fichier analyse" class="image-preview" />
+                    <div class="overlay">
+                      <mat-icon class="eye-icon">visibility</mat-icon>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </mat-card-content>
+        </mat-card>
       </div>
     </div>
-
-
 
   </mat-sidenav-content>
 </mat-sidenav-container>
+
+<!-- Modal Image -->
+<ng-template [ngIf]="isImageModalOpen">
+  <div class="modal-backdrop" (click)="closeImageModal()"></div>
+  <div class="image-modal" style="color: #212a5e;">
+    <button class="close-btn" (click)="closeImageModal()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <img [src]="'assets/images/imagerie2.png'" class="modal-image" alt="Image" />
+    <div class="modal-info">
+      <p><mat-icon color="primary">confirmation_number</mat-icon> <strong>Numéro :</strong> {{ selectedImage.numero }}</p>
+      <p><mat-icon color="primary">calendar_today</mat-icon> <strong>Date création :</strong> {{ selectedImage.dateCreation }}</p>
+      <p><mat-icon color="primary">person</mat-icon> <strong>Agent créateur :</strong> {{ selectedImage.agentCreateur }}</p>
+      <p><mat-icon color="primary">place</mat-icon> <strong>Adresse créateur :</strong> {{ selectedImage.adresseCreateur }}</p>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Modal Analyse -->
+<ng-template [ngIf]="isAnalyseModalOpen">
+  <div class="modal-backdrop" (click)="closeAnalyseModal()"></div>
+  <div class="image-modal" style="color: #212a5e;">
+    <button class="close-btn" (click)="closeAnalyseModal()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <img src="assets/images/analyseMedicale.png" class="modal-image" alt="Analyse" />
+    <div class="modal-info">
+      <p><mat-icon color="primary">confirmation_number</mat-icon> <strong>Numéro :</strong> {{ selectedAnalyse.numero }}</p>
+      <p><mat-icon color="primary">calendar_today</mat-icon> <strong>Date création :</strong> {{ selectedAnalyse.dateCreation }}</p>
+      <p><mat-icon color="primary">person</mat-icon> <strong>Agent créateur :</strong> {{ selectedAnalyse.agentCreateur }}</p>
+      <p><mat-icon color="primary">place</mat-icon> <strong>Adresse créateur :</strong> {{ selectedAnalyse.adresseCreateur }}</p>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Modal Fiche -->
+<ng-template [ngIf]="isFicheModalOpen">
+  <div class="modal-backdrop" (click)="closeFicheModal()"></div>
+  <div class="fiche-modal" style="color: #212a5e;">
+    <button class="close-btn" (click)="closeFicheModal()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <h2 style="color: #212a5e;">Détails de la fiche de soin</h2>
+
+    <div class="modal-info">
+      <p><mat-icon color="primary">confirmation_number</mat-icon> <strong>Numéro :</strong> {{ selectedFiche?.numero }}</p>
+      <p><mat-icon color="primary">calendar_today</mat-icon> <strong>Date de création :</strong> {{ selectedFiche?.dateCreation }}</p>
+      <p><mat-icon color="primary">person</mat-icon> <strong>Agent créateur :</strong> {{ selectedFiche?.agentCreateur }}</p>
+      <p><mat-icon color="primary">place</mat-icon> <strong>Adresse créateur :</strong> {{ selectedFiche?.adresseCreateur }}</p>
+    </div>
+
+    <div class="section-title" style="padding-top: 1%;">Lignes de la fiche</div>
+
+    <div *ngIf="selectedFiche?.lignes?.length; else noLigne">
+      <table mat-table [dataSource]="selectedFiche.lignes" class="mat-elevation-z1 custom-mat-table">
+
+        <!-- Nom Column -->
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef> Nom </th>
+          <td mat-cell *matCellDef="let ligne"> {{ ligne.nom }} </td>
+        </ng-container>
+
+        <!-- Type Column -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef> Type </th>
+          <td mat-cell *matCellDef="let ligne"> {{ ligne.type }} </td>
+        </ng-container>
+
+        <!-- Date d'ajout Column -->
+        <ng-container matColumnDef="dateAjout">
+          <th mat-header-cell *matHeaderCellDef> Date d'ajout </th>
+          <td mat-cell *matCellDef="let ligne"> {{ ligne.dateAjout }} </td>
+        </ng-container>
+
+        <!-- Contenu Column -->
+        <ng-container matColumnDef="contenu">
+          <th mat-header-cell *matHeaderCellDef> Contenu </th>
+          <td mat-cell *matCellDef="let ligne"> {{ ligne.contenu }} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <ng-template #noLigne>
+      <div style="text-align: center;">Aucune ligne disponible pour cette fiche de soin.</div>
+    </ng-template>
+  </div>
+</ng-template>
+

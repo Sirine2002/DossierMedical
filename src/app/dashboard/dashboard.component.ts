@@ -1,8 +1,9 @@
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
 
 interface PatientData {
   id: string;
@@ -13,6 +14,7 @@ interface PatientData {
   sexe: string;
   adresse: string;
   dateCreation: string;
+  numero: number;
 }
 
 @Component({
@@ -20,23 +22,28 @@ interface PatientData {
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements AfterViewInit {
+export class DashboardComponent implements AfterViewInit, OnInit {
+  dataSourceOriginal: PatientData[] = [];
   dataSource: PatientData[] = [];
   selectedPatient?: PatientData;
+  filteredDataSource: PatientData[] = [];
+
   ficheSoin = new MatTableDataSource<any>();
   images: any[] = [];
   analyses: any[] = [];
-  hoverImage: boolean = false;
 
+  hoverImage: boolean = false;
   selectedAnalyse: any = null;
   isAnalyseModalOpen: boolean = false;
-
   selectedImage: any = null;
   isImageModalOpen: boolean = false;
-
   isFicheModalOpen: boolean = false;
   selectedFiche: any = null;
-  userrole:string | null=localStorage.getItem('userRole');
+  showFilters: boolean = false;
+  userrole: string | null = localStorage.getItem('userRole');
+
+  // Champ de recherche global
+  searchTerm: string = '';
 
   displayedColumns: string[] = ['numero', 'dateCreation', 'agentCreateur', 'adresseCreateur', 'actions'];
   displayedColumns1: string[] = ['nom', 'type', 'dateAjout', 'contenu'];
@@ -44,39 +51,22 @@ export class DashboardComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   roleAcces: 'none' | 'Medecin' | 'Radiologue' | 'Analyste' = 'none';
+
   codeForm = new FormGroup({
     code: new FormControl('', Validators.required)
   });
 
-  constructor(private db: AngularFireDatabase) {
+  currentPage: number = 0;
+
+  constructor(private db: AngularFireDatabase, private router: Router) {}
+
+  ngOnInit(): void {
     this.loadPatients();
   }
 
   ngAfterViewInit(): void {
     this.ficheSoin.paginator = this.paginator;
-  }
-
-  validerCode() {
-    const code = this.codeForm.get('code')?.value;
-
-    switch (code) {
-      case '1111' :
-        this.roleAcces = 'Medecin';
-        break;
-      case '2222':
-        this.roleAcces = 'Radiologue';
-        break;
-      case '3333':
-        this.roleAcces = 'Analyste';
-        break;
-      default:
-        this.roleAcces = 'none';
-        //alert("Code invalide !");
-    }
-  }
-
-  ajouterFiche() {
-    console.log('Ajouter une fiche');
+    this.applyPagination();
   }
 
   loadPatients() {
@@ -92,7 +82,6 @@ export class DashboardComponent implements AfterViewInit {
           .subscribe(patients => {
             if (patients.length > 0) {
               const patientInfo = patients[0] as any;
-
               this.db.list('dossier', ref => ref.orderByChild('patientId').equalTo(userId))
                 .valueChanges()
                 .subscribe(dossiers => {
@@ -107,9 +96,13 @@ export class DashboardComponent implements AfterViewInit {
                       sexe: patientInfo.sexe,
                       adresse: patientInfo.adresse,
                       dateCreation: dossier.dateCreation,
+                      numero: dossier.numero,
                     };
-                    if (!this.dataSource.find(p => p.id === patientData.id)) {
-                      this.dataSource.push(patientData);
+
+                    const exists = this.dataSourceOriginal.find(p => p.id === patientData.id);
+                    if (!exists) {
+                      this.dataSourceOriginal.push(patientData);
+                      this.applyFilters();
                     }
                   }
                 });
@@ -119,75 +112,55 @@ export class DashboardComponent implements AfterViewInit {
     });
   }
 
+  paginate(source: PatientData[]) {
+    const startIndex = this.currentPage * 10;
+    const endIndex = startIndex + 10;
+    this.dataSource = source.slice(startIndex, endIndex);
+  }
+
+  // Nouveau filtre avec un seul champ de recherche
+  applyFilters() {
+    const term = this.searchTerm.toLowerCase();
+    const filtered = this.dataSourceOriginal.filter(patient => {
+      const fullNameMatch = patient.fullName.toLowerCase().includes(term);
+      const numeroMatch = patient.numero.toString().includes(term);
+      const dateMatch = new Date(patient.dateCreation).toISOString().slice(0, 10).includes(term);
+      return fullNameMatch || numeroMatch || dateMatch;
+    });
+
+    this.currentPage = 0;
+    this.paginate(filtered);
+  }
+
+  // Pagination avec le filtre appliqué
+  pageEvent(event: any) {
+    this.currentPage = event.pageIndex;
+    const term = this.searchTerm.toLowerCase();
+    const filtered = this.dataSourceOriginal.filter(patient => {
+      const fullNameMatch = patient.fullName.toLowerCase().includes(term);
+      const numeroMatch = patient.numero.toString().includes(term);
+      const dateMatch = new Date(patient.dateCreation).toISOString().slice(0, 10).includes(term);
+      return fullNameMatch || numeroMatch || dateMatch;
+    });
+
+    this.paginate(filtered);
+  }
+
+  applyPagination() {
+    const startIndex = this.currentPage * 10;
+    const endIndex = startIndex + 10;
+    this.dataSource = this.dataSourceOriginal.slice(startIndex, endIndex);
+  }
+
   voirDossier(patient: PatientData): void {
-    this.selectedPatient = patient;
-    this.ficheSoin.data = [];
-    this.images = [];
-    this.analyses = [];
-
-    this.db.list('dossier', ref => ref.orderByChild('patientId').equalTo(patient.id))
-      .snapshotChanges()
-      .subscribe(dossiers => {
-        if (dossiers.length > 0) {
-          const dossierKey = dossiers[0].key!;
-          console.log(dossierKey);
-
-          this.db.list('fichesSoin', ref => ref.orderByChild('dossierId').equalTo(dossierKey))
-            .snapshotChanges()
-            .subscribe(data => {
-              this.ficheSoin.data = data.map(action => {
-                const fiche = action.payload.val() as any;
-                fiche.id = action.key;
-                return fiche;
-              });
-              this.ficheSoin.paginator = this.paginator;
-            });
-
-          this.db.list('imagesMedicales', ref => ref.orderByChild('dossierId').equalTo(dossierKey))
-            .valueChanges()
-            .subscribe(data => {
-              this.images = data;
-            });
-
-          this.db.list('analysesMedicales', ref => ref.orderByChild('dossierId').equalTo(dossierKey))
-            .valueChanges()
-            .subscribe(data => {
-              this.analyses = data;
-            });
-        }
-      });
+    this.router.navigate(['/dossier-details', patient.id]);
   }
 
-  openImageModal(image: any) {
-    this.selectedImage = image;
-    this.isImageModalOpen = true;
-  }
-
-  closeImageModal() {
-    this.isImageModalOpen = false;
-  }
-
-  openAnalyseModal(analyse: any) {
-    this.selectedAnalyse = analyse;
-    this.isAnalyseModalOpen = true;
-  }
-
-  closeAnalyseModal() {
-    this.isAnalyseModalOpen = false;
-  }
-
-  voirFiche(fiche: any) {
-    this.selectedFiche = fiche;
-    this.isFicheModalOpen = true;
-
-    this.db.list('lignesFicheSoin', ref => ref.orderByChild('ficheSoinId').equalTo(fiche.id))
-      .valueChanges()
-      .subscribe(lignes => {
-        this.selectedFiche.lignes = lignes;
-      });
-  }
-
-  closeFicheModal() {
-    this.isFicheModalOpen = false;
+  formatPatientNumero(num: number): string {
+    const prefix = '2025';
+    const numStr = num.toString();
+    const zerosNeeded = 9 - prefix.length - numStr.length;
+    const zeroPadding = '0'.repeat(Math.max(0, zerosNeeded));
+    return `${prefix}${zeroPadding}${numStr}`;
   }
 }

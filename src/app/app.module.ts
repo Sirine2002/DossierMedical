@@ -52,8 +52,6 @@ import { ServicesComponent } from './services/services.component';
 import { specialitesComponent } from './specialites/specialites.component';
 
 
-
-
 @NgModule({
   declarations: [
     AppComponent,

@@ -23,7 +23,7 @@ const routes: Routes = [
   { path: 'dashboardPatient', component: DashboardPatientComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'profile', component: ProfileComponent },
-  { path: 'dossiers/:id', component: DossierDetailsComponent },
+  { path: 'dossier-details/:id', component: DossierDetailsComponent },
   { path: 'home/specialites', component: specialitesComponent },
   { path: 'home/partenaires', component: PartenairesComponent },
   { path: 'home/services', component: ServicesComponent },

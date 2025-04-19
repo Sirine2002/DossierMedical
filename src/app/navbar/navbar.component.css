@@ -1,95 +1,86 @@
-/* === LOGO === */
+/* Navbar fixe avec ombre douce */
+.toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 9%;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+
+/* Logo à gauche */
 .logo-container {
   display: flex;
   align-items: center;
 }
 
 .logo {
-  max-height: 50px;
+  max-height: 48px;
   width: auto;
-  margin-left: 0px;
 }
 
-/* === NAVBAR FIXE === */
-.toolbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  transition: background-color 0.3s, box-shadow 0.3s;
+/* Boutons de navigation */
+button.mat-button {
+  text-transform: none;
+  font-weight: 500;
+  font-size: 16px;
 }
 
-/* === SPACER POUR PUSH À DROITE === */
-.spacer {
-  flex-grow: 1;
-}
-
-/* === BOUTONS UTILISATEUR === */
 .user-button {
   display: flex;
   align-items: center;
   gap: 8px;
+  color: #3f51b5;
   font-size: medium;
   transition: all 0.3s ease;
 }
-
-.toolbar-button {
-  display: flex;
-  align-items: center;
-  margin-right: 9%;
+.active-button .user-button {
+  text-decoration: underline; /* Souligner le texte */
+  color: #212a5e; /* Changer la couleur du texte */
+}
+.user-button:hover {
+  text-decoration: underline;
 }
 
+/* Espace entre éléments */
+.spacer {
+  flex-grow: 1;
+}
+
+/* Conteneur utilisateur (avatar + nom) */
 .user-container {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+/* Image utilisateur */
+.user-icon {
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Nom utilisateur */
+.username {
+  color: #3f51b5;
   font-size: medium;
 }
 
-.user-icon {
-  font-size: 24px;
-}
-
-.username {
-  font-size: 16px;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
+/* Icône déroulante */
 .dropdown-icon {
-  font-size: 20px;
-  margin-left: auto;
+  color: #3f51b5;
 }
 
-/* === BOUTONS DE NAVIGATION === */
-button.mat-button {
-  text-transform: none;
-}
-
-/* === ÉTAT ACTIF === */
-.active-button .user-button {
-  text-decoration: underline;
-  color: #212a5e;
-}
-
-/* === TRANSPARENCE ET FOND DE LA NAVBAR === */
-.toolbar-transparent {
-  background-color: transparent !important;
-  color: #3f51b5 !important;
-  box-shadow: none !important;
-}
-
-.toolbar-white {
-  background: white !important;
-  color: #3f51b5 !important;
-  transition: background 0.3s ease, color 0.3s ease;
-}
-
-/* === CONTENU PRINCIPAL (ÉVITER OVERLAP NAVBAR) === */
+/* Padding haut pour éviter chevauchement avec la navbar */
 .content {
   margin-top: 64px;
   padding: 16px;

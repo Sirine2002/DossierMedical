@@ -1,8 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Location } from '@angular/common';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+
+interface PatientData {
+  id: string;
+  fullName: string;
+  dateNaissance: string;
+  phone: string;
+  email: string;
+  sexe: string;
+  adresse: string;
+  dateCreation: string;
+  numero: number;
+}
 
 @Component({
   selector: 'app-dossier-details',
@@ -10,103 +23,236 @@ import { Location } from '@angular/common';
   styleUrls: ['./dossier-details.component.css']
 })
 export class DossierDetailsComponent implements OnInit {
-  patient: any;
-  accessForm!: FormGroup;
-  imagesVisibles = false;
+  dataSourceOriginal: PatientData[] = [];
+  dataSource: PatientData[] = [];
+  selectedPatient?: PatientData;
 
-  // listeImagesIRM: string[] = [
-  //   'assets/images/irm1.jpg',
-  //   'assets/images/irm2.jpg',
-  //   'assets/images/irm3.jpg',
-  //   'assets/images/irm4.jpg'
+  ficheSoin = new MatTableDataSource<any>();
+  images: any[] = [];
+  analyses: any[] = [];
 
-  // ];
-  listeImagesIRM = [
-    {
-      url: 'assets/images/irm1.jpg',
-      type: 'IRM Cérébrale',
-      date: '2024-03-10',
-      medecin: 'Dr. Dupont'
-    },
-    {
-      url: 'assets/images/irm2.jpg',
-      type: 'Scanner Thoracique',
-      date: '2024-01-22',
-      medecin: 'Dr. Martin'
-    },
-    {
-      url: 'assets/images/irm3.jpg',
-      type: 'Scanner Thoracique',
-      date: '2024-01-22',
-      medecin: 'Dr. Martin'
-    },
-    {
-      url: 'assets/images/irm4.jpg',
-      type: 'Scanner Thoracique',
-      date: '2024-01-22',
-      medecin: 'Dr. Martin'
-    }
-    // etc.
-  ];
-  
-  
+  hoverImage: boolean = false;
+  selectedAnalyse: any = null;
+  isAnalyseModalOpen: boolean = false;
+  selectedImage: any = null;
+  isImageModalOpen: boolean = false;
+  isFicheModalOpen: boolean = false;
+  selectedFiche: any = null;
+  showFilters: boolean = false;
+  userrole: string | null = localStorage.getItem('userRole');
+
+  filterValue: string = '';
+  displayedColumns: string[] = ['numero', 'dateCreation', 'agentCreateur', 'adresseCreateur', 'actions'];
+  displayedColumns1: string[] = ['nom', 'type', 'dateAjout', 'contenu'];
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  roleAcces: 'none' | 'Medecin' | 'Radiologue' | 'Analyste' = 'none';
+
+  codeForm = new FormGroup({
+    code: new FormControl('', Validators.required)
+  });
+
+  currentPage: number = 0;
+
   constructor(
-    private router: Router,
     private db: AngularFireDatabase,
-    private fb: FormBuilder,
-    private location: Location,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.accessForm = this.fb.group({
-      code: ['', Validators.required]
+    this.route.paramMap.subscribe(params => {
+      const patientIdFromUrl = params.get('id');
+      this.loadPatients(patientIdFromUrl!);
     });
+  }
 
-    const initialPatient = history.state.patient;
+  ngAfterViewInit(): void {
+    this.ficheSoin.paginator = this.paginator;
+  }
 
-    if (!initialPatient || !initialPatient.id) {
-      console.error("Aucun patient transmis !");
-      return;
+  validerCode() {
+    const code = this.codeForm.get('code')?.value;
+    switch (code) {
+      case '1111':
+        this.roleAcces = 'Medecin';
+        break;
+      case '2222':
+        this.roleAcces = 'Radiologue';
+        break;
+      case '3333':
+        this.roleAcces = 'Analyste';
+        break;
+      default:
+        this.roleAcces = 'none';
+    }
+  }
+
+  loadPatients(patientIdFromUrl?: string) {
+    this.db.list('users').snapshotChanges().subscribe(users => {
+      const patientsUsers = users.filter(user => (user.payload.val() as any).role === 'Patient');
+      patientsUsers.forEach(user => {
+        const userId = user.key!;
+        const userInfo = user.payload.val() as any;
+
+        this.db.list('patients', ref => ref.orderByChild('utilisateurId').equalTo(userId))
+          .valueChanges()
+          .subscribe(patients => {
+            if (patients.length > 0) {
+              const patientInfo = patients[0] as any;
+
+              this.db.list('dossier', ref => ref.orderByChild('patientId').equalTo(userId))
+                .valueChanges()
+                .subscribe(dossiers => {
+                  if (dossiers.length > 0) {
+                    const dossier = dossiers[0] as any;
+                    const patientData: PatientData = {
+                      id: userId,
+                      fullName: `${userInfo.firstName} ${userInfo.lastName}`,
+                      dateNaissance: patientInfo.dateNaissance,
+                      phone: userInfo.phone,
+                      email: userInfo.email,
+                      sexe: patientInfo.sexe,
+                      adresse: patientInfo.adresse,
+                      dateCreation: dossier.dateCreation,
+                      numero: dossier.numero,
+                    };
+
+                    const exists = this.dataSourceOriginal.find(p => p.id === patientData.id);
+                    if (!exists) {
+                      this.dataSourceOriginal.push(patientData);
+                      this.applyFilters();
+
+                      if (patientData.id === patientIdFromUrl) {
+                        this.voirDossier(patientData, false);
+                      }
+                    }
+                  }
+                });
+            }
+          });
+      });
+    });
+  }
+
+  applyFilters() {
+    this.dataSource = this.dataSourceOriginal.filter(patient => {
+      const lowerFilterValue = this.filterValue.toLowerCase();
+      return (
+        patient.fullName.toLowerCase().includes(lowerFilterValue) ||
+        patient.numero.toString().includes(lowerFilterValue) ||
+        (patient.dateCreation && patient.dateCreation.includes(lowerFilterValue))
+      );
+    });
+    this.applyPagination(this.dataSource);
+  }
+
+  pageEvent(event: any) {
+    this.currentPage = event.pageIndex;
+    this.applyPagination(this.dataSource);
+  }
+
+  applyPagination(filteredData: PatientData[]) {
+    const startIndex = this.currentPage * 10;
+    const endIndex = startIndex + 10;
+    this.dataSource = filteredData.slice(startIndex, endIndex);
+  }
+
+  voirDossier(patient: PatientData, updateUrl: boolean = true): void {
+    this.selectedPatient = patient;
+    this.ficheSoin.data = [];
+    this.images = [];
+    this.analyses = [];
+
+    // Met à jour l'URL avec l'ID du patient sélectionné
+    if (updateUrl) {
+      this.router.navigate(['/dossier-details', patient.id]);
     }
 
-    this.patient = { ...initialPatient };
+    // Récupère les données du dossier du patient (comme avant)
+    this.db.list('dossier', ref => ref.orderByChild('patientId').equalTo(patient.id))
+      .snapshotChanges()
+      .subscribe(dossiers => {
+        if (dossiers.length > 0) {
+          const dossierKey = dossiers[0].key!;
 
-    this.db.list('patients', ref => ref.orderByChild('utilisateurId').equalTo(initialPatient.id))
-      .valueChanges()
-      .subscribe(patients => {
-        if (patients.length > 0) {
-          const patientDetails = patients[0] as any;
+          this.db.list('fichesSoin', ref => ref.orderByChild('dossierId').equalTo(dossierKey))
+            .snapshotChanges()
+            .subscribe(data => {
+              this.ficheSoin.data = data.map(action => {
+                const fiche = action.payload.val() as any;
+                fiche.id = action.key;
+                return fiche;
+              });
+              this.ficheSoin.paginator = this.paginator;
+            });
 
-          this.patient = {
-            ...this.patient,
-            adresse: patientDetails.adresse,
-            sexe: patientDetails.sexe
-          };
+          this.db.list('imagesMedicales', ref => ref.orderByChild('dossierId').equalTo(dossierKey))
+            .valueChanges()
+            .subscribe(data => {
+              this.images = data;
+            });
+
+          this.db.list('analysesMedicales', ref => ref.orderByChild('dossierId').equalTo(dossierKey))
+            .valueChanges()
+            .subscribe(data => {
+              this.analyses = data;
+            });
         }
       });
   }
 
+  selectPatient(patient: PatientData) {
+    // Change l'ID du patient sélectionné
+    this.selectedPatient = patient;
 
-  onScanQR() {
-    console.log("Scan QR lancé...");
-    const fakeCode = '123456';
-    this.accessForm.patchValue({ code: fakeCode });
-    alert("Code QR scanné avec succès !");
+    // Appelle voirDossier pour afficher les détails du patient et mettre à jour l'URL
+    this.voirDossier(patient, true); // Mettre à jour l'URL
+  }
+
+
+  openImageModal(image: any) {
+    this.selectedImage = image;
+    this.isImageModalOpen = true;
+  }
+
+  closeImageModal() {
+    this.isImageModalOpen = false;
+  }
+
+  openAnalyseModal(analyse: any) {
+    this.selectedAnalyse = analyse;
+    this.isAnalyseModalOpen = true;
+  }
+
+  closeAnalyseModal() {
+    this.isAnalyseModalOpen = false;
+  }
+
+  voirFiche(fiche: any) {
+    this.selectedFiche = fiche;
+    this.isFicheModalOpen = true;
+    console.log(fiche);
+    const id:string=fiche.id;
+    console.log(id);
+
+    this.db.list('lignesFicheSoin', ref => ref.orderByChild('ficheSoinId').equalTo(id))
+      .valueChanges()
+      .subscribe(lignes => {
+        this.selectedFiche.lignes = lignes;
+      });
 
   }
-  onAccessSubmit() {
-    const code = this.accessForm.value.code;
-    console.log("Code soumis:", code);
-  
-    // 👉 Exemple simple : tu peux faire une vraie vérification ici si tu veux
-    if (code === '123456') {
-      this.imagesVisibles = true;
-    } else {
-      alert("Code incorrect !");
-    }
+
+  closeFicheModal() {
+    this.isFicheModalOpen = false;
   }
-  retour(): void {
-    this.location.back();
+
+  formatPatientNumero(num: number): string {
+    const prefix = '2025';
+    const numStr = num.toString();
+    const zerosNeeded = 9 - prefix.length - numStr.length;
+    const zeroPadding = '0'.repeat(Math.max(0, zerosNeeded));
+    return `${prefix}${zeroPadding}${numStr}`;
   }
-  
 }

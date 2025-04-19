@@ -34,7 +34,11 @@
           Se connecter
         </button>
       </form>
-      <p>Pas encore de compte ? <a class="costum-color2" routerLink="/register">Inscrivez-vous içi</a></p>
+      <div *ngIf="loginError" class="error-message">
+        {{ loginError }}
+      </div>
+
+      <p>Pas encore de compte ? <a class="costum-color2" routerLink="/register">Inscrivez-vous ici</a></p>
     </mat-card-content>
   </mat-card>
 </div>
