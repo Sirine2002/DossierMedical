@@ -39,8 +39,8 @@
                 <!-- ✅ Statistiques médicales résumées -->
                 <div style="display: flex; justify-content: space-between; gap: 20px; margin-bottom: 30px;">
                   <!-- Carte 1 -->
-                  <mat-card
-                    style="flex: 1; padding: 20px; border-radius: 15px; display: flex; flex-direction: row; align-items: center; text-align: left; gap: 15px;">
+                  <mat-card class="card-section1"
+                    >
 
                     <!-- Image à gauche -->
                     <img src="../../assets/images/blood_pressure.png" alt="Blood Pressure Icon"
@@ -48,33 +48,32 @@
 
                     <!-- Texte à droite de l’image -->
                     <div style="display: flex; flex-direction: column;">
-                      <p style="font-weight: bold; color: #2c3e50; margin: 0;">Blood Pressure</p>
+                      <p style="font-weight: bold; color: #2c3e50; margin: 0;">Pression Artérielle</p>
                       <p style="font-size: 14px; color: #2c3e50; margin: 0;">
-                        <mat-icon style="vertical-align: middle;">trending_down</mat-icon> 10% Less Than Last Month
+                        <mat-icon style="vertical-align: middle;">trending_down</mat-icon> 10 % de moins que le mois dernier
                       </p>
                     </div>
                   </mat-card>
 
 
                   <!-- Carte 2 -->
-                  <mat-card
-                    style="flex: 1; padding: 20px; border-radius: 15px; display: flex; flex-direction: row; align-items: center; text-align: left; gap: 15px;">
-
+                   <mat-card class="card-section1"
+                    >
                     <!-- Image -->
                     <img src="../../assets/images/glucos_level.png" alt="Glucose Level Icon"
                       style="width: 60px; height: 60px;" />
 
                     <!-- Texte -->
                     <div style="display: flex; flex-direction: column;">
-                      <p style="font-weight: bold; color: #2c3e50; margin: 0;">Glucose Level</p>
+                      <p style="font-weight: bold; color: #2c3e50; margin: 0;">Niveau de glucose</p>
                       <p style="font-size: 14px; color: #2c3e50; margin: 0;">
-                        <mat-icon style="vertical-align: middle;">trending_up</mat-icon> 12% Higher Than Last Month
+                        <mat-icon style="vertical-align: middle;">trending_up</mat-icon> 12 % de plus que le mois dernier
                       </p>
                     </div>
                   </mat-card>
                   <!-- Carte 3 -->
                   <mat-card
-                    style="flex: 1; padding: 20px; border-radius: 15px; display: flex; flex-direction: row; align-items: center; text-align: left; gap: 15px;">
+                    class="card-section1">
 
                     <!-- Image -->
                     <img src="../../assets/images/blood_count.png" alt="Blood Count Icon"
@@ -82,9 +81,9 @@
 
                     <!-- Texte -->
                     <div style="display: flex; flex-direction: column;">
-                      <p style="font-weight: bold; color: #2c3e50; margin: 0;">Blood Count</p>
+                      <p style="font-weight: bold; color: #2c3e50; margin: 0;">Formule sanguine</p>
                       <p style="font-size: 14px; color: #2c3e50; margin: 0;">
-                        <mat-icon style="vertical-align: middle;">trending_up</mat-icon> 5% Higher Than Last Month
+                        <mat-icon style="vertical-align: middle;">trending_up</mat-icon> 5% de plus que le mois dernier
                       </p>
                     </div>
                   </mat-card>
@@ -101,12 +100,12 @@
                       Voir plus
                     </button>
                   </div>
-                </mat-card-title>
+                </mat-card-title><br />
                 
 
                 <div style="display: flex; flex-wrap: wrap; gap: 20px;">
                   <div *ngFor="let fiche of dossier.ficheSoin | slice: -4" class="fiche-card-container">
-                    <mat-card class="fiche-card">
+                    <mat-card class="card-section">
                       <img src="../../assets/images/ficheSoin.png" class="fiche-image">
                       <div class="fiche-details">
                         <p class="fiche-info">
@@ -130,7 +129,7 @@
                 </div>
 
 
-
+                <br />
                 <mat-divider></mat-divider><br />
 
                 <!-- ✅ Images médicales -->
@@ -149,13 +148,13 @@
 
                 <div style="display: flex; flex-wrap: wrap; gap: 20px;">
                   <div *ngFor="let img of dossier.imageMedicale | slice: -4" class="image-card-container">
-                    <mat-card class="image-card"
-                      style="display: flex; flex-direction: row; gap: 15px; padding: 16px; background-color: #f8f9fa; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <mat-card class="card-section"
+                     >
                       
                       <img [src]="img.image" alt="Image médicale"
                         style="width: 30%; max-width: 30%; height: 40%; border-radius: 8px; object-fit: cover;">
                       <div style="flex: 1; text-align: left; padding: 0 10px;">
-                        <p style="font-size: 18px; line-height: 1.8; color: #34495e;">
+                        <p class="fiche-info">
                           <strong>Numéro:</strong> {{ img.numero }}<br />
                           <strong>Date:</strong> {{ img.dateCreation }}<br />
                           <strong>Agent:</strong> {{ img.agentCreateur }}<br />
@@ -178,9 +177,9 @@
                 </div>
 
 
-              
+                <br />
 
-                <mat-divider></mat-divider>
+                <mat-divider></mat-divider><br />
 
                 <!-- ✅ Analyses médicales -->
                 <mat-card-title>
@@ -198,12 +197,11 @@
 
                 <div style="display: flex; flex-wrap: wrap; gap: 20px;">
                   <div *ngFor="let analyse of dossier.analyseMedicale | slice: -4" class="analyse-card-container">
-                    <mat-card class="analyse-card"
-                      style="display: flex; flex-direction: row; gap: 15px; padding: 16px;">
+                    <mat-card class="card-section">
                       <img [src]="analyse.fichier" alt="Analyse médicale"
                         style="width: 30%; max-width: 30%; height: 40%; border-radius: 8px;">
                       <div style="flex: 1; text-align: left;">
-                        <p style="font-size: 18px; line-height: 1.8; color: #34495e;">
+                        <p class="fiche-info">
                           <strong>Numéro:</strong> {{ analyse.numero }}<br />
                           <strong>Date: </strong>{{ analyse.dateCreation }}<br />
                           <strong>Agent: </strong>{{ analyse.agentCreateur }}<br />

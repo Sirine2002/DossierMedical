@@ -39,10 +39,9 @@
             <mat-icon>arrow_forward_ios</mat-icon>
           </button>
         </div>
-
-        <!-- Pagination -->
-        <mat-paginator [length]="dataSourceOriginal.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" (page)="pageEvent($event)">
+        <mat-paginator [length]="dataSourceOriginal.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 20]">
         </mat-paginator>
+
       </div>
 
       <!-- Détails du patient sélectionné -->
@@ -100,79 +99,69 @@
               <div class="info-card">
                 <div class="section-header">
                   <div class="section-title"><mat-icon color="primary">medical_services</mat-icon> Fiches de soin</div>
-                  <button mat-icon-button color="primary">
+                  <button mat-icon-button color="primary" matTooltip="Ajouter fiche" (click)="openAddFicheDialog(selectedPatient.id)">
                     <mat-icon>add</mat-icon>
                   </button>
                 </div>
 
-                <table mat-table [dataSource]="ficheSoin" class="mat-elevation-z1 mat-table">
-                  <!-- Numéro -->
-                  <ng-container matColumnDef="numero">
-                    <th mat-header-cell *matHeaderCellDef> Numéro </th>
-                    <td mat-cell *matCellDef="let fiche"> {{ fiche.numero }} </td>
-                  </ng-container>
-
-                  <!-- Date -->
-                  <ng-container matColumnDef="dateCreation">
-                    <th mat-header-cell *matHeaderCellDef> Date </th>
-                    <td mat-cell *matCellDef="let fiche"> {{ fiche.dateCreation }} </td>
-                  </ng-container>
-
-                  <!-- Agent -->
-                  <ng-container matColumnDef="agentCreateur">
-                    <th mat-header-cell *matHeaderCellDef> Agent </th>
-                    <td mat-cell *matCellDef="let fiche"> {{ fiche.agentCreateur }} </td>
-                  </ng-container>
-
-                  <!-- Adresse -->
-                  <ng-container matColumnDef="adresseCreateur">
-                    <th mat-header-cell *matHeaderCellDef> Adresse </th>
-                    <td mat-cell *matCellDef="let fiche"> {{ fiche.adresseCreateur }} </td>
-                  </ng-container>
-
-                  <!-- Actions -->
-                  <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef> Action </th>
-                    <td mat-cell *matCellDef="let fiche">
-                      <button mat-icon-button color="primary" (click)="voirFiche(fiche)">
-                        <mat-icon>visibility</mat-icon>
-                      </button>
-                    </td>
-                  </ng-container>
-
-                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                </table>
-                <br />
-
-                <mat-paginator [pageSize]="4" [pageSizeOptions]="[4]" showFirstLastButtons></mat-paginator>
-              </div>
-            </div>
-
-            <br *ngIf="images.length && (roleAcces === 'Medecin' || roleAcces === 'Radiologue')" />
-            <div *ngIf="images.length && (roleAcces === 'Medecin' || roleAcces === 'Radiologue')">
-              <div class="info-card">
-                <div class="section-title"><mat-icon color="primary">image</mat-icon> Images médicales</div>
+                <div *ngIf="ficheSoins.length===0" style="text-align: center;">Aucune fiche de soin...</div>
                 <div class="image-grid">
-                  <div class="image-box" *ngFor="let image of images.slice(0, 4)" (click)="openImageModal(image)">
-                    <img [src]="'assets/images/imagerie2.png'" alt="Image médicale" class="image-preview" />
+                  <div class="image-box" *ngFor="let fiche of ficheSoins.slice(0, 4)">
+                    <img src="assets/images/fiche.png" alt="fiche soin" class="image-preview" />
                     <div class="overlay">
-                      <mat-icon class="eye-icon">visibility</mat-icon>
+                      <mat-icon class="edit-icon" (click)="openEditFiche(fiche.key,fiche)">edit</mat-icon>
+                      <mat-icon class="delete-icon" (click)="deleteFiche(fiche.key)">delete</mat-icon>
+                      <mat-icon class="eye-icon" (click)="voirFiche(fiche)">visibility</mat-icon>
+                      <mat-icon class="download-icon" (click)="telechargerFichePDF(fiche,selectedPatient.fullName)"> download</mat-icon>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <br *ngIf="analyses.length && (roleAcces === 'Medecin' || roleAcces === 'Analyste')" />
-            <div *ngIf="analyses.length && (roleAcces === 'Medecin' || roleAcces === 'Analyste')">
+            <br *ngIf="(roleAcces === 'Medecin' || roleAcces === 'Radiologue')" />
+            <div *ngIf="(roleAcces === 'Medecin' || roleAcces === 'Radiologue')">
               <div class="info-card">
-                <div class="section-title"><mat-icon color="primary">science</mat-icon> Analyses médicales</div>
+                <div class="section-header">
+                  <div class="section-title"><mat-icon color="primary">image</mat-icon> Images médicales</div>
+                  <button *ngIf="roleAcces === 'Radiologue'" mat-icon-button color="primary" matTooltip="Ajouter image" (click)="openAddImage(selectedPatient.id)">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+                <div *ngIf="images.length===0" style="text-align: center;">Aucune image médicale...</div>
                 <div class="image-grid">
-                  <div class="image-box" *ngFor="let analyse of analyses.slice(0, 4)" (click)="openAnalyseModal(analyse)">
+                  <div class="image-box" *ngFor="let image of images.slice(0, 4)">
+                    <img [src]="image.image" alt="Image médicale" class="image-preview" />
+                    <div class="overlay">
+                      <mat-icon class="edit-icon" (click)="openEditImage(image.key,image)" *ngIf="roleAcces === 'Radiologue'">edit</mat-icon>
+                      <mat-icon class="delete-icon" (click)="deleteImage(image.key)" *ngIf="roleAcces === 'Radiologue'">delete</mat-icon>
+                      <mat-icon class="eye-icon" (click)="openImageModal(image)">visibility</mat-icon>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <br *ngIf=" (roleAcces === 'Medecin' || roleAcces === 'Analyste')" />
+            <div *ngIf="(roleAcces === 'Medecin' || roleAcces === 'Analyste')">
+              <div class="info-card">
+                <div class="section-header">
+                  <div class="section-title"><mat-icon color="primary">science</mat-icon> Analyses médicales</div>
+                  <button *ngIf="roleAcces === 'Analyste'" mat-icon-button color="primary" matTooltip="Ajouter analyse" (click)="openAddAnalyse(selectedPatient.id)">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+                <div *ngIf="analyses.length===0" style="text-align: center;">Aucune image médicale...</div>
+                <div class="image-grid">
+                  <div class="image-box" *ngFor="let analyse of analyses.slice(0, 4)">
                     <img src="assets/images/analyseMedicale.png" alt="Fichier analyse" class="image-preview" />
                     <div class="overlay">
-                      <mat-icon class="eye-icon">visibility</mat-icon>
+                      <mat-icon class="edit-icon" (click)="openEditAnalyse(analyse.key,analyse)" *ngIf="roleAcces === 'Analyste'">edit</mat-icon>
+                      <mat-icon class="delete-icon" (click)="deleteAnalyse(analyse.key)" *ngIf="roleAcces === 'Analyste'">delete</mat-icon>
+                      <mat-icon class="eye-icon" (click)="openAnalyseModal(analyse)">visibility</mat-icon>
+                      <mat-icon class="download-icon" (click)="telechargerPDF(analyse.fichier)">
+                        download
+                      </mat-icon>
                     </div>
                   </div>
                 </div>
@@ -194,7 +183,7 @@
     <button class="close-btn" (click)="closeImageModal()">
       <mat-icon>close</mat-icon>
     </button>
-    <img [src]="'assets/images/imagerie2.png'" class="modal-image" alt="Image" />
+    <img [src]="selectedImage.image" class="modal-image" alt="Image" />
     <div class="modal-info">
       <p><mat-icon color="primary">confirmation_number</mat-icon> <strong>Numéro :</strong> {{ selectedImage.numero }}</p>
       <p><mat-icon color="primary">calendar_today</mat-icon> <strong>Date création :</strong> {{ selectedImage.dateCreation }}</p>
@@ -266,8 +255,8 @@
           <td mat-cell *matCellDef="let ligne"> {{ ligne.contenu }} </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns1"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns1;"></tr>
       </table>
     </div>
 
@@ -276,4 +265,3 @@
     </ng-template>
   </div>
 </ng-template>
-

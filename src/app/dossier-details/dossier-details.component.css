@@ -214,7 +214,7 @@ mat-icon {
 .overlay {
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.35);
+  background-color: rgba(0, 0, 0, 0.449);
   opacity: 0;
   display: flex;
   align-items: center;
@@ -225,8 +225,23 @@ mat-icon {
 .eye-icon {
   color: #ffffff;
   font-size: 25px;
+  padding: 3%;
 }
-
+.edit-icon {
+  color: #ffb300;
+  font-size: 25px;
+  padding: 3%;
+}
+.delete-icon {
+  color: red;
+  font-size: 25px;
+  padding: 3%;
+}
+.download-icon {
+  color: #8193f8;
+  font-size: 25px;
+  padding: 3%;
+}
 .image-box:hover .overlay {
   opacity: 1;
 }
@@ -358,4 +373,12 @@ mat-icon {
 /* Style pour le patient sélectionné */
 .selected {
   background-color: #3f51b55c; /* Couleur de fond différente */
+}
+
+.error-message {
+  margin-top: 10px;
+  color: #f44336; /* Rouge Material pour les erreurs */
+  font-weight: 500;
+  font-size: 14px;
+  text-align: center;
 }

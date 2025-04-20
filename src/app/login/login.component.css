@@ -13,5 +13,11 @@
   font-weight: bold;
   transition: opacity 0.5s ease;
 }
+.success-message {
+  color: green;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
 
 

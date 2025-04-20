@@ -1,0 +1,12 @@
+<div class="modal-backdrop"></div>
+<div class="fiche-modal" style="color: #212a5e;">
+  <button class="close-btn" mat-dialog-close>
+    <mat-icon>close</mat-icon>
+  </button>
+  <h2 mat-dialog-title>Confirmation</h2>
+  <mat-dialog-content>{{ data.message }}</mat-dialog-content>
+  <mat-dialog-actions align="center">
+    <button mat-flat-button color="warn" (click)="onConfirm()">Supprimer</button>
+    <button mat-button (click)="onCancel()">Annuler</button>
+  </mat-dialog-actions>
+</div>

@@ -3,6 +3,9 @@
     <span><img src="assets/images/medical.png" height="120"/></span>
     <h2 class="costum-color2">Connexion </h2>
     <mat-card-content>
+      <div *ngIf="loginPass" class="success-message">
+        {{ loginPass }}
+      </div>
       <form (ngSubmit)="onSubmit()">
         <div class="form-grid">
           <!-- Zone de saisie pour l'email -->

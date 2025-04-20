@@ -6,11 +6,11 @@
 
                 <!-- Zone filtre -->
              
-                <div style="padding-top: 40px;"> 
+                <div> 
                   <form [formGroup]="filtreForm" style="display: flex; flex-direction: column; align-items: center;">
                     <div
                       style="
-                        border-radius: 20px;
+                        border-radius: 16px;
                         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
                         font-family: 'Segoe UI', sans-serif;
                         max-width: 500px;
@@ -31,10 +31,10 @@
                           display: flex;
                           align-items: center;
                           gap: 12px;
-                          border-radius: 20px 20px 0 0;
+                          border-radius: 16px 16px 0 0;
                         "
                       >
-                        <img src="../../assets/images/funnel.png" style="height: 20px;" />
+                      <mat-icon>filter_alt</mat-icon>
                         Filtres de recherche
                       </div>
                 
@@ -42,7 +42,7 @@
                       <div
                         style="
                           padding: 24px;
-                          background-color: #f9fafb;
+                          background-color: white;
                           display: flex;
                           flex-direction: column;
                           gap: 20px;
@@ -85,24 +85,26 @@
                 </div>
 
                 <!-- Liste des analyses médicales -->
-                <mat-card class="dossiers-list" style="flex: 2; overflow-y: auto;">
-                    <mat-card-header>
+                <mat-card class="card-section" style="flex: 2; overflow-y: auto;">
+                    <mat-card-header class="card-header">
                         <div style="display: flex; align-items: center; justify-content: space-between;">
                             <!-- Bouton Retour aligné à gauche -->
-                            <button mat-stroked-button color="primary" (click)="retour()">
-                                <mat-icon>arrow_back</mat-icon>
-                            </button>
+                           
 
                             <!-- Titre Analyses Médicales aligné à droite du bouton -->
                             <mat-card-title>
-                                <p style="font-size: 24px; font-weight: bold; margin: 10px 0; color: #2c3e50;">Analyses
-                                    Médicales</p>
+                              <div style="display: flex; align-items: center;">
+                                <mat-icon (click)="retour()" style="cursor: pointer; margin-right: 10px;">arrow_back</mat-icon>
+                                <span style="font-size: 24px; font-weight: bold; color: #2c3e50;">Analyses Médicales</span>
+                              </div>
                             </mat-card-title>
+                            <span class="spacer"></span>
+                            
                         </div>
                     </mat-card-header>
 
                     <mat-card-content>
-                        <div *ngFor="let analyse of analysesMedicales" style="display: flex; flex-direction: column;">
+                        <div *ngFor="let analyse of analysesMedicales" class="card-section">
                             <div
                                 style="display: flex; align-items: center; flex-wrap: wrap; flex-direction: row-reverse; gap: 15px;">
                                 <div style="flex: 1; text-align: left; padding: 0%">
@@ -124,7 +126,7 @@
                                 <img [src]="analyse.fichier" alt="Analyse médicale"
                                     style="width: 17%; max-width: 17%; height: 40%; border-radius: 8px; object-fit: cover;">
                             </div>
-                            <hr style="width: 100%; border: 0; border-top: 1px solid #ccc; margin: 20px 0;" />
+                        
                         </div>
 
                         <!-- Pagination -->

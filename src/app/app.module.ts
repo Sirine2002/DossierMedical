@@ -50,6 +50,13 @@ import { ImagesMedicalesComponent } from './images-medicales/images-medicales.co
 import { PartenairesComponent } from './partenaires/partenaires.component';
 import { ServicesComponent } from './services/services.component';
 import { specialitesComponent } from './specialites/specialites.component';
+import { AddFicheComponent } from './add-fiche/add-fiche.component';
+import { AddAnalyseComponent } from './add-analyse/add-analyse.component';
+import { AddImageComponent } from './add-image/add-image.component';
+import { EditFicheComponent } from './edit-fiche/edit-fiche.component';
+import { EditAnalyseComponent } from './edit-analyse/edit-analyse.component';
+import { EditImageComponent } from './edit-image/edit-image.component';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 
 @NgModule({
@@ -73,6 +80,13 @@ import { specialitesComponent } from './specialites/specialites.component';
     PartenairesComponent,
     ServicesComponent,
     specialitesComponent,
+    AddFicheComponent,
+    AddAnalyseComponent,
+    AddImageComponent,
+    EditFicheComponent,
+    EditAnalyseComponent,
+    EditImageComponent,
+    ConfirmDialogComponent,
 
   ],
   imports: [

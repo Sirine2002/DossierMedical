@@ -186,13 +186,14 @@ export class LoginComponent {
   email: string = '';
   password: string = '';
   hide = signal(true);
-  loginError: string = ''; // 🔴 Nouveau champ pour afficher une erreur
+  loginError: string = '';
+  loginPass: string = ''; // 🔴 Nouveau champ pour afficher une erreur
 
   constructor(
     private auth: AuthService,
     private router: Router,
     private db: AngularFireDatabase
-  ) {}
+  ) { }
 
   clickEvent(event: MouseEvent) {
     this.hide.set(!this.hide());
@@ -201,6 +202,7 @@ export class LoginComponent {
 
   onSubmit(): void {
     this.loginError = '';
+    this.loginPass = '';
     this.auth.signInWithEmailAndPassword(this.email, this.password)
       .then((userCredential) => {
         const userId = userCredential.user?.uid;
@@ -208,6 +210,9 @@ export class LoginComponent {
           this.loginError = "Identifiant utilisateur manquant.";
           console.error(this.loginError);
           return;
+        } else {
+          this.loginPass = "Connexion réussie!";
+          
         }
 
         localStorage.setItem('userUid', userId);
@@ -220,6 +225,8 @@ export class LoginComponent {
               console.error(this.loginError);
               this.router.navigate(['/login']);
               return;
+            } else {
+              this.loginPass = "Utilisateur trouvé dans la base.";
             }
 
             const userData = snapshot.val();
@@ -257,8 +264,9 @@ export class LoginComponent {
                   } else {
                     console.warn(`⚠️ Aucune donnée dans ${collection}`);
                   }
-
+                  this.loginPass = "Connexion réussie!";
                   this.router.navigate([redirectPath]);
+
                 })
                 .catch((error) => {
                   console.error(`Erreur ${collection} :`, error);
@@ -272,67 +280,67 @@ export class LoginComponent {
               case 'patient':
                 loadAdditionalData('patients', 'patientData', '/dashboardPatient');
                 this.db.database.ref('dossier')
-                      .orderByChild('patientId')
-                      .equalTo(userId)
-                      .once('value')
-                      .then((dossierSnapshot) => {
-                        if (dossierSnapshot.exists()) {
-                          const dossiers = dossierSnapshot.val();
-                          const dossierKeys = Object.keys(dossiers);
+                  .orderByChild('patientId')
+                  .equalTo(userId)
+                  .once('value')
+                  .then((dossierSnapshot) => {
+                    if (dossierSnapshot.exists()) {
+                      const dossiers = dossierSnapshot.val();
+                      const dossierKeys = Object.keys(dossiers);
 
-                          const allFichesPromises = dossierKeys.map(dossierKey => {
-                            return this.db.database.ref('fichesSoin')
-                              .orderByChild('dossierId') // ou dossierId selon ta base (⚠ vérifie)
-                              .equalTo(dossierKey)
-                              .once('value');
-                          });
+                      const allFichesPromises = dossierKeys.map(dossierKey => {
+                        return this.db.database.ref('fichesSoin')
+                          .orderByChild('dossierId') // ou dossierId selon ta base (⚠ vérifie)
+                          .equalTo(dossierKey)
+                          .once('value');
+                      });
 
-                          Promise.all(allFichesPromises).then(fichesSnapshots => {
-                            const ficheIds: string[] = [];
+                      Promise.all(allFichesPromises).then(fichesSnapshots => {
+                        const ficheIds: string[] = [];
 
-                            // 📌 Stocke les IDs des fiches
-                            const ficheIdByDossier: Record<string, string[]> = {};
+                        // 📌 Stocke les IDs des fiches
+                        const ficheIdByDossier: Record<string, string[]> = {};
 
-                            fichesSnapshots.forEach(snapshot => {
-                              if (snapshot.exists()) {
-                                const fiches = snapshot.val();
-                                Object.keys(fiches).forEach(ficheId => {
-                                  ficheIds.push(ficheId);
-                                });
-                              }
+                        fichesSnapshots.forEach(snapshot => {
+                          if (snapshot.exists()) {
+                            const fiches = snapshot.val();
+                            Object.keys(fiches).forEach(ficheId => {
+                              ficheIds.push(ficheId);
                             });
+                          }
+                        });
 
-                            // 🔍 Maintenant on récupère toutes les lignes
-                            this.db.database.ref('lignesFicheSoin')
-                              .once('value')
-                              .then(lignesSnapshot => {
-                                if (lignesSnapshot.exists()) {
-                                  const lignes = lignesSnapshot.val();
+                        // 🔍 Maintenant on récupère toutes les lignes
+                        this.db.database.ref('lignesFicheSoin')
+                          .once('value')
+                          .then(lignesSnapshot => {
+                            if (lignesSnapshot.exists()) {
+                              const lignes = lignesSnapshot.val();
 
-                                  // 🗃 Organiser les lignes par fiche
-                                  const lignesParFiche: Record<string, any[]> = {};
+                              // 🗃 Organiser les lignes par fiche
+                              const lignesParFiche: Record<string, any[]> = {};
 
-                                  Object.entries(lignes).forEach(([_, ligneData]: any) => {
-                                    const ficheId = ligneData.ficheSoinId;
-                                    if (ficheIds.includes(ficheId)) {
-                                      if (!lignesParFiche[ficheId]) {
-                                        lignesParFiche[ficheId] = [];
-                                      }
-                                      lignesParFiche[ficheId].push(ligneData);
-                                    }
-                                  });
-
-                                  console.log("✅ Lignes classées par fiche :", lignesParFiche);
-                                  localStorage.setItem('lignesFicheSoin', JSON.stringify(lignesParFiche));
-                                } else {
-                                  console.warn("❌ Aucune ligne de fiche de soin trouvée.");
+                              Object.entries(lignes).forEach(([_, ligneData]: any) => {
+                                const ficheId = ligneData.ficheSoinId;
+                                if (ficheIds.includes(ficheId)) {
+                                  if (!lignesParFiche[ficheId]) {
+                                    lignesParFiche[ficheId] = [];
+                                  }
+                                  lignesParFiche[ficheId].push(ligneData);
                                 }
                               });
+
+                              console.log("✅ Lignes classées par fiche :", lignesParFiche);
+                              localStorage.setItem('lignesFicheSoin', JSON.stringify(lignesParFiche));
+                            } else {
+                              console.warn("❌ Aucune ligne de fiche de soin trouvée.");
+                            }
                           });
-                        } else {
-                          console.warn("❌ Aucun dossier trouvé pour ce patient.");
-                        }
                       });
+                    } else {
+                      console.warn("❌ Aucun dossier trouvé pour ce patient.");
+                    }
+                  });
                 break;
               case 'Medecin':
               case 'medecin':
@@ -351,6 +359,7 @@ export class LoginComponent {
                 console.error(this.loginError);
                 this.router.navigate(['/']);
             }
+            this.loginPass = "Connexion réussie.";
           })
           .catch((error) => {
             this.loginError = "Erreur lors de la récupération des infos.";

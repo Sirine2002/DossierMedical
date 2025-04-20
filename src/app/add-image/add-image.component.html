@@ -1,0 +1,48 @@
+<div class="modal-backdrop"></div>
+<div class="fiche-modal" style="color: #212a5e;">
+  <button class="close-btn" mat-dialog-close>
+    <mat-icon>close</mat-icon>
+  </button>
+  <h2 style="color: #212a5e;">Nouvelle image médicale</h2>
+
+  <form [formGroup]="imageForm">
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-icon matPrefix color="primary">confirmation_number</mat-icon>
+        <mat-label>Numéro image</mat-label>
+        <input matInput formControlName="numero" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-icon matPrefix color="primary">person</mat-icon>
+        <mat-label>Agent créateur</mat-label>
+        <input matInput formControlName="agentCreateur" required>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-icon matPrefix color="primary">place</mat-icon>
+        <mat-label>Adresse créateur</mat-label>
+        <input matInput formControlName="adresseCreateur" required>
+      </mat-form-field>
+
+      <!-- Champ personnalisé pour l'image -->
+      <div class="custom-file-field" (click)="fileInput.click()">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-icon matPrefix color="primary">image</mat-icon>
+          <mat-label>Image</mat-label>
+          <input matInput [value]="selectedFile?.name || ''" placeholder="Sélectionner une image" readonly required>
+        </mat-form-field>
+        <input type="file" #fileInput hidden (change)="onFileSelected($event)" />
+      </div>
+    </div>
+  </form>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close (click)="cancelFicheForm()">Annuler</button>
+    <button mat-flat-button color="primary" [disabled]="!imageForm.valid || isUploading" (click)="ajouterImageMedicale()">
+      {{ isUploading ? 'Envoi...' : 'Ajouter' }}
+    </button>
+  </mat-dialog-actions>
+</div>

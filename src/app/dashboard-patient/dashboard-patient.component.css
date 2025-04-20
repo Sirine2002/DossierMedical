@@ -75,7 +75,7 @@
   
   /* Image de la fiche */
   .fiche-image {
-    width: 40%;
+    width: 31%;
     max-width: 40%;
     border-radius: 8px;
     object-fit: cover;
@@ -92,6 +92,8 @@
   .fiche-info {
     line-height: 1.8;
     margin-bottom: 15px;
+    font-size: 18px;
+    color: #34495e;
   }
   
   .fiche-actions {
@@ -110,4 +112,26 @@
     .fiche-card-container {
       flex: 0 0 100%; /* Cartes en pleine largeur sur petits écrans */
     }
+  }
+  .card-section {
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    background: white;
+    padding: 24px;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    transition: transform 0.3s ease-in-out;
+  }
+  .card-section1{
+    flex: 1; 
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    background: white;
+    padding: 20px; 
+    border-radius: 16px; 
+    display: flex; 
+    flex-direction: row; 
+    align-items: center; 
+    text-align: left; 
+    gap: 15px;
   }
