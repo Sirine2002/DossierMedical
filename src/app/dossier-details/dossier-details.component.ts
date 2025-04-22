@@ -15,6 +15,8 @@ import { take } from 'rxjs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { EditFicheComponent } from '../edit-fiche/edit-fiche.component';
+import { PageEvent } from '@angular/material/paginator';
+
 
 interface PatientData {
   id: string;
@@ -40,6 +42,8 @@ export class DossierDetailsComponent implements OnInit {
   dataSourceOriginal2: any[] = [];
   dataSource: PatientData[] = [];
   selectedPatient?: PatientData;
+  pageSize = 10;
+  currentPage = 0;
 
   ficheSoin = new MatTableDataSource<any>();
   images: any[] = [];
@@ -61,6 +65,10 @@ export class DossierDetailsComponent implements OnInit {
   errorMessage: string = '';
   displayedColumns: string[] = ['numero', 'dateCreation', 'agentCreateur', 'adresseCreateur', 'actions'];
   displayedColumns1: string[] = ['nom', 'type', 'dateAjout', 'contenu'];
+  ficheId:string='';
+  lignesFicheSoin: any[] = [];
+  itemsPerPage: number = 5;
+
 
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -69,8 +77,8 @@ export class DossierDetailsComponent implements OnInit {
   codeForm = new FormGroup({
     code: new FormControl('', Validators.required)
   });
+  
 
-  currentPage: number = 0;
 
   constructor(
     private db: AngularFireDatabase,
@@ -84,6 +92,10 @@ export class DossierDetailsComponent implements OnInit {
       const patientIdFromUrl = params.get('id');
       this.loadPatients(patientIdFromUrl!);
     });
+    this.updatePagination();
+
+
+ 
   }
 
   ngAfterViewInit(): void {
@@ -166,27 +178,44 @@ export class DossierDetailsComponent implements OnInit {
   }
 
   applyFilters() {
-    this.dataSource = this.dataSourceOriginal.filter(patient => {
-      const lowerFilterValue = this.filterValue.toLowerCase();
+    const lowerFilterValue = this.filterValue.toLowerCase();
+    const filtered = this.dataSourceOriginal.filter(patient => {
       return (
         patient.fullName.toLowerCase().includes(lowerFilterValue) ||
         patient.numero.toString().includes(lowerFilterValue) ||
         (patient.dateCreation && patient.dateCreation.includes(lowerFilterValue))
       );
     });
-    this.applyPagination(this.dataSource);
+    this.applyPagination(filtered);
   }
+  
 
   pageEvent(event: any) {
     this.currentPage = event.pageIndex;
-    this.applyPagination(this.dataSource);
+    this.itemsPerPage = event.pageSize;
+    this.applyPagination(this.dataSourceOriginal);  // <- base de données complète
   }
+  
 
   applyPagination(filteredData: PatientData[]) {
-    const startIndex = this.currentPage * 10;
-    const endIndex = startIndex + 10;
+    const startIndex = this.currentPage * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
     this.dataSource = filteredData.slice(startIndex, endIndex);
   }
+
+  onPageChange(event: PageEvent) {
+    this.pageSize = event.pageSize;
+    this.currentPage = event.pageIndex;
+    this.updatePagination();
+  }
+
+  updatePagination() {
+    const startIndex = this.currentPage * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.dataSource = this.dataSourceOriginal.slice(startIndex, endIndex);
+  }
+  
+  
 
   voirDossier(patient: PatientData, updateUrl: boolean = true): void {
     this.selectedPatient = patient;
@@ -389,10 +418,28 @@ export class DossierDetailsComponent implements OnInit {
   }
 
   telechargerFichePDF(fiche: any, nomPatient: string): void {
+   
 
+    if (!fiche ) {
+      console.error("Fiche ou son ID est manquant:", fiche);
+      return;
+    }
+  
+    this.db.list('lignesFicheSoin', ref => 
+      ref.orderByChild('ficheSoinId').equalTo(fiche.key)
+    )
+    .valueChanges()
+    .subscribe((lignes: any[]) => {
+      this.generatePDF(fiche, nomPatient, lignes);
+    }, error => {
+      console.error("Erreur lors du chargement des lignes de soin:", error);
+    });
+  }
+
+  generatePDF(fiche: any, nomPatient: string, soinsTrouves: any[]){
     const allLignesString = localStorage.getItem("lignesParFiche");
     console.log('Lignes par fiche:', allLignesString);
-    let soinsTrouves: any[] = [];
+    
 
     try {
       if (allLignesString && fiche?.id) {
@@ -519,7 +566,7 @@ export class DossierDetailsComponent implements OnInit {
       y += 16;
 
       const body = soinsTrouves.map((soin: any) => [
-        soin.dateAjout ? new Date(soin.dateAjout).toLocaleDateString() : 'N/A',
+        soin.dateAjout ,
         soin.nom || 'N/A',
         soin.contenu || 'N/A'
       ]);
@@ -638,51 +685,47 @@ export class DossierDetailsComponent implements OnInit {
       }
     });
   }
-  telechargerPDF(pdfUrl: string): void {
+  telechargerPDF(pdfUrl: string,nomPatient: string): void {
     if (!pdfUrl) {
       console.error('URL du PDF est vide.');
       return;
     }
-
-    const urlDownload = pdfUrl.includes('fl_attachment')
-      ? pdfUrl
-      : pdfUrl.replace('/raw/upload/', '/raw/upload/fl_attachment/');
-
-    console.log('URL de téléchargement:', urlDownload); // Vérifier l'URL de téléchargement
-
-    fetch(urlDownload)
+  
+    console.log('URL de téléchargement:', pdfUrl);
+  
+    fetch(pdfUrl)
       .then(response => {
-        console.log('Réponse du serveur:', response); // Vérifier la réponse du serveur
         const contentType = response.headers.get("Content-Type") || "";
-        console.log('Content-Type reçu :', contentType); // Afficher le Content-Type reçu
-
-        // Vérification si la réponse est correcte et si le type de contenu est un PDF
+        console.log('Content-Type reçu :', contentType);
+  
         if (!response.ok) {
           throw new Error(`Erreur lors du téléchargement : ${response.statusText}`);
         }
-        if (!contentType.includes("pdf")) {
-          throw new Error(`Type de contenu invalide : ${contentType}`);
+  
+        if (!contentType.includes('application/pdf')) {
+          throw new Error("Le fichier téléchargé n'est pas un PDF.");
         }
-
-        // Convertir la réponse en un Blob
+  
         return response.blob();
       })
       .then(blob => {
-        // Créer une URL pour le fichier téléchargé
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'rapport.pdf'; // Nom du fichier à télécharger
+        a.download = `rapport de ${nomPatient}.pdf`; // tu peux aussi mettre le nom d’origine
         document.body.appendChild(a);
-        a.click(); // Lancer le téléchargement
-        a.remove(); // Retirer l'élément du DOM
-        window.URL.revokeObjectURL(url); // Libérer l'URL de l'objet
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
       })
       .catch(error => {
         console.error('Erreur lors du téléchargement du PDF :', error);
-        alert("Erreur : le fichier n'est pas un PDF valide.");
+        alert("Erreur : le fichier n'est pas un PDF valide ou est introuvable.");
       });
   }
+  
+
+
   deleteAnalyse(analyseKey: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { message: 'Êtes-vous sûr de vouloir supprimer cette analyse ?' }

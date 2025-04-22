@@ -57,13 +57,15 @@ export class AddAnalyseComponent {
     }
 
     ajouterAnalyseMedicale(): void {
+      const formValue = this.imageForm.getRawValue();
+     
       if (!this.selectedFile) {
         alert('Veuillez sélectionner un fichier.');
         return;
       }
-
+    
       this.isUploading = true;
-
+    
       this.db.list('dossier', ref => ref.orderByChild('patientId').equalTo(this.patientId))
         .snapshotChanges()
         .subscribe(dossiers => {
@@ -72,33 +74,43 @@ export class AddAnalyseComponent {
             this.isUploading = false;
             return;
           }
-
-          // On suppose ici qu'il n'y a qu'un seul dossier par patient
+    
           const dossierId = dossiers[0].key;
-
+    
           const formData = new FormData();
+          formData.append('UPLOADCARE_PUB_KEY', '9d7b4bd0a0c2fc3b2f8c'); // ⬅️ Remplace par ta vraie clé
           formData.append('file', this.selectedFile!);
-          formData.append('upload_preset', this.uploadPreset);
-
-          const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/raw/upload`;
-
-          fetch(cloudinaryUrl, {
+    
+          fetch('https://upload.uploadcare.com/base/', {
             method: 'POST',
             body: formData
           })
-            .then(res => res.json())
+            .then(async res => {
+              if (!res.ok) {
+                const errorText = await res.text();
+                console.error('Erreur Uploadcare :', errorText);
+                throw new Error(`Échec de l’upload : ${res.statusText}`);
+              }
+              return res.json();
+            })
             .then(data => {
-              const fichierUrl = data.secure_url;
-
+              console.log('Réponse Uploadcare :', data); // { file: "uuid" }
+    
+              const uuid = data.file;
+              const fichierUrl = `https://ucarecdn.com/${uuid}/${this.selectedFile!.name}`;
+    
               const imageData = {
-                numero: this.imageForm.value.numero,
+                numero: formValue.numero,
                 agentCreateur: this.imageForm.value.agentCreateur,
                 adresseCreateur: this.imageForm.value.adresseCreateur,
                 dateCreation: new Date().toISOString(),
                 dossierId: dossierId,
                 fichier: fichierUrl
               };
+              console.log(imageData);
 
+             
+    
               return this.db.list('analysesMedicales').push(imageData);
             })
             .then(() => {
@@ -108,12 +120,14 @@ export class AddAnalyseComponent {
             })
             .catch(err => {
               console.error('Erreur lors de l\'upload ou de la sauvegarde Firebase :', err);
+              alert("Erreur lors de l'upload du fichier.");
             })
             .finally(() => {
               this.isUploading = false;
             });
         });
     }
+    
 
     cancelFicheForm(): void {
       this.imageForm.reset();

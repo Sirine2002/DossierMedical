@@ -39,14 +39,16 @@ export class EditAnalyseComponent {
   }
 
   modifierImageMedicale(): void {
+    const formValue = this.imageForm.getRawValue();
     this.isUploading = true;
 
     const updateImageData = (imageUrl: string | null = null) => {
       const newData: any = {
-        numero: this.imageForm.value.numero,
+        numero: formValue.numero,
         agentCreateur: this.imageForm.value.agentCreateur,
         adresseCreateur: this.imageForm.value.adresseCreateur,
       };
+      console.log(formValue.numero);
 
       if (imageUrl) {
         newData.fichier = imageUrl;

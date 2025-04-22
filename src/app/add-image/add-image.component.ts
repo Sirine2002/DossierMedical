@@ -46,6 +46,7 @@ export class AddImageComponent {
       console.log('Max numero:', maxNumero);
       const newNumero = parseInt(maxNumero) + 1; // 👈 incrémentation
       this.imageForm.patchValue({ numero: newNumero }); // 👈 mise à jour du numéro
+      
     });
   }
 
@@ -57,6 +58,7 @@ export class AddImageComponent {
   }
 
   ajouterImageMedicale(): void {
+    const formValue = this.imageForm.getRawValue();
     if (!this.selectedFile) {
       alert('Veuillez sélectionner une image.');
       return;
@@ -91,7 +93,7 @@ export class AddImageComponent {
             const imageUrl = data.secure_url;
 
             const imageData = {
-              numero: this.imageForm.value.numero,
+              numero: formValue.numero,
               agentCreateur: this.imageForm.value.agentCreateur,
               adresseCreateur: this.imageForm.value.adresseCreateur,
               dateCreation: new Date().toISOString(),

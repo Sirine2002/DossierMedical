@@ -3,20 +3,19 @@
     <app-navbar></app-navbar>
 
     <div class="dashboard-container">
-      <!-- File d'attente des patients -->
       <div class="patient-queue">
         <div class="section-header">
           <h3 class="section-title">Liste des patients</h3>
           <mat-form-field class="global-search" appearance="outline">
             <mat-label>Rechercher</mat-label>
-            <input matInput placeholder="Nom, numéro ou date" [(ngModel)]="searchTerm" (input)="applyFilters()">
+            <input matInput placeholder="Nom, numéro ou date" [(ngModel)]="searchTerm" (input)="applyFilters()" />
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
         </div>
 
-        <!-- Liste des patients -->
         <div class="patient-list">
-          <div class="patient-card" *ngFor="let patient of dataSource" (click)="voirDossier(patient)">
+          <!-- Utilisation de la pagination manuelle -->
+          <div class="patient-card" *ngFor="let patient of pagedPatients" (click)="voirDossier(patient)">
             <div class="card-left">
               <img src="assets/images/avatarH.png" alt="Avatar" class="avatar" *ngIf="patient.sexe=='Homme'" />
               <img src="assets/images/avatarF.png" alt="Avatar" class="avatar" *ngIf="patient.sexe=='Femme'" />
@@ -32,11 +31,14 @@
           </div>
         </div>
 
-        <!-- Pagination -->
-        <mat-paginator [length]="dataSourceOriginal.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 20]"
-          (page)="pageEvent($event)">
+        <!-- Paginator -->
+        <mat-paginator [length]="dataSource.data.length"
+                       [pageSize]="5"
+                       [pageSizeOptions]="[5, 10, 20]"
+                       showFirstLastButtons>
         </mat-paginator>
       </div>
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>
+

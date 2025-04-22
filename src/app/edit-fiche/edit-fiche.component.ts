@@ -89,8 +89,9 @@ export class EditFicheComponent implements OnInit {
   }
 
   modifierFicheSoin(): void {
+    const formValue = this.ficheForm.getRawValue();
     const ficheData = {
-      numero: this.ficheForm.value.numero,
+      numero: formValue.numero,
       agentCreateur: this.ficheForm.value.agentCreateur,
       adresseCreateur: this.ficheForm.value.adresseCreateur
     };

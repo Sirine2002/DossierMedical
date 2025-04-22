@@ -68,7 +68,24 @@ export class RegisterComponent {
               };
               this.db.database.ref('patients').child(userId).set(patientData)
                 .then(() => console.log("Utilisateur patient enregistré"))
-                .catch((err) => console.error("Erreur patient :", err));
+                const dossierRef = this.db.database.ref('dossier');
+                const newDossierKey = dossierRef.push().key;
+                const codeAcces = Math.random().toString(36).substring(2, 8).toUpperCase();
+            
+                const dossierData = {
+                  codeAcces: codeAcces,
+                  dateCreation: new Date().toISOString(),
+                  etat: "actif",
+                  numero: 1,
+                  patientId: userId
+                };
+            
+                if (newDossierKey) {
+                  dossierRef.child(newDossierKey).set(dossierData)
+                    .then(() => console.log("Dossier initial créé"))
+                    .catch((err) => console.error("Erreur lors de la création du dossier :", err));
+                }
+   
               break;
 
             case 'Analyste':
@@ -118,5 +135,7 @@ export class RegisterComponent {
       .catch((error) => {
         console.error("Erreur d'inscription :", error);
       });
+
+      this.db.database.ref()
   }
 }

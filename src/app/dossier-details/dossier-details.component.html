@@ -39,7 +39,7 @@
             <mat-icon>arrow_forward_ios</mat-icon>
           </button>
         </div>
-        <mat-paginator [length]="dataSourceOriginal.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 20]">
+        <mat-paginator [length]="dataSourceOriginal.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 20]"  (page)="onPageChange($event)">
         </mat-paginator>
 
       </div>
@@ -159,7 +159,7 @@
                       <mat-icon class="edit-icon" (click)="openEditAnalyse(analyse.key,analyse)" *ngIf="roleAcces === 'Analyste'">edit</mat-icon>
                       <mat-icon class="delete-icon" (click)="deleteAnalyse(analyse.key)" *ngIf="roleAcces === 'Analyste'">delete</mat-icon>
                       <mat-icon class="eye-icon" (click)="openAnalyseModal(analyse)">visibility</mat-icon>
-                      <mat-icon class="download-icon" (click)="telechargerPDF(analyse.fichier)">
+                      <mat-icon class="download-icon" (click)="telechargerPDF(analyse.fichier,selectedPatient.fullName)">
                         download
                       </mat-icon>
                     </div>

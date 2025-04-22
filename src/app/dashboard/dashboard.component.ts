@@ -1,6 +1,5 @@
 import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
@@ -23,40 +22,13 @@ interface PatientData {
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements AfterViewInit, OnInit {
-  dataSourceOriginal: PatientData[] = [];
-  dataSource: PatientData[] = [];
-  selectedPatient?: PatientData;
-  filteredDataSource: PatientData[] = [];
+  dataSource = new MatTableDataSource<PatientData>();
+  allPatients: PatientData[] = [];
+  pagedPatients: PatientData[] = [];
 
-  ficheSoin = new MatTableDataSource<any>();
-  images: any[] = [];
-  analyses: any[] = [];
-
-  hoverImage: boolean = false;
-  selectedAnalyse: any = null;
-  isAnalyseModalOpen: boolean = false;
-  selectedImage: any = null;
-  isImageModalOpen: boolean = false;
-  isFicheModalOpen: boolean = false;
-  selectedFiche: any = null;
-  showFilters: boolean = false;
-  userrole: string | null = localStorage.getItem('userRole');
-
-  // Champ de recherche global
   searchTerm: string = '';
 
-  displayedColumns: string[] = ['numero', 'dateCreation', 'agentCreateur', 'adresseCreateur', 'actions'];
-  displayedColumns1: string[] = ['nom', 'type', 'dateAjout', 'contenu'];
-
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-
-  roleAcces: 'none' | 'Medecin' | 'Radiologue' | 'Analyste' = 'none';
-
-  codeForm = new FormGroup({
-    code: new FormControl('', Validators.required)
-  });
-
-  currentPage: number = 0;
 
   constructor(private db: AngularFireDatabase, private router: Router) {}
 
@@ -65,8 +37,11 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit(): void {
-    this.ficheSoin.paginator = this.paginator;
-    this.applyPagination();
+    this.dataSource.paginator = this.paginator;
+
+    this.paginator.page.subscribe(() => {
+      this.updatePagedPatients();
+    });
   }
 
   loadPatients() {
@@ -99,10 +74,11 @@ export class DashboardComponent implements AfterViewInit, OnInit {
                       numero: dossier.numero,
                     };
 
-                    const exists = this.dataSourceOriginal.find(p => p.id === patientData.id);
+                    const exists = this.allPatients.find(p => p.id === patientData.id);
                     if (!exists) {
-                      this.dataSourceOriginal.push(patientData);
-                      this.applyFilters();
+                      this.allPatients.push(patientData);
+                      this.dataSource.data = this.allPatients;
+                      this.applyFilters(); // Appliquer le filtre initial
                     }
                   }
                 });
@@ -112,44 +88,25 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     });
   }
 
-  paginate(source: PatientData[]) {
-    const startIndex = this.currentPage * 10;
-    const endIndex = startIndex + 10;
-    this.dataSource = source.slice(startIndex, endIndex);
-  }
-
-  // Nouveau filtre avec un seul champ de recherche
   applyFilters() {
     const term = this.searchTerm.toLowerCase();
-    const filtered = this.dataSourceOriginal.filter(patient => {
-      const fullNameMatch = patient.fullName.toLowerCase().includes(term);
-      const numeroMatch = patient.numero.toString().includes(term);
-      const dateMatch = new Date(patient.dateCreation).toISOString().slice(0, 10).includes(term);
-      return fullNameMatch || numeroMatch || dateMatch;
+    const filtered = this.allPatients.filter(patient => {
+      return (
+        patient.fullName.toLowerCase().includes(term) ||
+        patient.numero.toString().includes(term) ||
+        new Date(patient.dateCreation).toISOString().slice(0, 10).includes(term)
+      );
     });
 
-    this.currentPage = 0;
-    this.paginate(filtered);
+    this.dataSource.data = filtered;
+    this.paginator.firstPage(); // revenir à la première page
+    this.updatePagedPatients();
   }
 
-  // Pagination avec le filtre appliqué
-  pageEvent(event: any) {
-    this.currentPage = event.pageIndex;
-    const term = this.searchTerm.toLowerCase();
-    const filtered = this.dataSourceOriginal.filter(patient => {
-      const fullNameMatch = patient.fullName.toLowerCase().includes(term);
-      const numeroMatch = patient.numero.toString().includes(term);
-      const dateMatch = new Date(patient.dateCreation).toISOString().slice(0, 10).includes(term);
-      return fullNameMatch || numeroMatch || dateMatch;
-    });
-
-    this.paginate(filtered);
-  }
-
-  applyPagination() {
-    const startIndex = this.currentPage * 10;
-    const endIndex = startIndex + 10;
-    this.dataSource = this.dataSourceOriginal.slice(startIndex, endIndex);
+  updatePagedPatients() {
+    const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
+    const endIndex = startIndex + this.paginator.pageSize;
+    this.pagedPatients = this.dataSource.data.slice(startIndex, endIndex);
   }
 
   voirDossier(patient: PatientData): void {

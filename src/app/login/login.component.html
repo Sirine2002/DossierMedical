@@ -1,4 +1,11 @@
 <div class="register-container">
+  <div class="back-button">
+    <button mat-button color="primary" routerLink="/home">
+      <mat-icon>arrow_back</mat-icon>
+      Accueil
+    </button>
+  </div>
+  
   <mat-card class="register-card center">
     <span><img src="assets/images/medical.png" height="120"/></span>
     <h2 class="costum-color2">Connexion </h2>
@@ -82,5 +89,11 @@
   .full-width {
     width: 100%;
   }
+
+  .back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
 
 </style>

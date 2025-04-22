@@ -15,6 +15,7 @@ export class AddFicheComponent {
   ficheForm: FormGroup;
   ficheSoins: any[] = [];
   patientId: any;
+  newNum:any;
 
   constructor(
     private fb: FormBuilder,
@@ -37,7 +38,7 @@ export class AddFicheComponent {
       ref.orderByChild('numero').limitToLast(1) // 👈 récupère le dernier (le plus grand)
     )
     .snapshotChanges()
-    .subscribe(ficheChanges => {
+    .subscribe(ficheChanges => { 
       const maxFiche = ficheChanges.map(c => ({
         id: c.payload.key,
         ...(c.payload.val() as any)
@@ -46,7 +47,8 @@ export class AddFicheComponent {
       const maxNumero = maxFiche?.numero ?? 0; // 👈 récupération du numero
       console.log('Max numero:', maxNumero);
       const newNumero = parseInt(maxNumero) + 1; // 👈 incrémentation
-      this.ficheForm.patchValue({ numero: newNumero }); // 👈 mise à jour du numéro
+      this.ficheForm.patchValue({ numero: newNumero }); 
+      this.newNum=newNumero; // 👈 mise à jour du numéro
     });
     
 }
@@ -86,7 +88,7 @@ export class AddFicheComponent {
 
         const dossierId = dossiers[0].key!;
         const ficheData = {
-          numero: this.ficheForm.value.numero,
+          numero: this.newNum,
           agentCreateur: this.ficheForm.value.agentCreateur,
           adresseCreateur: this.ficheForm.value.adresseCreateur,
           dateCreation: new Date().toISOString(),
