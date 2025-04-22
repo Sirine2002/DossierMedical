@@ -40,10 +40,12 @@ export class EditImageComponent {
 
   modifierImageMedicale(): void {
     this.isUploading = true;
+    const formValue = this.imageForm.getRawValue();
 
     const updateImageData = (imageUrl: string | null = null) => {
+      
       const newData: any = {
-        numero: this.imageForm.value.numero,
+        numero: formValue.numero,
         agentCreateur: this.imageForm.value.agentCreateur,
         adresseCreateur: this.imageForm.value.adresseCreateur,
       };
