@@ -1,7 +1,7 @@
 import { Component, Inject, Input } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { AnalyseService } from '../../Services/analyse.service';
 
 @Component({
   selector: 'app-add-analyse',
@@ -9,128 +9,107 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./add-analyse.component.css']
 })
 export class AddAnalyseComponent {
-   @Input() patient: any;
-    imageForm: FormGroup;
-    selectedFile: File | null = null;
-    isUploading = false;
+  @Input() patient: any;
+  imageForm: FormGroup;
+  selectedFile: File | null = null;
+  isUploading = false;
+  patientId: string;
 
-    cloudName = 'dxc5curxy';
-    uploadPreset = 'ProjectMedicale';
-    patientId: string;
+  constructor(
+    private fb: FormBuilder,
+    private dialogRef: MatDialogRef<AddAnalyseComponent>,
+    private analyseService: AnalyseService,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    this.imageForm = this.fb.group({
+      numero: ['', Validators.required],
+      agentCreateur: ['', Validators.required],
+      adresseCreateur: ['', Validators.required]
+    });
 
-    constructor(
-      private fb: FormBuilder,
-      private db: AngularFireDatabase,
-      private dialogRef: MatDialogRef<AddAnalyseComponent>,
-      @Inject(MAT_DIALOG_DATA) public data: any
-    ) {
-      this.imageForm = this.fb.group({
-        numero: ['', Validators.required],
-        agentCreateur: ['', Validators.required],
-        adresseCreateur: ['', Validators.required]
-      });
+    this.patientId = data.patientId;
+    this.imageForm.get("numero")?.disable();
 
-      this.patientId = data.patientId;
-      this.imageForm.get("numero")?.disable();
-      this.db.list('analysesMedicales', ref =>
-        ref.orderByChild('numero').limitToLast(1) // 👈 récupère le dernier (le plus grand)
-      )
-      .snapshotChanges()
-      .subscribe(ficheChanges => {
-        const maxFiche = ficheChanges.map(c => ({
-          id: c.payload.key,
-          ...(c.payload.val() as any)
-        }))[0]; // Il y a normalement un seul élément ici
-      
-        const maxNumero = maxFiche?.numero ?? 0; // 👈 récupération du numero
-        console.log('Max numero:', maxNumero);
-        const newNumero = parseInt(maxNumero) + 1; // 👈 incrémentation
-        this.imageForm.patchValue({ numero: newNumero }); // 👈 mise à jour du numéro
-      });
+    // ✅ Utilisation du service pour récupérer le dernier numéro
+    this.analyseService.getLastAnalyseNumero().subscribe(maxNumero => {
+      const newNumero = maxNumero + 1;
+      this.imageForm.patchValue({ numero: newNumero });
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.selectedFile = input.files[0];
+    }
+  }
+
+  ajouterAnalyseMedicale(): void {
+    const formValue = this.imageForm.getRawValue();
+
+    if (!this.selectedFile) {
+      alert('Veuillez sélectionner un fichier.');
+      return;
     }
 
-    onFileSelected(event: Event): void {
-      const input = event.target as HTMLInputElement;
-      if (input.files && input.files[0]) {
-        this.selectedFile = input.files[0];
-      }
-    }
+    this.isUploading = true;
 
-    ajouterAnalyseMedicale(): void {
-      const formValue = this.imageForm.getRawValue();
-     
-      if (!this.selectedFile) {
-        alert('Veuillez sélectionner un fichier.');
+    this.analyseService.getDossierIdByPatient(this.patientId).subscribe(dossierId => {
+      if (!dossierId) {
+        console.error('Aucun dossier trouvé pour ce patient.');
+        this.isUploading = false;
         return;
       }
-    
-      this.isUploading = true;
-    
-      this.db.list('dossier', ref => ref.orderByChild('patientId').equalTo(this.patientId))
-        .snapshotChanges()
-        .subscribe(dossiers => {
-          if (dossiers.length === 0) {
-            console.error('Aucun dossier trouvé pour ce patient.');
-            this.isUploading = false;
-            return;
+
+      const formData = new FormData();
+      formData.append('UPLOADCARE_PUB_KEY', '9d7b4bd0a0c2fc3b2f8c'); // 🔐 Remplacer par ta vraie clé
+      formData.append('file', this.selectedFile!);
+
+      fetch('https://upload.uploadcare.com/base/', {
+        method: 'POST',
+        body: formData
+      })
+        .then(async res => {
+          if (!res.ok) {
+            const errorText = await res.text();
+            console.error('Erreur Uploadcare :', errorText);
+            throw new Error(`Échec de l’upload : ${res.statusText}`);
           }
-    
-          const dossierId = dossiers[0].key;
-    
-          const formData = new FormData();
-          formData.append('UPLOADCARE_PUB_KEY', '9d7b4bd0a0c2fc3b2f8c'); // ⬅️ Remplace par ta vraie clé
-          formData.append('file', this.selectedFile!);
-    
-          fetch('https://upload.uploadcare.com/base/', {
-            method: 'POST',
-            body: formData
-          })
-            .then(async res => {
-              if (!res.ok) {
-                const errorText = await res.text();
-                console.error('Erreur Uploadcare :', errorText);
-                throw new Error(`Échec de l’upload : ${res.statusText}`);
-              }
-              return res.json();
-            })
-            .then(data => {
-              console.log('Réponse Uploadcare :', data); // { file: "uuid" }
-    
-              const uuid = data.file;
-              const fichierUrl = `https://ucarecdn.com/${uuid}/${this.selectedFile!.name}`;
-    
-              const imageData = {
-                numero: formValue.numero,
-                agentCreateur: this.imageForm.value.agentCreateur,
-                adresseCreateur: this.imageForm.value.adresseCreateur,
-                dateCreation: new Date().toISOString(),
-                dossierId: dossierId,
-                fichier: fichierUrl
-              };
-              console.log(imageData);
+          return res.json();
+        })
+        .then(data => {
+          const uuid = data.file;
+          const fichierUrl = `https://ucarecdn.com/${uuid}/${this.selectedFile!.name}`;
 
-             
-    
-              return this.db.list('analysesMedicales').push(imageData);
-            })
-            .then(() => {
-              this.imageForm.reset();
-              this.selectedFile = null;
-              this.dialogRef.close(); // Ferme le dialog après succès
-            })
-            .catch(err => {
-              console.error('Erreur lors de l\'upload ou de la sauvegarde Firebase :', err);
-              alert("Erreur lors de l'upload du fichier.");
-            })
-            .finally(() => {
-              this.isUploading = false;
-            });
+          const imageData = {
+            numero: formValue.numero,
+            agentCreateur: formValue.agentCreateur,
+            adresseCreateur: formValue.adresseCreateur,
+            dateCreation: new Date().toISOString(),
+            dossierId,
+            fichier: fichierUrl
+          };
+
+          // ✅ Utilisation du service pour ajouter l’analyse
+          return this.analyseService.addAnalyseMedicale(imageData);
+        })
+        .then(() => {
+          this.imageForm.reset();
+          this.selectedFile = null;
+          this.dialogRef.close(); // Ferme le dialog après succès
+        })
+        .catch(err => {
+          console.error('Erreur lors de l\'upload ou de la sauvegarde Firebase :', err);
+          alert("Erreur lors de l'upload du fichier.");
+        })
+        .finally(() => {
+          this.isUploading = false;
         });
-    }
-    
+    });
+  }
 
-    cancelFicheForm(): void {
-      this.imageForm.reset();
-      this.selectedFile = null;
-    }
+  cancelFicheForm(): void {
+    this.imageForm.reset();
+    this.selectedFile = null;
+  }
 }

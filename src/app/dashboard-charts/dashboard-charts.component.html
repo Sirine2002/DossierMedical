@@ -1,0 +1,97 @@
+<mat-sidenav-container style="background-color: #f4f6f8; padding-top:78px">
+    <mat-sidenav-content>
+      <app-navbar></app-navbar>
+  
+      <div class="dashboard-container">
+  
+        <!-- Section de bienvenue -->
+        <div class="welcome-section">
+          <div class="welcome-left">
+            <p class="welcome-back">Bienvenue de retour</p>
+            <h2 class="doctor-name">{{ firstName }} {{ lastName }}</h2>
+            <p class="specialty">{{ service }}</p>
+  
+            <div class="stats-cards">
+              <div class="stat-card appointments">Nombre Total Patients <span>{{ patientCount }}</span></div>
+              <div class="stat-card surgeries">Nombre Total Fiches <span>{{ ficheCount }}</span></div>
+              <div class="stat-card visits">Nombre Total Analyses <span>{{ analyseCount }}</span></div>
+              <div class="stat-card visits1">Nombre Total Images <span>{{ imageCount }}</span></div>
+            </div>
+          </div>
+  
+          <div class="welcome-right">
+            <img src="assets/images/doctor-illustration.png" alt="Illustration du médecin" class="doctor-illustration">
+          </div>
+        </div>
+  
+        <!-- Grille de graphiques -->
+        <div class="charts-grid">
+          <div class="chart-container">
+            <h3>Nombre de Fiches de soin par mois</h3>
+            <canvas baseChart
+                    [type]="'line'"
+                    [datasets]="chartData"
+                    [labels]="chartLabels"
+                    [options]="chartOptions">
+            </canvas>
+          </div>
+  
+          <div class="chart-container">
+            <h3>Nombre d'Analyses médicales par mois</h3>
+            <canvas baseChart
+                    [type]="'line'"
+                    [datasets]="chartDataAnalyses"
+                    [labels]="chartLabels"
+                    [options]="chartOptions">
+            </canvas>
+          </div>
+  
+        </div>
+        <div class="charts-grid">
+          <div class="chart-container">
+            <h3>Nombre d'Images médicales par mois</h3>
+            <canvas baseChart
+                    [type]="'line'"
+                    [datasets]="chartDataImages"
+                    [labels]="chartLabels"
+                    [options]="chartOptions">
+            </canvas>
+          </div>
+          <div class="chart-container">
+            <h3>Nombre de fiches, analyses et images par dossier</h3>
+            <canvas baseChart
+                    [type]="'bar'"
+                    [datasets]="chartDataPerPatient"
+                    [labels]="chartLabelsPerPatient"
+                    [options]="chartOptions">
+            </canvas>
+          </div>
+  
+        </div>
+        <div class="charts-grid">
+          <div class="chart-container">
+            <h3>Répartition des patients</h3>
+            <canvas baseChart
+                    [type]="'pie'"
+                    [datasets]="chartDatapie"
+                    [labels]="chartLabelspie"
+                    [options]="chartOptions">
+            </canvas>
+          </div>
+  
+          <div class="chart-container">
+            <h3>Analyse des consultations</h3>
+            <canvas baseChart
+                    [type]="'doughnut'"
+                    [datasets]="chartDatadonu"
+                    [labels]="chartLabelsdonu"
+                    [options]="chartOptions">
+            </canvas>
+          </div>
+  
+  
+        </div>
+  
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>

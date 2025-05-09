@@ -9,6 +9,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { PatientService } from '../../Services/patient.service'; 
 
 interface DossierComplet {
   dossier: any;
@@ -40,6 +41,7 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
+    private PatientService: PatientService,
     private db: AngularFireDatabase,
     private auth: AngularFireAuth,
     public dialog: MatDialog,
@@ -62,69 +64,49 @@ export class DashboardPatientComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     const storedName = localStorage.getItem('username');
     this.nomPatient = storedName ? storedName : 'Inconnu';
+    
     this.auth.authState.subscribe(user => {
       if (user) {
         const userId = user.uid;
 
-        this.db.list('dossier', ref => ref.orderByChild('patientId').equalTo(userId))
-          .snapshotChanges()
-          .subscribe(dossiers => {
-            this.dossiersComplets = []; // Réinitialiser
+        // Récupérer les dossiers pour le patient
+        this.PatientService.getDossiersByPatientId(userId).subscribe(dossiers => {
+          this.dossiersComplets = []; // Réinitialiser
+          dossiers.forEach(dossierData => {
+            const dossierComplet: any = {
+              dossier: dossierData,
+              ficheSoin: [],
+              imageMedicale: [],
+              analyseMedicale: []
+            };
 
-            dossiers.forEach(d => {
-              const dossierData = { ...(d.payload.val() as any), key: d.key };
-
-              const dossierComplet: DossierComplet = {
-                dossier: dossierData,
-                ficheSoin: [],
-                imageMedicale: [],
-                analyseMedicale: []
-              };
-
-              // 🔹 Fiches de soin
-              this.db.list('fichesSoin', ref => ref.orderByChild('dossierId').equalTo(dossierData.key))
-                .snapshotChanges()
-                .subscribe(data => {
-                  dossierComplet.ficheSoin = data.map(item => ({
-                    id: item.key,
-                    ...(item.payload.val() as any)
-                  }));
-                  this.cdr.detectChanges();
-                });
-
-              // 🔹 Images médicales
-              this.db.list('imagesMedicales', ref => ref.orderByChild('dossierId').equalTo(dossierData.key))
-                .snapshotChanges()
-                .subscribe(data => {
-                  dossierComplet.imageMedicale = data.map(item => ({
-                    key: item.key,
-                    type: 'image',
-                    ...(item.payload.val() as any)
-                  }));
-                  this.cdr.detectChanges();
-                });
-
-              // 🔹 Analyses médicales
-              this.db.list('analysesMedicales', ref => ref.orderByChild('dossierId').equalTo(dossierData.key))
-                .snapshotChanges()
-                .subscribe(data => {
-                  dossierComplet.analyseMedicale = data.map(item => ({
-                    key: item.key,
-                    type: 'analyse',
-                    ...(item.payload.val() as any)
-                  }));
-                  this.cdr.detectChanges();
-                });
-
-              this.dossiersComplets.push(dossierComplet);
-              this.dossiersFiltres = [...this.dossiersComplets];
+            // Récupérer les fiches de soin pour ce dossier
+            this.PatientService.getFichesSoinByDossierId(dossierData.key).subscribe(fiches => {
+              dossierComplet.ficheSoin = fiches;
               this.cdr.detectChanges();
             });
 
-            this.filtreForm.valueChanges.subscribe(() => {
-              this.filtrerDossiers();
+            // Récupérer les images médicales pour ce dossier
+            this.PatientService.getImagesMedicalesByDossierId(dossierData.key).subscribe(images => {
+              dossierComplet.imageMedicale = images;
+              this.cdr.detectChanges();
             });
+
+            // Récupérer les analyses médicales pour ce dossier
+            this.PatientService.getAnalysesMedicalesByDossierId(dossierData.key).subscribe(analyses => {
+              dossierComplet.analyseMedicale = analyses;
+              this.cdr.detectChanges();
+            });
+
+            this.dossiersComplets.push(dossierComplet);
+            this.dossiersFiltres = [...this.dossiersComplets];
+            this.cdr.detectChanges();
           });
+
+          this.filtreForm.valueChanges.subscribe(() => {
+            this.filtrerDossiers();
+          });
+        });
       }
     });
   }

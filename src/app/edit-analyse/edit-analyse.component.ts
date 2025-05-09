@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { AnalyseService } from '../../Services/analyse.service'; 
 
 @Component({
   selector: 'app-edit-analyse',
@@ -9,20 +9,16 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./edit-analyse.component.css']
 })
 export class EditAnalyseComponent {
- imageForm: FormGroup;
+  imageForm: FormGroup;
   selectedFile: File | null = null;
   isUploading = false;
 
-  cloudName = 'dxc5curxy';
-  uploadPreset = 'ProjectMedicale';
-
   constructor(
     private fb: FormBuilder,
-    private db: AngularFireDatabase,
     private dialogRef: MatDialogRef<EditAnalyseComponent>,
+    private analyseService: AnalyseService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    // Initialiser le formulaire avec les données existantes
     this.imageForm = this.fb.group({
       numero: [data.image.numero, Validators.required],
       agentCreateur: [data.image.agentCreateur, Validators.required],
@@ -38,55 +34,33 @@ export class EditAnalyseComponent {
     }
   }
 
-  modifierImageMedicale(): void {
+  async modifierImageMedicale(): Promise<void> {
     const formValue = this.imageForm.getRawValue();
     this.isUploading = true;
 
-    const updateImageData = (imageUrl: string | null = null) => {
-      const newData: any = {
+    try {
+      let imageUrl: string | null = null;
+
+      if (this.selectedFile) {
+        imageUrl = await this.analyseService.uploadFileToCloudinary(this.selectedFile);
+      }
+
+      const updateData: any = {
         numero: formValue.numero,
         agentCreateur: this.imageForm.value.agentCreateur,
         adresseCreateur: this.imageForm.value.adresseCreateur,
       };
-      console.log(formValue.numero);
 
       if (imageUrl) {
-        newData.fichier = imageUrl;
+        updateData.fichier = imageUrl;
       }
 
-      this.db.object(`analysesMedicales/${this.data.imageKey}`).update(newData)
-        .then(() => {
-          this.dialogRef.close();
-        })
-        .catch(err => console.error('Erreur lors de la mise à jour :', err))
-        .finally(() => {
-          this.isUploading = false;
-        });
-    };
-
-    if (this.selectedFile) {
-      const formData = new FormData();
-      formData.append('file', this.selectedFile);
-      formData.append('upload_preset', this.uploadPreset);
-
-      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/raw/upload`;
-
-      fetch(cloudinaryUrl, {
-        method: 'POST',
-        body: formData
-      })
-        .then(res => res.json())
-        .then(data => {
-          const imageUrl = data.secure_url;
-          updateImageData(imageUrl);
-        })
-        .catch(err => {
-          console.error('Erreur d\'upload Cloudinary :', err);
-          this.isUploading = false;
-        });
-    } else {
-      // Aucun nouveau fichier, mise à jour uniquement des champs texte
-      updateImageData();
+      await this.analyseService.updateAnalyse(this.data.imageKey, updateData);
+      this.dialogRef.close();
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour ou de l\'upload :', error);
+    } finally {
+      this.isUploading = false;
     }
   }
 

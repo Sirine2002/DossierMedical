@@ -16,6 +16,9 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { EditFicheComponent } from '../edit-fiche/edit-fiche.component';
 import { PageEvent } from '@angular/material/paginator';
+import { AnalyseService } from 'src/Services/analyse.service';
+import { ImageService } from 'src/Services/image.service';
+import { FicheService } from 'src/Services/fiche.service';
 
 
 interface PatientData {
@@ -84,7 +87,10 @@ export class DossierDetailsComponent implements OnInit {
     private db: AngularFireDatabase,
     private route: ActivatedRoute,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private analyseService: AnalyseService,
+    private imageService: ImageService,
+    private ficheService: FicheService
   ) { }
 
   ngOnInit(): void {
@@ -294,16 +300,14 @@ export class DossierDetailsComponent implements OnInit {
 
   voirFiche(fiche: any) {
     this.selectedFiche = fiche;
-    this.isFicheModalOpen = true;
-    console.log(fiche);
-    const id: string = fiche.key;
-    console.log(id);
+  this.isFicheModalOpen = true;
+  console.log(fiche);
+  const id: string = fiche.key;
+  console.log(id);
 
-    this.db.list('lignesFicheSoin', ref => ref.orderByChild('ficheSoinId').equalTo(id))
-      .valueChanges()
-      .subscribe(lignes => {
-        this.selectedFiche.lignes = lignes;
-      });
+  this.ficheService.voirLignesByFicheId(id).subscribe(lignes => {
+    this.selectedFiche.lignes = lignes;
+  });
 
   }
 
@@ -320,44 +324,16 @@ export class DossierDetailsComponent implements OnInit {
   }
   //Ajout Fiche Soin
   loadFicheSoins(): void {
-    this.db.list('fichesSoin', ref =>
-      ref.orderByChild('dossierId').equalTo(this.patient.id)
-    )
-      .snapshotChanges()
-      .subscribe(ficheChanges => {
-        const fiches = ficheChanges.map(c => ({
-          id: c.payload.key,
-          ...(c.payload.val() as any),
-          lignes: []
-        }));
-  
-        this.db.list('lignesFicheSoin')
-          .snapshotChanges()
-          .subscribe(ligneChanges => {
-            const lignes = ligneChanges.map(c => ({
-              id: c.payload.key,
-              ...(c.payload.val() as any)
-            }));
-  
-            const lignesParFiche: { [ficheId: string]: any[] } = {};
-  
-            fiches.forEach(fiche => {
-              const lignesFiche = lignes.filter(ligne => ligne.FicheSoinId === fiche.id);
-              fiche.lignes = lignesFiche;
-              lignesParFiche[fiche.id] = lignesFiche;
-            });
-  
-            this.ficheSoins = fiches;
-            localStorage.setItem('lignesParFiche', JSON.stringify(lignesParFiche));
-          });
-      });
+    this.ficheService.loadFicheSoinsByDossierId(this.patient.id).subscribe(fiches => {
+      this.ficheSoins = fiches;
+    });
   }
   
 
   openAddFicheDialog(patientId: string): void {
     const dialogRef = this.dialog.open(AddFicheComponent, {
       disableClose: true,
-      data: { patientId } // 👈 on passe l'id ici
+      data: { patientId } 
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -382,37 +358,18 @@ export class DossierDetailsComponent implements OnInit {
 
   deleteFiche(ficheKey: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        message: 'Êtes-vous sûr de vouloir supprimer cette fiche de soin et ses lignes ?'
-      }
+      data: { message: 'Êtes-vous sûr de vouloir supprimer cette fiche de soin et ses lignes ?' }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Étape 1 : Récupérer toutes les lignes liées à cette fiche (une seule fois)
-        this.db.list('lignesFicheSoin').snapshotChanges().pipe(take(1)).subscribe(snapshots => {
-          const suppressions: Promise<void>[] = [];
-
-          snapshots.forEach(snapshot => {
-            const ligneKey = snapshot.key;
-            const ligneData = snapshot.payload.val() as any;
-
-            // Vérifie que cette ligne appartient bien à la fiche
-            if (ligneData && ligneData.ficheSoinId === ficheKey) {
-              const suppression = this.db.object(`lignesFicheSoin/${ligneKey}`).remove()
-                .then(() => console.log(`✔️ Ligne ${ligneKey} supprimée.`))
-                .catch(err => console.error(`❌ Erreur suppression ligne ${ligneKey} :`, err));
-              suppressions.push(suppression);
-            }
+        this.ficheService.deleteFiche(ficheKey)
+          .then(() => {
+            console.log('Fiche supprimée avec succès');
+          })
+          .catch(err => {
+            console.error('Erreur lors de la suppression de la fiche :', err);
           });
-
-          // Étape 2 : Une fois toutes les lignes supprimées, supprimer la fiche
-          Promise.all(suppressions).then(() => {
-            this.db.object(`fichesSoin/${ficheKey}`).remove()
-              .then(() => console.log('🗑️ Fiche supprimée avec succès.'))
-              .catch(err => console.error('❌ Erreur lors de la suppression de la fiche :', err));
-          });
-        });
       }
     });
   }
@@ -618,24 +575,15 @@ export class DossierDetailsComponent implements OnInit {
 
 
   loadImages(): void {
-    this.db.list('imagesMedicales', ref =>
-      ref.orderByChild('dossierId').equalTo(this.patient.id)
-    )
-      .snapshotChanges()
-      .subscribe(ficheChanges => {
-        const fiches = ficheChanges.map(c => ({
-          id: c.payload.key,
-          ...(c.payload.val() as any),
-        }));
-
-        this.images = fiches;
-      });
+    this.imageService.loadImagesByDossierId(this.patient.id).subscribe(images => {
+      this.images = images;
+    });
   }
 
   openAddImage(patientId: string): void {
     const dialogRef = this.dialog.open(AddImageComponent, {
       disableClose: true,
-      data: { patientId } // 👈 on passe l'id ici
+      data: { patientId } 
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -664,12 +612,12 @@ export class DossierDetailsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.db.object(`imagesMedicales/${imageKey}`).remove()
+        this.imageService.deleteImage(imageKey)
           .then(() => {
-            console.log('Image supprimée de Firebase.');
+            console.log('Image supprimée avec succès');
           })
           .catch(err => {
-            console.error('Erreur lors de la suppression :', err);
+            console.error('Erreur lors de la suppression de l\'image :', err);
           });
       }
     });
@@ -677,7 +625,7 @@ export class DossierDetailsComponent implements OnInit {
   openAddAnalyse(patientId: string): void {
     const dialogRef = this.dialog.open(AddAnalyseComponent, {
       disableClose: true,
-      data: { patientId } // 👈 on passe l'id ici
+      data: { patientId } 
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -685,64 +633,77 @@ export class DossierDetailsComponent implements OnInit {
       }
     });
   }
-  telechargerPDF(pdfUrl: string,nomPatient: string): void {
+
+  telechargerPDF(pdfUrl: string, nomPatient: string): void {
     if (!pdfUrl) {
-      console.error('URL du PDF est vide.');
+      console.error('URL de l’image est vide.');
       return;
     }
   
-    console.log('URL de téléchargement:', pdfUrl);
-  
+    // Charger l'image principale à insérer dans le PDF
     fetch(pdfUrl)
-      .then(response => {
-        const contentType = response.headers.get("Content-Type") || "";
-        console.log('Content-Type reçu :', contentType);
-  
-        if (!response.ok) {
-          throw new Error(`Erreur lors du téléchargement : ${response.statusText}`);
-        }
-  
-        if (!contentType.includes('application/pdf')) {
-          throw new Error("Le fichier téléchargé n'est pas un PDF.");
-        }
-  
-        return response.blob();
-      })
+      .then(res => res.blob())
       .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `rapport de ${nomPatient}.pdf`; // tu peux aussi mettre le nom d’origine
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const imageBase64 = reader.result as string;
+  
+          // Créer un nouveau PDF
+          const doc = new jsPDF();
+          const pageWidth = doc.internal.pageSize.getWidth();
+          const primaryColor: [number, number, number] = [63, 81, 181];
+          let y = 20;
+  
+          // Charger le logo
+          const logo = new Image();
+          logo.src = "../../assets/images/logo (2).png"; // Assure-toi que le chemin est correct
+  
+          logo.onload = () => {
+            // Étape 1 : Logo
+            doc.addImage(logo, 'PNG', 10, 10, 40, 15);
+  
+            // Étape 2 : Titre centré
+            doc.setFontSize(18);
+            doc.setTextColor(...primaryColor);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Rapport médical de ${nomPatient}`, pageWidth / 2, y, { align: 'center' });
+  
+            y += 30; // Laisser un espace après le titre
+  
+            // Étape 3 : Ajout de l'image principale (analyse, photo, etc.)
+            doc.addImage(imageBase64, 'JPEG', 15, y, 180, 160);
+  
+            // Étape 4 : Télécharger le PDF
+            doc.save(`Analyse_${nomPatient}.pdf`);
+          };
+        };
+        reader.readAsDataURL(blob);
       })
       .catch(error => {
-        console.error('Erreur lors du téléchargement du PDF :', error);
-        alert("Erreur : le fichier n'est pas un PDF valide ou est introuvable.");
+        console.error("Erreur lors du chargement ou génération de l'image :", error);
+        alert("Impossible de télécharger l'image et générer le PDF.");
       });
   }
   
 
 
-  deleteAnalyse(analyseKey: string): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: { message: 'Êtes-vous sûr de vouloir supprimer cette analyse ?' }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.db.object(`analysesMedicales/${analyseKey}`).remove()
-          .then(() => {
-            console.log('Analyse supprimée de Firebase.');
-          })
-          .catch(err => {
-            console.error('Erreur lors de la suppression :', err);
-          });
-      }
-    });
-  }
+   deleteAnalyse(analyseKey: string): void {
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        data: { message: 'Êtes-vous sûr de vouloir supprimer cette analyse ?' }
+      });
+  
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.analyseService.deleteAnalyse(analyseKey)
+            .then(() => {
+              console.log('Analyse supprimée avec succès');
+            })
+            .catch(err => {
+              console.error('Erreur lors de la suppression :', err);
+            });
+        }
+      });
+    }
 
   openEditAnalyse(analyseKey: string, analyseData: any): void {
     const dialogRef = this.dialog.open(EditAnalyseComponent, {

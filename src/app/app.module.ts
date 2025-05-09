@@ -57,6 +57,8 @@ import { EditFicheComponent } from './edit-fiche/edit-fiche.component';
 import { EditAnalyseComponent } from './edit-analyse/edit-analyse.component';
 import { EditImageComponent } from './edit-image/edit-image.component';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { DashboardChartsComponent } from './dashboard-charts/dashboard-charts.component';
+import { NgChartsModule } from 'ng2-charts';
 
 
 @NgModule({
@@ -87,6 +89,7 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
     EditAnalyseComponent,
     EditImageComponent,
     ConfirmDialogComponent,
+    DashboardChartsComponent,
 
   ],
   imports: [
@@ -120,7 +123,8 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
     MatGridListModule,
     MatTooltipModule,
     MatRadioModule,
-    MatDividerModule
+    MatDividerModule,
+    NgChartsModule
 
   ],
   providers: [],

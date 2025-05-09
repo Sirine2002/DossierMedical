@@ -8,9 +8,9 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Location } from '@angular/common';
 import { PageEvent } from '@angular/material/paginator';
 import { FicheSoinDetailsComponent } from '../fiche-soin-details/fiche-soin-details.component';
-import { FicheSoinService } from 'src/Services/fiche-soin.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { FicheService } from 'src/Services/fiche.service';
 
 @Component({
   selector: 'app-fiches-soin',
@@ -39,7 +39,7 @@ export class FichesSoinComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private fb: FormBuilder,
     private location: Location,
-    private ficheSoinService: FicheSoinService // Injecter le service
+    private FicheService: FicheService // Injecter le service
   ) {
     this.filtreForm = this.fb.group({
       dateDebut: [''],
@@ -51,73 +51,42 @@ export class FichesSoinComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const storedName = localStorage.getItem('username');
     this.nomPatient = storedName ? storedName : 'Inconnu';
-    this.ficheId = this.ficheSoinService.getFicheId();
+  
+    this.ficheId = this.FicheService.getFicheId();
   
     if (this.ficheId) {
-      // Charger les lignes de la fiche de soin associée à cette ficheId
-      this.db.list('lignesFicheSoin', ref => ref.orderByChild('ficheSoinId').equalTo(this.ficheId))
-        .snapshotChanges()
-        .subscribe(lignes => {
-          this.lignesFicheSoin = lignes.map(d => ({
-            key: d.key,
-            ...d.payload.val() as any
-          }));
-          console.log('Lignes de la fiche de soin récupérées :', this.lignesFicheSoin);
-
-        }, error => {
-          console.error('Erreur lors de la récupération des lignes de la fiche de soin:', error);
-        });
-
+      this.FicheService.getLignesByFicheId(this.ficheId).subscribe(lignes => {
+        this.lignesFicheSoin = lignes;
+        console.log('Lignes récupérées :', this.lignesFicheSoin);
+      }, error => {
+        console.error('Erreur lors de la récupération des lignes :', error);
+      });
     }
-
+  
     this.numeroDossier = this.route.snapshot.paramMap.get('numero') || '';
-
+  
     this.auth.authState.subscribe(user => {
       if (user) {
         const userId = user.uid;
         this.loadFichesDuPatient(userId);
       }
     });
-
-    // Appliquer les filtres si nécessaire
+  
     this.filtreForm.valueChanges.subscribe(() => {
       this.filtrerFichesSoin();
     });
   }
+  
 
   loadFichesDuPatient(userId: string): void {
-    const dossiersSub = this.db.list('dossier', ref =>
-      ref.orderByChild('patientId').equalTo(userId))
-      .snapshotChanges()
-      .subscribe(dossiers => {
-        const dossierIds = dossiers.map(d => d.key);
-
-        if (dossierIds.length === 0) {
-          this.fichesSoin = [];
-          return;
-        }
-
-        const fichesSub = this.db.list('fichesSoin', ref =>
-          ref.orderByChild('dossierId').equalTo(dossierIds[0]))  // Vous pouvez adapter la condition si nécessaire
-          .snapshotChanges()
-          .subscribe(fiches => {
-            const toutesFiches = fiches.map(f => {
-              const data = f.payload.val() as any;
-              const id = f.key;
-              return { id, ...data };
-            });
-
-            this.fichesSoin = toutesFiches;
-            this.fichesSoinFiltrees = [...this.fichesSoin];
-            this.updatePagedFiches();
-
-          });
-
-        this.subscription.add(fichesSub);
-      });
-
-    this.subscription.add(dossiersSub);
+    this.FicheService.getFichesWithLignes(userId).then(fiches => {
+      this.fichesSoin = fiches;
+      this.fichesSoinFiltrees = [...this.fichesSoin];
+      this.updatePagedFiches();
+    });
+    
   }
+  
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();

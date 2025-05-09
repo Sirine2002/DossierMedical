@@ -13,6 +13,7 @@ import { ImagesMedicalesComponent } from './images-medicales/images-medicales.co
 import { specialitesComponent } from './specialites/specialites.component';
 import { PartenairesComponent } from './partenaires/partenaires.component';
 import { ServicesComponent } from './services/services.component';
+import { DashboardChartsComponent } from './dashboard-charts/dashboard-charts.component';
 
 
 const routes: Routes = [
@@ -21,16 +22,16 @@ const routes: Routes = [
   {path:'login',component:LoginComponent},
   { path: 'register', component: RegisterComponent },
   { path: 'dashboardPatient', component: DashboardPatientComponent },
-  { path: 'dashboard', component: DashboardComponent },
+  { path: 'liste-des-patients', component: DashboardComponent },
   { path: 'profile', component: ProfileComponent },
-  { path: 'dossier-details/:id', component: DossierDetailsComponent },
+  { path: 'dossier-details/:id', component: DossierDetailsComponent } ,
   { path: 'home/specialites', component: specialitesComponent },
   { path: 'home/partenaires', component: PartenairesComponent },
   { path: 'home/services', component: ServicesComponent },
   { path: 'fiches-soin/:numero', component: FichesSoinComponent },
   { path: 'images-medicales/:numero', component: ImagesMedicalesComponent },
   { path: 'analyses-medicales/:numero', component: AnalysesMedicalesComponent },
-
+  { path: 'dashboard', component: DashboardChartsComponent },
 ];
 
 @NgModule({

@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ImageService } from '../../Services/image.service'; // <-- Import du service
 
 @Component({
   selector: 'app-edit-image',
@@ -13,16 +13,12 @@ export class EditImageComponent {
   selectedFile: File | null = null;
   isUploading = false;
 
-  cloudName = 'dxc5curxy';
-  uploadPreset = 'ProjectMedicale';
-
   constructor(
     private fb: FormBuilder,
-    private db: AngularFireDatabase,
+    private imageService: ImageService, // <-- Injection du service
     private dialogRef: MatDialogRef<EditImageComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    // Initialiser le formulaire avec les données existantes
     this.imageForm = this.fb.group({
       numero: [data.image.numero, Validators.required],
       agentCreateur: [data.image.agentCreateur, Validators.required],
@@ -43,7 +39,6 @@ export class EditImageComponent {
     const formValue = this.imageForm.getRawValue();
 
     const updateImageData = (imageUrl: string | null = null) => {
-      
       const newData: any = {
         numero: formValue.numero,
         agentCreateur: this.imageForm.value.agentCreateur,
@@ -54,38 +49,20 @@ export class EditImageComponent {
         newData.image = imageUrl;
       }
 
-      this.db.object(`imagesMedicales/${this.data.imageKey}`).update(newData)
-        .then(() => {
-          this.dialogRef.close();
-        })
+      this.imageService.updateImage(this.data.imageKey, newData)
+        .then(() => this.dialogRef.close())
         .catch(err => console.error('Erreur lors de la mise à jour :', err))
-        .finally(() => {
-          this.isUploading = false;
-        });
+        .finally(() => this.isUploading = false);
     };
 
     if (this.selectedFile) {
-      const formData = new FormData();
-      formData.append('file', this.selectedFile);
-      formData.append('upload_preset', this.uploadPreset);
-
-      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`;
-
-      fetch(cloudinaryUrl, {
-        method: 'POST',
-        body: formData
-      })
-        .then(res => res.json())
-        .then(data => {
-          const imageUrl = data.secure_url;
-          updateImageData(imageUrl);
-        })
+      this.imageService.uploadImage(this.selectedFile)
+        .then(imageUrl => updateImageData(imageUrl))
         .catch(err => {
           console.error('Erreur d\'upload Cloudinary :', err);
           this.isUploading = false;
         });
     } else {
-      // Aucun nouveau fichier, mise à jour uniquement des champs texte
       updateImageData();
     }
   }

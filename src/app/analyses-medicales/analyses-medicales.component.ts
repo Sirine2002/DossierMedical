@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { PageEvent } from '@angular/material/paginator';
 import { Location } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { AnalyseService } from 'src/Services/analyse.service';
 
 @Component({
   selector: 'app-analyses-medicales',
@@ -20,7 +21,7 @@ export class AnalysesMedicalesComponent implements OnInit, OnDestroy {
   selectedFilter: 'date' | 'agent' = 'agent'; // Valeur par défaut
   private subscription: Subscription = new Subscription();
 
-  constructor(private db: AngularFireDatabase, private location: Location, private fb: FormBuilder) {
+  constructor(private db: AngularFireDatabase, private location: Location, private fb: FormBuilder,private analyseService: AnalyseService) {
     
     this.filtreForm = this.fb.group({
       date: [''],
@@ -36,16 +37,11 @@ export class AnalysesMedicalesComponent implements OnInit, OnDestroy {
   }
 
   loadAnalyses(): void {
-    const analysesSub = this.db.list('analysesMedicales').snapshotChanges()
-      .subscribe(analyses => {
-        this.allAnalysesMedicales = analyses.map(a => {
-          const data = a.payload.val() as any;
-          const id = a.key;
-          return { id, ...data };
-        });
-        this.applyFilters();
-      });
-
+    const analysesSub = this.analyseService.getAnalyses().subscribe(analyses => {
+      this.allAnalysesMedicales = analyses;
+      this.applyFilters();
+    });
+  
     this.subscription.add(analysesSub);
   }
 

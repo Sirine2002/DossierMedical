@@ -1,7 +1,7 @@
 import { Component, Inject, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ImageService } from '../../Services/image.service'; // Importation du service ImageService
 
 @Component({
   selector: 'app-add-image',
@@ -14,13 +14,11 @@ export class AddImageComponent {
   selectedFile: File | null = null;
   isUploading = false;
 
-  cloudName = 'dxc5curxy';
-  uploadPreset = 'ProjectMedicale';
   patientId: string;
 
   constructor(
     private fb: FormBuilder,
-    private db: AngularFireDatabase,
+    private imageService: ImageService, // Utilisation du service ImageService
     private dialogRef: MatDialogRef<AddImageComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
@@ -32,21 +30,14 @@ export class AddImageComponent {
 
     this.patientId = data.patientId;
     this.imageForm.get("numero")?.disable();
-    this.db.list('imagesMedicales', ref =>
-      ref.orderByChild('numero').limitToLast(1) // 👈 récupère le dernier (le plus grand)
-    )
-    .snapshotChanges()
-    .subscribe(ficheChanges => {
-      const maxFiche = ficheChanges.map(c => ({
-        id: c.payload.key,
-        ...(c.payload.val() as any)
-      }))[0]; // Il y a normalement un seul élément ici
     
-      const maxNumero = maxFiche?.numero ?? 0; // 👈 récupération du numero
-      console.log('Max numero:', maxNumero);
-      const newNumero = parseInt(maxNumero) + 1; // 👈 incrémentation
-      this.imageForm.patchValue({ numero: newNumero }); // 👈 mise à jour du numéro
-      
+    this.imageService.getPatientDossiers(this.patientId).subscribe(dossiers => {
+      if (dossiers.length > 0) {
+        const maxFiche = dossiers[0].payload.val();
+        const maxNumero = maxFiche?.numero ?? 0;
+        const newNumero = parseInt(maxNumero) + 1;
+        this.imageForm.patchValue({ numero: newNumero });
+      }
     });
   }
 
@@ -66,55 +57,41 @@ export class AddImageComponent {
 
     this.isUploading = true;
 
-    this.db.list('dossier', ref => ref.orderByChild('patientId').equalTo(this.patientId))
-      .snapshotChanges()
-      .subscribe(dossiers => {
-        if (dossiers.length === 0) {
-          console.error('Aucun dossier trouvé pour ce patient.');
-          this.isUploading = false;
-          return;
-        }
+    // On récupère le dossier du patient et on upload l'image
+    this.imageService.getPatientDossiers(this.patientId).subscribe(dossiers => {
+      if (dossiers.length === 0) {
+        console.error('Aucun dossier trouvé pour ce patient.');
+        this.isUploading = false;
+        return;
+      }
 
-        // On suppose ici qu'il n'y a qu'un seul dossier par patient
-        const dossierId = dossiers[0].key;
+      // On suppose ici qu'il n'y a qu'un seul dossier par patient
+      const dossierId = dossiers[0].key;
 
-        const formData = new FormData();
-        formData.append('file', this.selectedFile!);
-        formData.append('upload_preset', this.uploadPreset);
+      this.imageService.uploadImage(this.selectedFile!).then(imageUrl => {
+        const imageData = {
+          numero: formValue.numero,
+          agentCreateur: this.imageForm.value.agentCreateur,
+          adresseCreateur: this.imageForm.value.adresseCreateur,
+          dateCreation: new Date().toISOString(),
+          dossierId: dossierId,
+          image: imageUrl
+        };
 
-        const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`;
-
-        fetch(cloudinaryUrl, {
-          method: 'POST',
-          body: formData
-        })
-          .then(res => res.json())
-          .then(data => {
-            const imageUrl = data.secure_url;
-
-            const imageData = {
-              numero: formValue.numero,
-              agentCreateur: this.imageForm.value.agentCreateur,
-              adresseCreateur: this.imageForm.value.adresseCreateur,
-              dateCreation: new Date().toISOString(),
-              dossierId: dossierId,
-              image: imageUrl
-            };
-
-            return this.db.list('imagesMedicales').push(imageData);
-          })
-          .then(() => {
-            this.imageForm.reset();
-            this.selectedFile = null;
-            this.dialogRef.close(); // Ferme le dialog après succès
-          })
-          .catch(err => {
-            console.error('Erreur lors de l\'upload ou de la sauvegarde Firebase :', err);
-          })
-          .finally(() => {
-            this.isUploading = false;
-          });
+        return this.imageService.addImage(imageData);
+      })
+      .then(() => {
+        this.imageForm.reset();
+        this.selectedFile = null;
+        this.dialogRef.close(); // Ferme le dialog après succès
+      })
+      .catch(err => {
+        console.error('Erreur lors de l\'upload ou de la sauvegarde Firebase :', err);
+      })
+      .finally(() => {
+        this.isUploading = false;
       });
+    });
   }
 
   cancelFicheForm(): void {

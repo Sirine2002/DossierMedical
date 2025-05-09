@@ -1,28 +1,27 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/compat/database';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Inject } from '@angular/core';
+import { FicheService } from '../../Services/fiche.service'; // Adapter le chemin
 
 @Component({
   selector: 'app-add-fiche',
   templateUrl: './add-fiche.component.html',
   styleUrls: ['./add-fiche.component.css']
 })
-export class AddFicheComponent {
+export class AddFicheComponent implements OnInit {
   @Input() patient: any;
   ficheForm: FormGroup;
   ficheSoins: any[] = [];
   patientId: any;
-  newNum:any;
+  newNum: any;
 
   constructor(
     private fb: FormBuilder,
-    private db: AngularFireDatabase,
     private route: ActivatedRoute,
     private router: Router,
-    @Inject(MAT_DIALOG_DATA) public data: any // 👈 ici on récupère les data envoyées
+    private ficheService: FicheService,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.ficheForm = this.fb.group({
       numero: ['', Validators.required],
@@ -31,28 +30,15 @@ export class AddFicheComponent {
       lignesFiche: this.fb.array([])
     });
 
-    this.patientId = data.patientId; 
+    this.patientId = data.patientId;
     this.ficheForm.get("numero")?.disable();
+  }
 
-    this.db.list('fichesSoin', ref =>
-      ref.orderByChild('numero').limitToLast(1) // 👈 récupère le dernier (le plus grand)
-    )
-    .snapshotChanges()
-    .subscribe(ficheChanges => { 
-      const maxFiche = ficheChanges.map(c => ({
-        id: c.payload.key,
-        ...(c.payload.val() as any)
-      }))[0]; // Il y a normalement un seul élément ici
-    
-      const maxNumero = maxFiche?.numero ?? 0; // 👈 récupération du numero
-      console.log('Max numero:', maxNumero);
-      const newNumero = parseInt(maxNumero) + 1; // 👈 incrémentation
-      this.ficheForm.patchValue({ numero: newNumero }); 
-      this.newNum=newNumero; // 👈 mise à jour du numéro
-    });
-    
-}
-
+  async ngOnInit(): Promise<void> {
+    const numero = await this.ficheService.getDernierNumeroFiche();
+    this.ficheForm.patchValue({ numero });
+    this.newNum = numero;
+  }
 
   get lignesFiche(): FormArray {
     return this.ficheForm.get('lignesFiche') as FormArray;
@@ -72,78 +58,35 @@ export class AddFicheComponent {
     this.lignesFiche.removeAt(index);
   }
 
-  ajouterFicheSoin(): void {
+  async ajouterFicheSoin(): Promise<void> {
     if (!this.patientId) {
       console.error("Patient non défini !");
       return;
     }
 
-    this.db.list('dossier', ref => ref.orderByChild('patientId').equalTo(this.patientId))
-      .snapshotChanges()
-      .subscribe(dossiers => {
-        if (dossiers.length === 0) {
-          console.error("Aucun dossier trouvé pour ce patient !");
-          return;
-        }
+    const dossierId = await this.ficheService.getDossierIdByPatient(this.patientId);
+    if (!dossierId) {
+      console.error("Aucun dossier trouvé pour ce patient !");
+      return;
+    }
 
-        const dossierId = dossiers[0].key!;
-        const ficheData = {
-          numero: this.newNum,
-          agentCreateur: this.ficheForm.value.agentCreateur,
-          adresseCreateur: this.ficheForm.value.adresseCreateur,
-          dateCreation: new Date().toISOString(),
-          dossierId: dossierId
-        };
+    const ficheData = {
+      numero: this.newNum,
+      agentCreateur: this.ficheForm.value.agentCreateur,
+      adresseCreateur: this.ficheForm.value.adresseCreateur,
+      dateCreation: new Date().toISOString(),
+      dossierId: dossierId
+    };
 
-        const lignes = [...this.ficheForm.value.lignesFiche];
-
-        this.db.list('fichesSoin').push(ficheData).then(ref => {
-          const ficheSoinId = ref.key;
-
-          lignes.forEach(ligne => {
-            const ligneFiche = {
-              ...ligne,
-              ficheSoinId
-            };
-            this.db.list('lignesFicheSoin').push(ligneFiche);
-          });
-
-          this.loadFicheSoins();
-          this.ficheForm.reset();
-          this.lignesFiche.clear();
-        });
-      });
+    await this.ficheService.ajouterFicheEtLignes(ficheData, this.ficheForm.value.lignesFiche);
+    this.loadFicheSoins();
+    this.ficheForm.reset();
+    this.lignesFiche.clear();
   }
 
-  loadFicheSoins(): void {
+  async loadFicheSoins(): Promise<void> {
     if (!this.patient || !this.patient.id) return;
-
-    this.db.list('fichesSoin', ref =>
-      ref.orderByChild('dossierId').equalTo(this.patient.id)
-    )
-    .snapshotChanges()
-    .subscribe(ficheChanges => {
-      const fiches = ficheChanges.map(c => ({
-        id: c.payload.key,
-        ...(c.payload.val() as any),
-        lignes: []
-      }));
-
-      this.db.list('lignesFicheSoin')
-        .snapshotChanges()
-        .subscribe(ligneChanges => {
-          const lignes = ligneChanges.map(c => ({
-            id: c.payload.key,
-            ...(c.payload.val() as any)
-          }));
-
-          fiches.forEach(fiche => {
-            fiche.lignes = lignes.filter(ligne => ligne.ficheSoinId === fiche.id);
-          });
-
-          this.ficheSoins = fiches;
-        });
-    });
+    this.ficheSoins = await this.ficheService.getFichesWithLignes(this.patient.id);
   }
 
   cancelFicheForm(): void {

@@ -13,8 +13,13 @@
       </div>
     </button>
   </div>
+  <div *ngIf="userrole=== 'Medecin'" class="pl-5"class="pl-5">
+    <button mat-button [routerLink]="['/dashboard']" routerLinkActive="active-button" [routerLinkActiveOptions]="{exact: true}">
+      <div class="user-button"><b>Dashboard</b></div>
+    </button>
+  </div>
   <div *ngIf="userrole !== 'Patient'" class="pl-5">
-      <button mat-button [routerLink]="['/dashboard']" routerLinkActive="active-button" [routerLinkActiveOptions]="{exact: true}">
+      <button mat-button [routerLink]="['/liste-des-patients']" routerLinkActive="active-button" [routerLinkActiveOptions]="{exact: true}">
         <div class="user-button"><b>Patients</b></div>
       </button>
   </div>

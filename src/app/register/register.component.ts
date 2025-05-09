@@ -29,7 +29,8 @@ export class RegisterComponent {
   constructor(
     private auth: AuthService,
     private router: Router,
-    private db: AngularFireDatabase
+    private db: AngularFireDatabase,
+    private AuthService: AuthService
   ) {}
 
   hide = signal(true);
@@ -47,95 +48,109 @@ export class RegisterComponent {
     this.auth.signUpWithEmailAndPassword(this.email, this.password)
       .then((userCredential) => {
         const userId = userCredential.user?.uid;
-        if (userId) {
-          let userData: any = {
-            cin: this.cin,
-            firstName: this.firstName,
-            lastName: this.lastName,
-            phone: this.phone,
-            email: this.email,
-            role: this.selectedRole
-          };
-
-          // Enregistrement spécifique selon le rôle
-          switch (this.selectedRole) {
-            case 'Patient':
+        if (!userId) return;
+  
+        const userData: any = {
+          cin: this.cin,
+          firstName: this.firstName,
+          lastName: this.lastName,
+          phone: this.phone,
+          email: this.email,
+          role: this.selectedRole
+        };
+  
+        const promises = [];
+  
+        switch (this.selectedRole) {
+          case 'Patient':
               const patientData = {
                 utilisateurId: userId,
                 dateNaissance: this.dateNaissance,
                 sexe: this.sexe,
                 adresse: this.adresse
               };
+
               this.db.database.ref('patients').child(userId).set(patientData)
                 .then(() => console.log("Utilisateur patient enregistré"))
-                const dossierRef = this.db.database.ref('dossier');
-                const newDossierKey = dossierRef.push().key;
-                const codeAcces = Math.random().toString(36).substring(2, 8).toUpperCase();
-            
-                const dossierData = {
-                  codeAcces: codeAcces,
-                  dateCreation: new Date().toISOString(),
-                  etat: "actif",
-                  numero: 1,
-                  patientId: userId
-                };
-            
-                if (newDossierKey) {
-                  dossierRef.child(newDossierKey).set(dossierData)
-                    .then(() => console.log("Dossier initial créé"))
-                    .catch((err) => console.error("Erreur lors de la création du dossier :", err));
-                }
-   
-              break;
+                .catch((err) => console.error("Erreur patient :", err));
 
-            case 'Analyste':
-              const analysteData = {
-                utilisateurId: userId,
-                specialite: this.specialite,
-                service: this.service
-              };
-              this.db.database.ref('analystes').child(userId).set(analysteData)
-                .then(() => console.log("Utilisateur analyste enregistré"))
-                .catch((err) => console.error("Erreur analyste :", err));
-              break;
+              // Récupérer le dernier numéro de dossier et incrémenter
+              const dossierRef = this.db.database.ref('dossier');
+              dossierRef
+                .orderByChild('numero')
+                .limitToLast(1)
+                .once('value')
+                .then(snapshot => {
+                  let lastNumero = 0;
+                  snapshot.forEach(childSnapshot => {
+                    const data = childSnapshot.val();
+                    if (data.numero) {
+                      lastNumero = data.numero;
+                    }
+                  });
 
-            case 'Medecin':
-              const medecinData = {
-                utilisateurId: userId,
-                specialite: this.specialite
-              };
-              this.db.database.ref('medecins').child(userId).set(medecinData)
-                .then(() => console.log("Utilisateur médecin enregistré"))
-                .catch((err) => console.error("Erreur médecin :", err));
-              break;
+                  const nextNumero = lastNumero + 1;
+                  const newDossierKey = dossierRef.push().key;
+                  const codeAcces = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-            case 'Radiologue':
-              const radiologueData = {
-                utilisateurId: userId,
-                typeImagerie: this.typeImagerie,
-                service: this.service
-              };
-              this.db.database.ref('radiologues').child(userId).set(radiologueData)
-                .then(() => console.log("Utilisateur radiologue enregistré"))
-                .catch((err) => console.error("Erreur radiologue :", err));
-              break;
-          }
+                  const dossierData = {
+                    codeAcces: codeAcces,
+                    dateCreation: new Date().toISOString(),
+                    etat: "actif",
+                    numero: nextNumero,
+                    patientId: userId
+                  };
 
-          // Enregistrement général
-          this.db.database.ref('users/' + userId).set(userData)
-            .then(() => {
-              console.log("Utilisateur principal enregistré");
-              this.router.navigate(['/login']);
-            })
-            .catch((error) => {
-              console.error("Erreur user principal :", error);
-            });
+                  if (newDossierKey) {
+                    dossierRef.child(newDossierKey).set(dossierData)
+                      .then(() => console.log("Dossier initial créé avec numero", nextNumero))
+                      .catch((err) => console.error("Erreur lors de la création du dossier :", err));
+                  }
+                })
+                .catch(err => {
+                  console.error("Erreur lors de la récupération du dernier numero :", err);
+                });
+
+              break;
+  
+          case 'Analyste':
+            promises.push(this.AuthService.enregistrerAnalyste(userId, {
+              utilisateurId: userId,
+              specialite: this.specialite,
+              service: this.service
+            }));
+            break;
+  
+          case 'Medecin':
+            promises.push(this.AuthService.enregistrerMedecin(userId, {
+              utilisateurId: userId,
+              specialite: this.specialite
+            }));
+            break;
+  
+          case 'Radiologue':
+            promises.push(this.AuthService.enregistrerRadiologue(userId, {
+              utilisateurId: userId,
+              typeImagerie: this.typeImagerie,
+              service: this.service
+            }));
+            break;
         }
+  
+        promises.push(this.AuthService.enregistrerUtilisateurPrincipal(userId, userData));
+  
+        Promise.all(promises)
+          .then(() => {
+            console.log("Utilisateur enregistré avec succès");
+            this.router.navigate(['/login']);
+          })
+          .catch(err => {
+            console.error("Erreur lors de l'enregistrement :", err);
+          });
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("Erreur d'inscription :", error);
       });
-
-      this.db.database.ref()
   }
+  
 }

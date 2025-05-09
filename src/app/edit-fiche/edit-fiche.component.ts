@@ -1,8 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { firstValueFrom } from 'rxjs';
+import { FicheService } from '../../Services/fiche.service'; // Importation de FicheService
 
 @Component({
   selector: 'app-edit-fiche',
@@ -16,7 +15,7 @@ export class EditFicheComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private db: AngularFireDatabase,
+    private ficheService: FicheService, // Utilisation du service FicheService
     private dialogRef: MatDialogRef<EditFicheComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
@@ -28,7 +27,7 @@ export class EditFicheComponent implements OnInit {
     });
 
     this.ficheId = data.ficheKey;
-    this.ficheForm.get("numero")?.disable(); // Correction ici
+    this.ficheForm.get("numero")?.disable(); // On désactive le champ numéro
   }
 
   ngOnInit(): void {
@@ -40,7 +39,7 @@ export class EditFicheComponent implements OnInit {
   }
 
   loadFiche(): void {
-    this.db.object(`fichesSoin/${this.ficheId}`).valueChanges().subscribe((fiche: any) => {
+    this.ficheService.getFicheById(this.ficheId).subscribe((fiche: any) => {
       if (fiche) {
         this.ficheForm.patchValue({
           numero: fiche.numero,
@@ -48,23 +47,21 @@ export class EditFicheComponent implements OnInit {
           adresseCreateur: fiche.adresseCreateur
         });
 
-        this.db.list('lignesFicheSoin', ref => ref.orderByChild('ficheSoinId').equalTo(this.ficheId))
-          .snapshotChanges()
-          .subscribe(changes => {
-            this.lignesFiche.clear();
-            changes.forEach(change => {
-              const ligne = change.payload.val() as any;
-              const id = change.payload.key;
+        this.ficheService.getLignesByFicheId(this.ficheId).subscribe(changes => {
+          this.lignesFiche.clear();
+          changes.forEach(change => {
+            const ligne = change.payload.val() as any;
+            const id = change.payload.key;
 
-              this.lignesFiche.push(this.fb.group({
-                id: [id],
-                nom: [ligne.nom, Validators.required],
-                type: [ligne.type, Validators.required],
-                dateAjout: [ligne.dateAjout, Validators.required],
-                contenu: [ligne.contenu, Validators.required]
-              }));
-            });
+            this.lignesFiche.push(this.fb.group({
+              id: [id],
+              nom: [ligne.nom, Validators.required],
+              type: [ligne.type, Validators.required],
+              dateAjout: [ligne.dateAjout, Validators.required],
+              contenu: [ligne.contenu, Validators.required]
+            }));
           });
+        });
       }
     });
   }
@@ -83,55 +80,33 @@ export class EditFicheComponent implements OnInit {
     const ligne = this.lignesFiche.at(index);
     const id = ligne.value.id;
     if (id) {
-      this.db.object(`lignesFicheSoin/${id}`).remove();
+      this.ficheService.supprimerLigne(id).then(() => {
+        this.lignesFiche.removeAt(index);
+      }).catch(error => {
+        console.error('Erreur lors de la suppression de la ligne :', error);
+      });
+    } else {
+      this.lignesFiche.removeAt(index);
     }
-    this.lignesFiche.removeAt(index);
   }
 
   modifierFicheSoin(): void {
     const formValue = this.ficheForm.getRawValue();
     const ficheData = {
       numero: formValue.numero,
-      agentCreateur: this.ficheForm.value.agentCreateur,
-      adresseCreateur: this.ficheForm.value.adresseCreateur
+      agentCreateur: formValue.agentCreateur,
+      adresseCreateur: formValue.adresseCreateur
     };
 
-    // Mise à jour de la fiche
-    this.db.object(`fichesSoin/${this.ficheId}`).update(ficheData).then(() => {
-      this.updateLignesFiche();
+    // Mise à jour de la fiche et des lignes via le service
+    this.ficheService.modifierFicheEtLignes(this.ficheId, ficheData, formValue.lignesFiche).then(() => {
+      this.dialogRef.close(true); // Ferme le dialog après succès
     }).catch(error => {
-      console.error('Erreur lors de la mise à jour de la fiche :', error);
+      console.error('Erreur lors de la mise à jour de la fiche et des lignes :', error);
     });
-  }
-
-  updateLignesFiche(): void {
-    const idsFormulaire = this.lignesFiche.controls.map(ctrl => ctrl.value.id).filter(id => id);
-
-    // Mise à jour des lignes
-    this.lignesFiche.controls.forEach(async (ligneCtrl) => {
-      const ligne = ligneCtrl.value;
-      const ligneData = {
-        nom: ligne.nom,
-        type: ligne.type,
-        dateAjout: ligne.dateAjout,
-        contenu: ligne.contenu,
-        ficheSoinId: this.ficheId // Important pour lier la ligne à la fiche
-      };
-
-      if (ligne.id) {
-        // Mise à jour de la ligne existante
-        await this.db.object(`lignesFicheSoin/${ligne.id}`).update(ligneData);
-      } else {
-        // Ajout d'une nouvelle ligne
-        await this.db.list('lignesFicheSoin').push(ligneData);
-      }
-    });
-
-    // Fermer le dialog une fois les lignes traitées
-    this.dialogRef.close(true);
   }
 
   cancel(): void {
-    this.dialogRef.close(false);
+    this.dialogRef.close(false); // Ferme le dialog sans sauvegarder
   }
 }

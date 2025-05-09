@@ -3,6 +3,7 @@ import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { PatientService } from 'src/Services/patient.service';
 
 interface PatientData {
   id: string;
@@ -30,7 +31,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private db: AngularFireDatabase, private router: Router) {}
+  constructor(private db: AngularFireDatabase, private router: Router,private patientService:PatientService) {}
 
   ngOnInit(): void {
     this.loadPatients();
@@ -45,45 +46,44 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   }
 
   loadPatients() {
-    this.db.list('users').snapshotChanges().subscribe(users => {
+    this.patientService.getAllPatients().subscribe(users => {
       const patientsUsers = users.filter(user => (user.payload.val() as any).role === 'Patient');
 
       patientsUsers.forEach(user => {
         const userId = user.key!;
         const userInfo = user.payload.val() as any;
 
-        this.db.list('patients', ref => ref.orderByChild('utilisateurId').equalTo(userId))
-          .valueChanges()
-          .subscribe(patients => {
-            if (patients.length > 0) {
-              const patientInfo = patients[0] as any;
-              this.db.list('dossier', ref => ref.orderByChild('patientId').equalTo(userId))
-                .valueChanges()
-                .subscribe(dossiers => {
-                  if (dossiers.length > 0) {
-                    const dossier = dossiers[0] as any;
-                    const patientData: PatientData = {
-                      id: userId,
-                      fullName: `${userInfo.firstName} ${userInfo.lastName}`,
-                      dateNaissance: patientInfo.dateNaissance,
-                      phone: userInfo.phone,
-                      email: userInfo.email,
-                      sexe: patientInfo.sexe,
-                      adresse: patientInfo.adresse,
-                      dateCreation: dossier.dateCreation,
-                      numero: dossier.numero,
-                    };
+        // Charger les informations du patient
+        this.patientService.getPatientInfo(userId).subscribe(patients => {
+          if (patients.length > 0) {
+            const patientInfo = patients[0] as any;
 
-                    const exists = this.allPatients.find(p => p.id === patientData.id);
-                    if (!exists) {
-                      this.allPatients.push(patientData);
-                      this.dataSource.data = this.allPatients;
-                      this.applyFilters(); // Appliquer le filtre initial
-                    }
-                  }
-                });
-            }
-          });
+            // Charger les dossiers du patient
+            this.patientService.getPatientDossiers(userId).subscribe(dossiers => {
+              if (dossiers.length > 0) {
+                const dossier = dossiers[0] as any;
+                const patientData: PatientData = {
+                  id: userId,
+                  fullName: `${userInfo.firstName} ${userInfo.lastName}`,
+                  dateNaissance: patientInfo.dateNaissance,
+                  phone: userInfo.phone,
+                  email: userInfo.email,
+                  sexe: patientInfo.sexe,
+                  adresse: patientInfo.adresse,
+                  dateCreation: dossier.dateCreation,
+                  numero: dossier.numero,
+                };
+
+                const exists = this.allPatients.find(p => p.id === patientData.id);
+                if (!exists) {
+                  this.allPatients.push(patientData);
+                  this.dataSource.data = this.allPatients;
+                  this.applyFilters(); // Appliquer le filtre initial
+                }
+              }
+            });
+          }
+        });
       });
     });
   }

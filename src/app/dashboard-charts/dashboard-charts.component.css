@@ -1,0 +1,129 @@
+.welcome-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    margin-bottom: 2rem;
+  }
+  
+  .welcome-left {
+    flex: 1;
+  }
+  
+  .welcome-back {
+    font-size: 0.9rem;
+    color: #999;
+    margin-bottom: 0.4rem;
+  }
+  
+  .doctor-name {
+    font-size: 2.2rem;
+    color: #2c3e50;
+    font-weight: 700;
+    margin: 0.3rem 0;
+  }
+  
+  .specialty {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 1.2rem;
+  }
+  
+  .stats-cards {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .stat-card {
+    background: #fff;
+    padding: 1.2rem 1.5rem;
+    border-radius: 16px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #333;
+    min-width: 130px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+  }
+  
+  .stat-card span {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-top: 0.4rem;
+  }
+  
+  .appointments {
+    border-top: 4px solid #3f51b5;
+  }
+  
+  .surgeries {
+    border-top: 4px solid #e53935;
+  }
+  
+  .visits {
+    border-top: 4px solid #43a047;
+  }
+  
+  .visits1 {
+    border-top: 4px solid #ffe600;
+  }
+  .welcome-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .doctor-illustration {
+    width: 240px;
+    height: auto;
+  }
+  
+  .dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    background-color: #f9fafb;
+    padding: 2rem 8%;
+  }
+  
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 2rem;
+  }
+  .charts-grid2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 2rem;
+  }
+  
+  .chart-container {
+    background: #fff;
+    border-radius: 20px;
+    padding: 1.8rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  }
+  
+  .chart-container h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+  }
+  
+  mat-sidenav-content {
+    background: #f9fafb;
+  }
+  

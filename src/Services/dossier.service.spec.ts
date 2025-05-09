@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { FicheSoinService } from './fiche-soin.service';
+import { DossierService } from './dossier.service';
 
-describe('FicheSoinService', () => {
-  let service: FicheSoinService;
+describe('DossierService', () => {
+  let service: DossierService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(FicheSoinService);
+    service = TestBed.inject(DossierService);
   });
 
   it('should be created', () => {

@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { PageEvent } from '@angular/material/paginator';
 import { Location } from '@angular/common';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { ImageService } from 'src/Services/image.service';
 
 @Component({
   selector: 'app-images-medicales',
@@ -21,7 +22,7 @@ export class ImagesMedicalesComponent implements OnInit, OnDestroy {
   filtreForm: FormGroup;
   private subscription: Subscription = new Subscription();
 
-  constructor(private db: AngularFireDatabase, private location: Location, private fb: FormBuilder) {
+  constructor(private db: AngularFireDatabase, private location: Location, private fb: FormBuilder,private imageService: ImageService) {
     this.filtreForm = this.fb.group({
       date: [''],
       agent: ['']
@@ -38,16 +39,10 @@ export class ImagesMedicalesComponent implements OnInit, OnDestroy {
 
 
   loadImages(): void {
-    const imagesSub = this.db.list('imagesMedicales').snapshotChanges()
-      .subscribe(images => {
-        this.allImagesMedicales = images.map(i => {
-          const data = i.payload.val() as any;
-          const id = i.key;
-          return { id, ...data };
-        });
-        this.applyFilters();
-      });
-
+    const imagesSub = this.imageService.getAllImages().subscribe(images => {
+      this.allImagesMedicales = images;
+      this.applyFilters();
+    });
     this.subscription.add(imagesSub);
   }
 

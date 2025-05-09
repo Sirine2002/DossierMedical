@@ -1,10 +1,11 @@
+// fiche-soin-details.component.ts
+
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { FicheSoinService } from 'src/Services/fiche-soin.service';
+import { FicheService } from 'src/Services/fiche.service';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Component({
   selector: 'app-fiche-soin-details',
@@ -21,30 +22,26 @@ export class FicheSoinDetailsComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<FicheSoinDetailsComponent>,
-    private db: AngularFireDatabase,
-    private auth: AngularFireAuth,
-    private ficheSoinService: FicheSoinService
+    private FicheService: FicheService,
+    private auth: AngularFireAuth
   ) {
     console.log('DATA INJECTED :', this.data);
     this.ficheId = this.data.id;
   }
 
   ngOnInit(): void {
-    this.auth.authState.subscribe(user => {
-      if (user) {
-        this.db.list('lignesFicheSoin', ref => ref.orderByChild('ficheSoinId').equalTo(this.ficheId))
-          .snapshotChanges()
-          .subscribe(lignes => {
-            const fiches = lignes.map(d => ({
-              key: d.key,
-              ...d.payload.val() as any
-            }));
-            this.dataSource = new MatTableDataSource(fiches);
-            this.dataSource.paginator = this.paginator;
-          }, error => {
-            console.error('Erreur lors de la récupération des lignes :', error);
-          });
-      }
+    // On ne gère plus l'authentification ici si elle n'est pas nécessaire pour la récupération des lignes
+    this.FicheService.getLignesFicheSoin(this.ficheId).subscribe(lignes => {
+      this.dataSource.data = lignes;  // Mettre à jour la source des données
+
+      // Vérifier que le paginator est bien défini avant de l'utiliser
+      setTimeout(() => {
+        if (this.paginator) {
+          this.dataSource.paginator = this.paginator;  // Ajouter le paginator
+        }
+      });
+    }, error => {
+      console.error('Erreur lors de la récupération des lignes :', error);
     });
   }
 

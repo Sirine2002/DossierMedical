@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "dist/project-medical",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
